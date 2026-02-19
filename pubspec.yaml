@@ -1,0 +1,30 @@
+name: studysync
+description: A mobile app for finding compatible study partners
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Navigation
+  go_router: ^14.6.2  # Latest version as of Feb 2026
+
+  # TODO: Add these as you implement features
+  # provider: ^6.1.2
+  # firebase_core: ^3.10.0
+  # firebase_auth: ^5.3.4
+  # cloud_firestore: ^5.5.2
+  # firebase_storage: ^12.3.8
+  # firebase_messaging: ^15.1.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
