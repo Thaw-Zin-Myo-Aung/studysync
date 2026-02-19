@@ -86,4 +86,3 @@ class _ToggleableAuthInputState extends State<_ToggleableAuthInput> {
     ));
   }
 }
-
