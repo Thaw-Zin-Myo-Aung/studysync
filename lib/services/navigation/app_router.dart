@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/route_constants.dart';
 import '../../features/authentication/screens/login_screen.dart';
 import '../../features/home/screens/home_screen.dart';
+import '../../features/matching/screens/discover_screen.dart';
 
 /// GoRouter configuration for StudySync app navigation
 class AppRouter {
@@ -32,9 +33,7 @@ class AppRouter {
       // Placeholder Routes
       GoRoute(
         path: RouteConstants.discover,
-        builder: (context, state) => Scaffold(
-          appBar: AppBar(title: const Text('Discover')),
-        ),
+        builder: (context, state) => const DiscoverScreen(),
       ),
       GoRoute(
         path: RouteConstants.groups,
