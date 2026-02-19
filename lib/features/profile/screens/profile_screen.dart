@@ -1,0 +1,96 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/constants/route_constants.dart';
+import '../widgets/profile_header_card.dart';
+import '../widgets/learning_style_card.dart';
+import '../widgets/enrolled_courses_section.dart';
+import '../widgets/weekly_schedule_section.dart';
+
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFEFF6FF),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const ProfileHeaderCard(
+                name: 'Thaw Zin',
+                major: 'Computer Science',
+                year: 'Junior Year',
+                reliabilityScore: 100,
+                reliabilityLabel: 'High Reliability',
+              ),
+              const SizedBox(height: 24),
+              const LearningStyleCard(style: 'Visual Learner', description: 'Learns best with charts & diagrams'),
+              const SizedBox(height: 24),
+              const EnrolledCoursesSection(),
+              const SizedBox(height: 24),
+              const WeeklyScheduleSection(),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 52,
+                      child: OutlinedButton.icon(
+                        onPressed: () => context.go(RouteConstants.settings),
+                        icon: const Icon(Icons.settings_outlined, color: Colors.black87),
+                        label: const Text('Settings', style: TextStyle(color: Colors.black87)),
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 52,
+                      child: ElevatedButton.icon(
+                        onPressed: () => context.go(RouteConstants.editProfile),
+                        icon: const Icon(Icons.edit_outlined, color: Colors.white),
+                        label: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2563EB),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 3,
+        selectedItemColor: const Color(0xFF2563EB),
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) {
+          switch (index) {
+            case 0: context.go(RouteConstants.home); break;
+            case 1: context.go(RouteConstants.discover); break;
+            case 2: context.go(RouteConstants.groups); break;
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), label: 'Discover'),
+          BottomNavigationBarItem(icon: Icon(Icons.group_outlined), label: 'Groups'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: 'Profile'),
+        ],
+      ),
+    );
+  }
+}
+
