@@ -20,7 +20,7 @@ class GroupsListScreen extends StatelessWidget {
             children: [
               GroupsHeader(
                 groupCount: mockGroups.length,
-                onAdd: () => print('Create'),
+                onAdd: () {},
               ),
               const SizedBox(height: 24),
               Expanded(
@@ -39,6 +39,18 @@ class GroupsListScreen extends StatelessWidget {
               const SizedBox(height: 16),
             ],
           ),
+        ),
+      ),
+      floatingActionButton: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: IconButton(
+          icon: const Icon(Icons.add, color: Colors.white, size: 28),
+          onPressed: () => print('Create group'),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

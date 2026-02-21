@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               YourGroupsSection(groups: mockGroups, onCreateGroup: () {}),
               const SizedBox(height: 20),
-              FindPartnerBanner(courseName: 'Engineering Math II', onFindPartner: () {}),
+              FindPartnerBanner(courseName: 'Engineering Math II', onFindPartner: () => context.go(RouteConstants.discover)),
               const SizedBox(height: 20),
             ],
           ),
