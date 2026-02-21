@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 import 'settings_section_header.dart';
 import 'settings_item_row.dart';
 
@@ -33,7 +34,7 @@ class _NotificationsSectionState extends State<NotificationsSection> {
                 trailing: Switch(
                   value: _pushEnabled,
                   onChanged: (v) => setState(() => _pushEnabled = v),
-                  activeColor: const Color(0xFF2563EB),
+                  activeThumbColor: AppColors.primary,
                 ),
               ),
               const Divider(height: 1, indent: 68),
@@ -46,7 +47,7 @@ class _NotificationsSectionState extends State<NotificationsSection> {
                 trailing: Switch(
                   value: _groupEnabled,
                   onChanged: (v) => setState(() => _groupEnabled = v),
-                  activeColor: const Color(0xFF2563EB),
+                  activeThumbColor: AppColors.primary,
                 ),
               ),
             ],

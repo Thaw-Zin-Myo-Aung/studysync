@@ -48,7 +48,7 @@ class HomeHeaderCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Welcome back,', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text('Welcome back,', style: const TextStyle(fontSize: 12, color: Colors.grey)),
                       Text(userName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
                     ],
                   ),

@@ -19,9 +19,9 @@ class AppPreferencesSection extends StatelessWidget {
             iconBgColor: const Color(0xFFF0FDF4),
             iconColor: const Color(0xFF10B981),
             title: "Language",
-            trailing: Row(
+            trailing: const Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Text(
                   "English",
                   style: TextStyle(

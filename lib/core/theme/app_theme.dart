@@ -8,7 +8,7 @@ class AppTheme {
     useMaterial3: false,
     scaffoldBackgroundColor: AppColors.backgroundPage,
     primaryColor: AppColors.primary,
-    colorScheme: ColorScheme.light(
+    colorScheme: const ColorScheme.light(
       primary: AppColors.primary,
       surface: AppColors.surface,
       error: AppColors.error,

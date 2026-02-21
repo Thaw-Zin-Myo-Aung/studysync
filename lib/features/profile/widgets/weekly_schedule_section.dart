@@ -53,10 +53,10 @@ class WeeklyScheduleSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _dot(AppColors.scheduleLegFree),
-                Text(' Free', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                Text(' Free', style: const TextStyle(fontSize: 12, color: Colors.grey)),
                 const SizedBox(width: 16),
                 _dot(AppColors.scheduleBusyBg),
-                Text(' Busy', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                Text(' Busy', style: const TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),
           ],

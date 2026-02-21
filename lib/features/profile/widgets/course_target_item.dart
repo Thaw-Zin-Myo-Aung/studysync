@@ -33,7 +33,7 @@ class CourseTargetItem extends StatelessWidget {
           RichText(
             text: TextSpan(
               children: [
-                TextSpan(text: 'Target:  ', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                TextSpan(text: 'Target:  ', style: const TextStyle(fontSize: 12, color: Colors.grey)),
                 TextSpan(text: targetGrade, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black)),
               ],
             ),

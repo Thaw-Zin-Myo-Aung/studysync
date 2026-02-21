@@ -25,11 +25,11 @@ class DiscoverScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Discover', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
-            Text('Find your perfect study buddy', style: TextStyle(fontSize: 12, color: Colors.grey)),
+            Text('Find your perfect study buddy', style: const TextStyle(fontSize: 12, color: Colors.grey)),
           ],
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.tune_outlined, color: Colors.grey)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.tune_outlined, color: Colors.grey)),
         ],
       ),
       body: SafeArea(
@@ -42,7 +42,7 @@ class DiscoverScreen extends StatelessWidget {
               return Column(
                 children: [
                   const SizedBox(height: 8),
-                  Text("That's all for now!", style: TextStyle(fontSize: 13, color: Colors.grey)),
+                  Text("That's all for now!", style: const TextStyle(fontSize: 13, color: Colors.grey)),
                   TextButton(
                     onPressed: () {},
                     child: const Text('Adjust Filters', style: TextStyle(color: AppColors.primary)),
