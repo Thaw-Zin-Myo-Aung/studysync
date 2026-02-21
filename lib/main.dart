@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'core/theme/app_theme.dart';
 import 'services/navigation/app_router.dart';
 
 void main() {
@@ -24,35 +25,7 @@ class StudySyncApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       // Theme configuration
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        
-        // App bar theme
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-        ),
-
-        // Card theme
-        cardTheme: CardThemeData(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-
-        // Input decoration theme
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          filled: true,
-        ),
-      ),
+      theme: AppTheme.light,
 
       // GoRouter configuration
       routerConfig: AppRouter.router,

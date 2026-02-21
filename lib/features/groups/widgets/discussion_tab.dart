@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/discussion_post_card.dart';
 
 class DiscussionTab extends StatelessWidget {
@@ -49,11 +50,7 @@ class DiscussionTab extends StatelessWidget {
               height: 56,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF0D9488), Color(0xFF14B8A6)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: AppColors.primary,
               ),
               child: const Icon(Icons.add, color: Colors.white, size: 28),
             ),
