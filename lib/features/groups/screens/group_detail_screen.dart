@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/constants/route_constants.dart';
 import '../models/group_model.dart';
 import '../widgets/discussion_tab.dart';
 
@@ -43,7 +44,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: () => context.pop(),
+          onPressed: () => context.go(RouteConstants.groups),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,6 +96,27 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
             Center(child: Text('Members - Coming Soon', style: TextStyle(color: Colors.grey))),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 2,
+        selectedItemColor: const Color(0xFF2563EB),
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
+        onTap: (index) {
+          switch (index) {
+            case 0: context.go(RouteConstants.home); break;
+            case 1: context.go(RouteConstants.discover); break;
+            case 2: context.go(RouteConstants.groups); break;
+            case 3: context.go(RouteConstants.profile); break;
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), label: 'Discover'),
+          BottomNavigationBarItem(icon: Icon(Icons.group_outlined), label: 'Groups'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: 'Profile'),
+        ],
       ),
     );
   }
