@@ -5,6 +5,7 @@ import '../../features/authentication/screens/login_screen.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/matching/screens/discover_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
+import '../../features/settings/screens/settings_screen.dart';
 
 /// GoRouter configuration for StudySync app navigation
 class AppRouter {
@@ -48,10 +49,7 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteConstants.settings,
-        builder: (context, state) => Scaffold(
-          appBar: AppBar(title: const Text('Settings')),
-          body: const Center(child: Text('Settings - Coming Soon')),
-        ),
+        builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
         path: RouteConstants.editProfile,
