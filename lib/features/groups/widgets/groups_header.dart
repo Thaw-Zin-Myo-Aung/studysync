@@ -3,12 +3,10 @@ import '../../../core/theme/app_colors.dart';
 
 class GroupsHeader extends StatelessWidget {
   final int groupCount;
-  final VoidCallback onAdd;
 
   const GroupsHeader({
     super.key,
     required this.groupCount,
-    required this.onAdd,
   });
 
   @override
@@ -41,21 +39,8 @@ class GroupsHeader extends StatelessWidget {
               ],
             ),
           ),
-          GestureDetector(
-            onTap: onAdd,
-            child: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: const Icon(Icons.add, color: Colors.white, size: 24),
-            ),
-          ),
         ],
       ),
     );
   }
 }
-

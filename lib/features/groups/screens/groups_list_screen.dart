@@ -18,10 +18,7 @@ class GroupsListScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              GroupsHeader(
-                groupCount: mockGroups.length,
-                onAdd: () {},
-              ),
+              GroupsHeader(groupCount: mockGroups.length),
               const SizedBox(height: 24),
               Expanded(
                 child: ListView.separated(
