@@ -62,7 +62,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF0D9488),
+                color: Color(0xFF2563EB),
               ),
             ),
           ],
@@ -75,9 +75,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: const Color(0xFF0D9488),
+          labelColor: const Color(0xFF2563EB),
           unselectedLabelColor: Colors.grey,
-          indicatorColor: const Color(0xFF0D9488),
+          indicatorColor: const Color(0xFF2563EB),
           indicatorWeight: 2.5,
           tabs: const [
             Tab(text: 'Discussion'),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../features/groups/models/group_model.dart';
 import 'group_list_item.dart';
 
 class YourGroupsSection extends StatefulWidget {
-  final List<Map<String, dynamic>> groups;
+  final List<GroupModel> groups;
   final VoidCallback onCreateGroup;
 
   const YourGroupsSection({super.key, required this.groups, required this.onCreateGroup});
@@ -44,10 +46,10 @@ class _YourGroupsSectionState extends State<YourGroupsSection> {
               ...widget.groups.map((g) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: GroupListItem(
-                  groupName: g['name'] as String,
-                  memberCount: g['memberCount'] as int,
-                  avatarColor: g['color'] as Color,
-                  onTap: () {},
+                  groupName: g.name,
+                  memberCount: g.memberInitials.length + g.extraMemberCount,
+                  avatarColor: g.iconBgColor,
+                  onTap: () => context.go('/groups/${g.id}'),
                 ),
               )),
               SizedBox(

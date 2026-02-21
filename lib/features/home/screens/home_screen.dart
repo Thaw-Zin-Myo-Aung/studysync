@@ -5,6 +5,7 @@ import '../widgets/home_header_card.dart';
 import '../widgets/upcoming_session_card.dart';
 import '../widgets/your_groups_section.dart';
 import '../widgets/find_partner_banner.dart';
+import '../../groups/models/group_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,11 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final groups = [
-      {'name': 'Database Team', 'memberCount': 4, 'color': const Color(0xFFFED7AA)},
-      {'name': 'Web Dev Group', 'memberCount': 3, 'color': const Color(0xFFE9D5FF)},
-      {'name': 'AI Research', 'memberCount': 5, 'color': const Color(0xFFDDD6FE)},
-    ];
 
     return Scaffold(
       backgroundColor: const Color(0xFFEFF6FF),
@@ -50,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 canCheckIn: false,
               ),
               const SizedBox(height: 20),
-              YourGroupsSection(groups: groups, onCreateGroup: () {}),
+              YourGroupsSection(groups: mockGroups, onCreateGroup: () {}),
               const SizedBox(height: 20),
               FindPartnerBanner(courseName: 'Engineering Math II', onFindPartner: () {}),
               const SizedBox(height: 20),
