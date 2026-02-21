@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/route_constants.dart';
+import '../models/group_model.dart';
 import '../widgets/groups_header.dart';
 import '../widgets/group_card.dart';
 
@@ -9,30 +10,6 @@ class GroupsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> groups = [
-      {
-        'name': 'Finals Prep - Web', 'subject': 'Web Development',
-        'session': 'Tomorrow, 10:00 AM',
-        'icon': Icons.code, 'iconBg': const Color(0xFFF3E8FF),
-        'iconColor': const Color(0xFF9333EA),
-        'initials': ['A', 'B', 'C'], 'extra': 1, 'unread': true,
-      },
-      {
-        'name': 'Calculus Review', 'subject': 'Calculus I',
-        'session': 'Wed, 2:00 PM',
-        'icon': Icons.calculate_outlined, 'iconBg': const Color(0xFFFFF7ED),
-        'iconColor': const Color(0xFFF97316),
-        'initials': ['A', 'B', 'C'], 'extra': 0, 'unread': false,
-      },
-      {
-        'name': 'History Study', 'subject': 'World History',
-        'session': 'Friday, 1:00 PM',
-        'icon': Icons.menu_book_outlined, 'iconBg': const Color(0xFFF0FDF4),
-        'iconColor': const Color(0xFF16A34A),
-        'initials': ['A', 'B', 'C'], 'extra': 2, 'unread': true,
-      },
-    ];
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
@@ -41,25 +18,19 @@ class GroupsScreen extends StatelessWidget {
           child: Column(
             children: [
               GroupsHeader(
-                groupCount: 3,
+                groupCount: mockGroups.length,
                 onAdd: () => print('Create group'),
               ),
               const SizedBox(height: 24),
               Expanded(
                 child: ListView.separated(
-                  itemCount: groups.length,
+                  itemCount: mockGroups.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (_, i) => GroupCard(
-                    groupName: groups[i]['name'] as String,
-                    subject: groups[i]['subject'] as String,
-                    nextSession: groups[i]['session'] as String,
-                    groupIcon: groups[i]['icon'] as IconData,
-                    iconBgColor: groups[i]['iconBg'] as Color,
-                    iconColor: groups[i]['iconColor'] as Color,
-                    memberInitials: List<String>.from(groups[i]['initials'] as List),
-                    extraMemberCount: groups[i]['extra'] as int,
-                    hasUnread: groups[i]['unread'] as bool,
-                    onTap: () => print('Tapped ${groups[i]['name']}'),
+                    group: mockGroups[i],
+                    onTap: () => context.push(
+                      RouteConstants.groupDetail.replaceAll(':groupId', mockGroups[i].id),
+                    ),
                   ),
                 ),
               ),

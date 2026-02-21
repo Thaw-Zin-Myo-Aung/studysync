@@ -1,37 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../models/group_model.dart';
 import 'group_icon_badge.dart';
 import 'member_avatar_stack.dart';
 
 class GroupCard extends StatelessWidget {
-  final String groupName;
-  final String subject;
-  final String nextSession;
-  final IconData groupIcon;
-  final Color iconBgColor;
-  final Color iconColor;
-  final List<String> memberInitials;
-  final int extraMemberCount;
-  final bool hasUnread;
-  final VoidCallback onTap;
+  final GroupModel group;
+  final VoidCallback? onTap;
 
   const GroupCard({
     super.key,
-    required this.groupName,
-    required this.subject,
-    required this.nextSession,
-    required this.groupIcon,
-    required this.iconBgColor,
-    required this.iconColor,
-    required this.memberInitials,
-    this.extraMemberCount = 0,
-    this.hasUnread = false,
-    required this.onTap,
+    required this.group,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: onTap ?? () => context.go('/groups/${group.id}'),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -43,9 +29,9 @@ class GroupCard extends StatelessWidget {
         child: Row(
           children: [
             GroupIconBadge(
-              icon: groupIcon,
-              backgroundColor: iconBgColor,
-              iconColor: iconColor,
+              icon: group.icon,
+              backgroundColor: group.iconBgColor,
+              iconColor: group.iconColor,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -55,14 +41,14 @@ class GroupCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        groupName,
+                        group.name,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
                       ),
-                      if (hasUnread) ...[
+                      if (group.hasUnread) ...[
                         const SizedBox(width: 6),
                         Container(
                           width: 8,
@@ -77,7 +63,7 @@ class GroupCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    subject,
+                    group.subject,
                     style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                   ),
                   const SizedBox(height: 6),
@@ -86,7 +72,7 @@ class GroupCard extends StatelessWidget {
                       const Icon(Icons.access_time_outlined, size: 13, color: Color(0xFF2563EB)),
                       const SizedBox(width: 4),
                       Text(
-                        nextSession,
+                        group.nextSession,
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -99,8 +85,8 @@ class GroupCard extends StatelessWidget {
               ),
             ),
             MemberAvatarStack(
-              initials: memberInitials,
-              extraCount: extraMemberCount,
+              initials: group.memberInitials,
+              extraCount: group.extraMemberCount,
             ),
           ],
         ),
@@ -108,4 +94,3 @@ class GroupCard extends StatelessWidget {
     );
   }
 }
-

@@ -4,7 +4,8 @@ import '../../core/constants/route_constants.dart';
 import '../../features/authentication/screens/login_screen.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/matching/screens/discover_screen.dart';
-import '../../features/groups/screens/groups_screen.dart';
+import '../../features/groups/screens/groups_list_screen.dart';
+import '../../features/groups/screens/group_detail_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 
@@ -40,7 +41,13 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteConstants.groups,
-        builder: (context, state) => const GroupsScreen(),
+        builder: (context, state) => const GroupsListScreen(),
+      ),
+      GoRoute(
+        path: RouteConstants.groupDetail,
+        builder: (context, state) => GroupDetailScreen(
+          groupId: state.pathParameters['groupId'] ?? '',
+        ),
       ),
       GoRoute(
         path: RouteConstants.profile,
