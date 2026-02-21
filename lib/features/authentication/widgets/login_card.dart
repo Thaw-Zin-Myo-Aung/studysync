@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studysync/core/constants/route_constants.dart';
+import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/app_logo.dart';
 import 'package:studysync/core/widgets/auth_input_field.dart';
 import 'package:studysync/core/widgets/primary_button.dart';
@@ -37,7 +38,7 @@ class _LoginCardState extends State<LoginCard> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -85,7 +86,7 @@ class _LoginCardState extends State<LoginCard> {
               onPressed: () {},
               child: const Text(
                 'Forgot Password?',
-                style: TextStyle(color: Color(0xFF2563EB)),
+                style: TextStyle(color: AppColors.primary),
               ),
             ),
           ),
@@ -100,7 +101,7 @@ class _LoginCardState extends State<LoginCard> {
                 onPressed: () => context.go(RouteConstants.home),
                 child: const Text(
                   'Create Account',
-                  style: TextStyle(color: Color(0xFF2563EB), fontWeight: FontWeight.w600),
+                  style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
                 ),
               ),
             ],

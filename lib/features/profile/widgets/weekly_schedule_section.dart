@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/profile_section_header.dart';
 
 class WeeklyScheduleSection extends StatelessWidget {
@@ -16,7 +17,7 @@ class WeeklyScheduleSection extends StatelessWidget {
     final days = ['M', 'T', 'W', 'T', 'F'];
 
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -37,7 +38,7 @@ class WeeklyScheduleSection extends StatelessWidget {
                           height: 20,
                           margin: const EdgeInsets.only(bottom: 6),
                           decoration: BoxDecoration(
-                            color: busy ? const Color(0xFFFCA5A5) : const Color(0xFFF1F5F9),
+                            color: busy ? AppColors.scheduleBusyBg : AppColors.scheduleFreeBg,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         )),
@@ -51,10 +52,10 @@ class WeeklyScheduleSection extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _dot(const Color(0xFFFECACA)),
+                _dot(AppColors.scheduleLegFree),
                 Text(' Free', style: TextStyle(fontSize: 12, color: Colors.grey)),
                 const SizedBox(width: 16),
-                _dot(const Color(0xFFFCA5A5)),
+                _dot(AppColors.scheduleBusyBg),
                 Text(' Busy', style: TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/route_constants.dart';
+import '../../../core/theme/app_colors.dart';
 import '../widgets/profile_header_card.dart';
 import '../widgets/learning_style_card.dart';
 import '../widgets/enrolled_courses_section.dart';
@@ -12,7 +13,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEFF6FF),
+      backgroundColor: AppColors.backgroundBlue,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -42,7 +43,7 @@ class ProfileScreen extends StatelessWidget {
                         icon: const Icon(Icons.settings_outlined, color: Colors.black87),
                         label: const Text('Settings', style: TextStyle(color: Colors.black87)),
                         style: OutlinedButton.styleFrom(
-                          backgroundColor: Colors.white,
+                          backgroundColor: AppColors.surface,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                       ),
@@ -57,7 +58,7 @@ class ProfileScreen extends StatelessWidget {
                         icon: const Icon(Icons.edit_outlined, color: Colors.white),
                         label: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
+                          backgroundColor: AppColors.primary,
                           elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
@@ -73,7 +74,7 @@ class ProfileScreen extends StatelessWidget {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 3,
-        selectedItemColor: const Color(0xFF2563EB),
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         onTap: (index) {

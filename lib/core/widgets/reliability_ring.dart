@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class ReliabilityRing extends StatelessWidget {
   final double score;
@@ -24,8 +25,8 @@ class ReliabilityRing extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: score / 100,
                   strokeWidth: 8,
-                  backgroundColor: const Color(0xFFE2E8F0),
-                  valueColor: const AlwaysStoppedAnimation(Color(0xFF2563EB)),
+                  backgroundColor: AppColors.border,
+                  valueColor: const AlwaysStoppedAnimation(AppColors.primary),
                 ),
               ),
               Text('${score.toInt()}%', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
@@ -36,10 +37,10 @@ class ReliabilityRing extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
           decoration: BoxDecoration(
-            color: const Color(0xFFDCFCE7),
+            color: AppColors.successSurface,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF16A34A))),
+          child: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.success)),
         ),
       ],
     );

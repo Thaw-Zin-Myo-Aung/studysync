@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/match_score_badge.dart';
 import 'package:studysync/core/widgets/reliability_badge.dart';
 import 'why_you_match_section.dart';
@@ -30,7 +31,7 @@ class StudyPartnerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
@@ -44,8 +45,8 @@ class StudyPartnerCard extends StatelessWidget {
                   children: [
                     const CircleAvatar(
                       radius: 28,
-                      backgroundColor: Color(0xFFDBEAFE),
-                      child: Icon(Icons.person, color: Color(0xFF2563EB), size: 28),
+                      backgroundColor: AppColors.primarySurface,
+                      child: Icon(Icons.person, color: AppColors.primary, size: 28),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -94,7 +95,7 @@ class StudyPartnerCard extends StatelessWidget {
                       icon: const Icon(Icons.check, color: Colors.white, size: 18),
                       label: const Text('Request', style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
+                        backgroundColor: AppColors.primary,
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),

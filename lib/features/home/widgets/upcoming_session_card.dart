@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/session_info_row.dart';
 
 class UpcomingSessionCard extends StatelessWidget {
@@ -22,7 +23,7 @@ class UpcomingSessionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
@@ -36,10 +37,10 @@ class UpcomingSessionCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF3E0),
+                  color: AppColors.warningLight,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(timeUntil, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFFF97316))),
+                  child: Text(timeUntil, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.warning)),
                 ),
                 CircleAvatar(
                   backgroundColor: Colors.grey.shade200,
@@ -64,7 +65,7 @@ class UpcomingSessionCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
+                    backgroundColor: AppColors.primary,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     elevation: 0,
                   ),
@@ -77,7 +78,7 @@ class UpcomingSessionCard extends StatelessWidget {
                 height: 44,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
+                  color: AppColors.scheduleFreeBg,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(

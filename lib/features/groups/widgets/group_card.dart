@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/theme/app_colors.dart';
 import '../models/group_model.dart';
 import 'group_icon_badge.dart';
 import 'member_avatar_stack.dart';
@@ -22,9 +23,9 @@ class GroupCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+          border: Border.all(color: AppColors.border, width: 1),
         ),
         child: Row(
           children: [
@@ -54,7 +55,7 @@ class GroupCard extends StatelessWidget {
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEF4444),
+                            color: AppColors.error,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
@@ -64,19 +65,19 @@ class GroupCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     group.subject,
-                    style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                    style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.access_time_outlined, size: 13, color: Color(0xFF2563EB)),
+                      const Icon(Icons.access_time_outlined, size: 13, color: AppColors.primary),
                       const SizedBox(width: 4),
                       Text(
                         group.nextSession,
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF2563EB),
+                          color: AppColors.primary,
                         ),
                       ),
                     ],

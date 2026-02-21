@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/route_constants.dart';
+import '../../../core/theme/app_colors.dart';
 import '../models/group_model.dart';
 import '../widgets/discussion_tab.dart';
 
@@ -37,9 +38,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.backgroundPage,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
@@ -62,7 +63,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF2563EB),
+                color: AppColors.primary,
               ),
             ),
           ],
@@ -75,9 +76,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: const Color(0xFF2563EB),
+          labelColor: AppColors.primary,
           unselectedLabelColor: Colors.grey,
-          indicatorColor: const Color(0xFF2563EB),
+          indicatorColor: AppColors.primary,
           indicatorWeight: 2.5,
           tabs: const [
             Tab(text: 'Discussion'),
@@ -99,10 +100,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 2,
-        selectedItemColor: const Color(0xFF2563EB),
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         onTap: (index) {
           switch (index) {
             case 0: context.go(RouteConstants.home); break;

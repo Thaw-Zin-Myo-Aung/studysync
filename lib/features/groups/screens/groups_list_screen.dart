@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/route_constants.dart';
+import '../../../core/theme/app_colors.dart';
 import '../models/group_model.dart';
 import '../widgets/groups_header.dart';
 import '../widgets/group_card.dart';
@@ -11,7 +12,7 @@ class GroupsListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.backgroundPage,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -32,7 +33,7 @@ class GroupsListScreen extends StatelessWidget {
               const SizedBox(height: 16),
               const Text(
                 'Tap a group to chat or view schedule',
-                style: TextStyle(fontSize: 12, color: Color(0xFFCBD5E1)),
+                style: TextStyle(fontSize: 12, color: AppColors.textDisabled),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -42,7 +43,7 @@ class GroupsListScreen extends StatelessWidget {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 2,
-        selectedItemColor: const Color(0xFF2563EB),
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         onTap: (index) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/features/authentication/widgets/login_card.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -7,7 +8,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEFF6FF),
+      backgroundColor: AppColors.backgroundBlue,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {

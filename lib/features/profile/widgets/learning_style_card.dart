@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/profile_section_header.dart';
 
 class LearningStyleCard extends StatelessWidget {
@@ -15,7 +16,7 @@ class LearningStyleCard extends StatelessWidget {
         const ProfileSectionHeader(icon: Icons.bolt_outlined, title: 'Learning Style'),
         const SizedBox(height: 12),
         Card(
-          color: Colors.white,
+          color: AppColors.surface,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -25,10 +26,10 @@ class LearningStyleCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFEF9C3),
+                    color: AppColors.amberLight,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.emoji_events_outlined, color: Color(0xFFCA8A04), size: 24),
+                  child: const Icon(Icons.emoji_events_outlined, color: AppColors.amber, size: 24),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

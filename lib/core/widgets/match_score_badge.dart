@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class MatchScoreBadge extends StatelessWidget {
   final int score;
@@ -10,7 +11,7 @@ class MatchScoreBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFDCFCE7),
+        color: AppColors.successSurface,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -18,7 +19,7 @@ class MatchScoreBadge extends StatelessWidget {
         style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF16A34A),
+          color: AppColors.success,
         ),
       ),
     );

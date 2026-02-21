@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/route_constants.dart';
+import '../../../core/theme/app_colors.dart';
 import '../widgets/account_section.dart';
 import '../widgets/notifications_section.dart';
 import '../widgets/app_preferences_section.dart';
@@ -11,10 +12,10 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.backgroundPage,
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         foregroundColor: Colors.black87,
         leading: IconButton(
@@ -37,17 +38,17 @@ class SettingsScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  icon: const Icon(Icons.logout, color: Color(0xFFEF4444)),
+                  icon: const Icon(Icons.logout, color: AppColors.error),
                   label: const Text(
                     "Log Out",
                     style: TextStyle(
-                      color: Color(0xFFEF4444),
+                      color: AppColors.error,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFFFECACA)),
-                    backgroundColor: const Color(0xFFFFF5F5),
+                    side: const BorderSide(color: AppColors.errorSurface),
+                    backgroundColor: AppColors.errorLight,
                     minimumSize: const Size(double.infinity, 52),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -60,7 +61,7 @@ class SettingsScreen extends StatelessWidget {
               const Center(
                 child: Text(
                   "Version 1.0.0",
-                  style: TextStyle(fontSize: 12, color: Color(0xFFCBD5E1)),
+                  style: TextStyle(fontSize: 12, color: AppColors.textDisabled),
                 ),
               ),
               const SizedBox(height: 24),
@@ -70,7 +71,7 @@ class SettingsScreen extends StatelessWidget {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 3,
-        selectedItemColor: const Color(0xFF2563EB),
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         onTap: (index) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../features/groups/models/group_model.dart';
 import 'group_list_item.dart';
 
@@ -19,7 +20,7 @@ class _YourGroupsSectionState extends State<YourGroupsSection> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -32,7 +33,7 @@ class _YourGroupsSectionState extends State<YourGroupsSection> {
                   const CircleAvatar(
                     radius: 18,
                     backgroundColor: Color(0xFFEEF2FF),
-                    child: Icon(Icons.group_outlined, color: Color(0xFF2563EB), size: 20),
+                    child: Icon(Icons.group_outlined, color: AppColors.primary, size: 20),
                   ),
                   const SizedBox(width: 12),
                   const Text('Your Groups', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -58,11 +59,11 @@ class _YourGroupsSectionState extends State<YourGroupsSection> {
                 child: OutlinedButton(
                   onPressed: widget.onCreateGroup,
                   style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    side: const BorderSide(color: Color(0xFF2563EB)),
+                    backgroundColor: AppColors.surface,
+                    side: const BorderSide(color: AppColors.primary),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('+ Create New Group', style: TextStyle(color: Color(0xFF2563EB), fontWeight: FontWeight.w600)),
+                  child: const Text('+ Create New Group', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
                 ),
               ),
             ],

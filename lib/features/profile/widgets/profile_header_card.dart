@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/reliability_ring.dart';
 
 class ProfileHeaderCard extends StatelessWidget {
@@ -20,7 +21,7 @@ class ProfileHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -31,8 +32,8 @@ class ProfileHeaderCard extends StatelessWidget {
               children: [
                 const CircleAvatar(
                   radius: 40,
-                  backgroundColor: Color(0xFFE2E8F0),
-                  child: Icon(Icons.person, size: 40, color: Color(0xFF94A3B8)),
+                  backgroundColor: AppColors.border,
+                  child: Icon(Icons.person, size: 40, color: AppColors.textHint),
                 ),
                 Positioned(
                   bottom: 0,
@@ -41,7 +42,7 @@ class ProfileHeaderCard extends StatelessWidget {
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2563EB),
+                      color: AppColors.primary,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(Icons.edit, size: 14, color: Colors.white),
@@ -55,9 +56,9 @@ class ProfileHeaderCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.school_outlined, size: 14, color: Color(0xFF64748B)),
+                const Icon(Icons.school_outlined, size: 14, color: AppColors.textMuted),
                 const SizedBox(width: 8),
-                Text('$major • $year', style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                Text('$major • $year', style: const TextStyle(fontSize: 13, color: AppColors.textMuted)),
               ],
             ),
             const SizedBox(height: 20),

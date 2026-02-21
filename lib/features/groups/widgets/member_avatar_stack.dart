@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 class MemberAvatarStack extends StatelessWidget {
   final List<String> initials;
@@ -25,13 +26,13 @@ class MemberAvatarStack extends StatelessWidget {
               left: entry.key * 16.0,
               child: CircleAvatar(
                 radius: 14,
-                backgroundColor: const Color(0xFFE2E8F0),
+                backgroundColor: AppColors.border,
                 child: Text(
                   entry.value,
                   style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF64748B),
+                    color: AppColors.textMuted,
                   ),
                 ),
               ),
@@ -42,13 +43,13 @@ class MemberAvatarStack extends StatelessWidget {
               left: initials.length * 16.0,
               child: CircleAvatar(
                 radius: 14,
-                backgroundColor: const Color(0xFFCBD5E1),
+                backgroundColor: AppColors.textDisabled,
                 child: Text(
                   '+$extraCount',
                   style: const TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF475569),
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ),

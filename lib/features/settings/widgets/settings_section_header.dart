@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 class SettingsSectionHeader extends StatelessWidget {
   final String title;
@@ -14,7 +15,7 @@ class SettingsSectionHeader extends StatelessWidget {
         style: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF64748B),
+          color: AppColors.textMuted,
           letterSpacing: 1.2,
         ),
       ),

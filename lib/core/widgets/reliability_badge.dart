@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class ReliabilityBadge extends StatelessWidget {
   final double score;
@@ -16,7 +17,7 @@ class ReliabilityBadge extends StatelessWidget {
             width: 8,
             height: 8,
             decoration: const BoxDecoration(
-              color: Color(0xFF2563EB),
+              color: AppColors.primary,
               shape: BoxShape.circle,
             ),
           ),
@@ -26,7 +27,7 @@ class ReliabilityBadge extends StatelessWidget {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF2563EB),
+              color: AppColors.primary,
             ),
           ),
         ],

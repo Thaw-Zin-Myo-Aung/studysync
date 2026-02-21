@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/route_constants.dart';
+import '../../../core/theme/app_colors.dart';
 import '../widgets/home_header_card.dart';
 import '../widgets/upcoming_session_card.dart';
 import '../widgets/your_groups_section.dart';
@@ -21,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: const Color(0xFFEFF6FF),
+      backgroundColor: AppColors.backgroundBlue,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -33,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Upcoming Session', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
-                  TextButton(onPressed: () {}, child: const Text('See all', style: TextStyle(color: Color(0xFF2563EB), fontSize: 13))),
+                  TextButton(onPressed: () {}, child: const Text('See all', style: TextStyle(color: AppColors.primary, fontSize: 13))),
                 ],
               ),
               const SizedBox(height: 12),
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        selectedItemColor: const Color(0xFF2563EB),
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         onTap: (index) {

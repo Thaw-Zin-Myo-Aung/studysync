@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/reliability_badge.dart';
 
 class HomeHeaderCard extends StatelessWidget {
@@ -11,7 +12,7 @@ class HomeHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -24,8 +25,8 @@ class HomeHeaderCard extends StatelessWidget {
                   children: [
                     const CircleAvatar(
                       radius: 24,
-                      backgroundColor: Color(0xFFDBEAFE),
-                      child: Icon(Icons.person, color: Color(0xFF2563EB)),
+                      backgroundColor: AppColors.primarySurface,
+                      child: Icon(Icons.person, color: AppColors.primary),
                     ),
                     Positioned(
                       bottom: 0,
@@ -34,7 +35,7 @@ class HomeHeaderCard extends StatelessWidget {
                         width: 10,
                         height: 10,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF22C55E),
+                          color: AppColors.success,
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                         ),

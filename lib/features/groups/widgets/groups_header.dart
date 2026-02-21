@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 class GroupsHeader extends StatelessWidget {
   final int groupCount;
@@ -15,7 +16,7 @@ class GroupsHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -35,7 +36,7 @@ class GroupsHeader extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   '$groupCount active groups',
-                  style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+                  style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
                 ),
               ],
             ),
@@ -46,7 +47,7 @@ class GroupsHeader extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: const Color(0xFF2563EB),
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(24),
               ),
               child: const Icon(Icons.add, color: Colors.white, size: 24),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/route_constants.dart';
+import '../../../core/theme/app_colors.dart';
 import '../widgets/study_partner_card.dart';
 
 class DiscoverScreen extends StatelessWidget {
@@ -15,10 +16,10 @@ class DiscoverScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFEFF6FF),
+      backgroundColor: AppColors.backgroundBlue,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         titleSpacing: 16,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +45,7 @@ class DiscoverScreen extends StatelessWidget {
                   Text("That's all for now!", style: TextStyle(fontSize: 13, color: Colors.grey)),
                   TextButton(
                     onPressed: () {},
-                    child: const Text('Adjust Filters', style: TextStyle(color: Color(0xFF2563EB))),
+                    child: const Text('Adjust Filters', style: TextStyle(color: AppColors.primary)),
                   ),
                 ],
               );
@@ -66,7 +67,7 @@ class DiscoverScreen extends StatelessWidget {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
-        selectedItemColor: const Color(0xFF2563EB),
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         onTap: (index) {

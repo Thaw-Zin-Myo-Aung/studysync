@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 class FindPartnerBanner extends StatelessWidget {
   final String courseName;
@@ -14,7 +15,7 @@ class FindPartnerBanner extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: const LinearGradient(
-          colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+          colors: [AppColors.primary, Color(0xFF1D4ED8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -51,11 +52,11 @@ class FindPartnerBanner extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onFindPartner,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
+                backgroundColor: AppColors.surface,
                 elevation: 0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Find Partner', style: TextStyle(color: Color(0xFF2563EB), fontWeight: FontWeight.bold, fontSize: 15)),
+              child: const Text('Find Partner', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 15)),
             ),
           ),
         ],
