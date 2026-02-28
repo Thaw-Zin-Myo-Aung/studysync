@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../widgets/account_section.dart';
 import '../widgets/notifications_section.dart';
 import '../widgets/app_preferences_section.dart';
@@ -70,33 +71,16 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 3,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
         onTap: (index) {
           switch (index) {
-            case 0:
-              context.go(RouteConstants.home);
-              break;
-            case 1:
-              context.go(RouteConstants.discover);
-              break;
-            case 2:
-              context.go(RouteConstants.groups);
-              break;
-            case 3:
-              context.go(RouteConstants.profile);
-              break;
+            case 0: context.go(RouteConstants.home);     break;
+            case 1: context.go(RouteConstants.discover); break;
+            case 2: context.go(RouteConstants.groups);   break;
+            case 3: context.go(RouteConstants.profile);  break;
           }
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.compass), label: 'Discover'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.users), label: 'Groups'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profile'),
-        ],
       ),
     );
   }

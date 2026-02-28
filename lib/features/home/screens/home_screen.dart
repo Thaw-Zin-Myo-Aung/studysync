@@ -10,15 +10,9 @@ import '../widgets/your_groups_section.dart';
 import '../widgets/find_partner_banner.dart';
 import '../../groups/models/group_model.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -167,9 +161,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentIndex,
+        currentIndex: 0,
         onTap: (index) {
-          setState(() => _currentIndex = index);
           switch (index) {
             case 1: context.go(RouteConstants.discover); break;
             case 2: context.go(RouteConstants.groups); break;
