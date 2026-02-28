@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../widgets/user_profile_card.dart';
 import '../widgets/upcoming_sessions_section.dart';
 import '../widgets/your_groups_section.dart';
@@ -83,55 +84,55 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Stack(
         children: [
-          // Blob 1 — large primary glow, top-right behind profile card
+          // Blob 1 — large glow centered-right behind profile card
           Positioned(
-            top: -20,
-            right: -30,
+            top: 30,
+            right: -60,
             child: Container(
-              width: 220,
-              height: 220,
+              width: 260,
+              height: 260,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.primary.withValues(alpha: 0.30),
+                    AppColors.primary.withValues(alpha: 0.28),
                     AppColors.primary.withValues(alpha: 0.0),
                   ],
                 ),
               ),
             ),
           ),
-          // Blob 2 — mid-left softer glow
+          // Blob 2 — medium glow centered-left behind profile card
           Positioned(
-            top: 40,
-            left: -50,
+            top: 20,
+            left: -60,
             child: Container(
-              width: 180,
-              height: 180,
+              width: 200,
+              height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFF60A5FA).withValues(alpha: 0.22),
+                    const Color(0xFF60A5FA).withValues(alpha: 0.25),
                     const Color(0xFF60A5FA).withValues(alpha: 0.0),
                   ],
                 ),
               ),
             ),
           ),
-          // Blob 3 — small accent top-center
+          // Blob 3 — small warm accent, dead center of card
           Positioned(
-            top: 10,
-            left: 120,
+            top: 50,
+            left: 140,
             child: Container(
-              width: 100,
-              height: 100,
+              width: 120,
+              height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFFA5C8FE).withValues(alpha: 0.25),
-                    const Color(0xFFA5C8FE).withValues(alpha: 0.0),
+                    const Color(0xFFBAD7FF).withValues(alpha: 0.35),
+                    const Color(0xFFBAD7FF).withValues(alpha: 0.0),
                   ],
                 ),
               ),
@@ -165,11 +166,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
         onTap: (index) {
           setState(() => _currentIndex = index);
           switch (index) {
@@ -178,12 +176,6 @@ class _HomeScreenState extends State<HomeScreen> {
             case 3: context.go(RouteConstants.profile); break;
           }
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.compass), label: 'Discover'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.users), label: 'Groups'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profile'),
-        ],
       ),
     );
   }
