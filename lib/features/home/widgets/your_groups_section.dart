@@ -15,8 +15,35 @@ class YourGroupsSection extends StatefulWidget {
   State<YourGroupsSection> createState() => _YourGroupsSectionState();
 }
 
-class _YourGroupsSectionState extends State<YourGroupsSection> {
+class _YourGroupsSectionState extends State<YourGroupsSection>
+    with SingleTickerProviderStateMixin {
   bool _isExpanded = true;
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+      value: 1.0, // starts expanded
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    setState(() => _isExpanded = !_isExpanded);
+    if (_isExpanded) {
+      _controller.forward();
+    } else {
+      _controller.reverse();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +65,7 @@ class _YourGroupsSectionState extends State<YourGroupsSection> {
         children: [
           // Header
           GestureDetector(
-            onTap: () => setState(() => _isExpanded = !_isExpanded),
+            onTap: _toggle,
             child: Row(
               children: [
                 const CircleAvatar(
@@ -52,55 +79,69 @@ class _YourGroupsSectionState extends State<YourGroupsSection> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                 ),
                 const Spacer(),
-                Icon(
-                  _isExpanded ? LucideIcons.chevronUp : LucideIcons.chevronDown,
-                  color: AppColors.textMuted,
-                  size: 20,
+                AnimatedRotation(
+                  turns: _isExpanded ? 0.0 : 0.5,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  child: const Icon(
+                    LucideIcons.chevronUp,
+                    color: AppColors.textMuted,
+                    size: 20,
+                  ),
                 ),
               ],
             ),
           ),
-          if (_isExpanded) ...[
-            const SizedBox(height: 12),
-            ...widget.groups.map((g) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: GroupListItem(
-                groupName: g.name,
-                memberCount: g.memberInitials.length + g.extraMemberCount,
-                avatarColor: g.iconBgColor,
-                onTap: () => context.go('/groups/${g.id}'),
-              ),
-            )),
-            const SizedBox(height: 4),
-            Container(
-              width: double.infinity,
-              height: 48,
-              decoration: BoxDecoration(
-                color: AppColors.backgroundPage,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border, width: 1),
-              ),
-              child: InkWell(
-                onTap: widget.onCreateGroup,
-                borderRadius: BorderRadius.circular(12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(LucideIcons.plus, size: 16, color: AppColors.textMuted),
-                    const SizedBox(width: 6),
-                    const Text(
-                      'Create New Group',
-                      style: TextStyle(
-                        color: AppColors.textMuted,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
+          // Animated expandable body
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: _isExpanded
+                ? Column(
+                    children: [
+                      const SizedBox(height: 12),
+                      ...widget.groups.map((g) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: GroupListItem(
+                          groupName: g.name,
+                          memberCount: g.memberInitials.length + g.extraMemberCount,
+                          avatarColor: g.iconBgColor,
+                          onTap: () => context.go('/groups/${g.id}'),
+                        ),
+                      )),
+                      const SizedBox(height: 4),
+                      Container(
+                        width: double.infinity,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColors.backgroundPage,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.border, width: 1),
+                        ),
+                        child: InkWell(
+                          onTap: widget.onCreateGroup,
+                          borderRadius: BorderRadius.circular(12),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(LucideIcons.plus, size: 16, color: AppColors.textMuted),
+                              SizedBox(width: 6),
+                              Text(
+                                'Create New Group',
+                                style: TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+                    ],
+                  )
+                : const SizedBox.shrink(),
+          ),
         ],
       ),
     );
