@@ -7,6 +7,7 @@ import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../models/group_model.dart';
 import '../widgets/discussion_tab.dart';
 import '../widgets/sessions_tab.dart';
+import '../widgets/members_tab.dart';
 
 class GroupDetailScreen extends StatefulWidget {
   final String groupId;
@@ -26,6 +27,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() => setState(() {}));
     group = mockGroups.firstWhere(
       (g) => g.id == widget.groupId,
       orElse: () => mockGroups.first,
@@ -154,12 +156,29 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               children: [
                 const DiscussionTab(),
                 SessionsTab(group: group),
-                const Center(child: Text('Members - Coming Soon', style: TextStyle(color: Colors.grey))),
+                MembersTab(group: group),
               ],
             ),
           ),
         ],
       ),
+      floatingActionButton: _tabController.index == 1
+          ? FloatingActionButton(
+              onPressed: () {},
+              backgroundColor: AppColors.primary,
+              shape: const CircleBorder(),
+              elevation: 3,
+              child: const Icon(LucideIcons.calendarPlus, color: Colors.white, size: 22),
+            )
+          : _tabController.index == 2
+              ? FloatingActionButton(
+                  onPressed: () {},
+                  backgroundColor: AppColors.primary,
+                  shape: const CircleBorder(),
+                  elevation: 3,
+                  child: const Icon(LucideIcons.userPlus, color: Colors.white, size: 22),
+                )
+              : null,
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 2,
         onTap: (index) {

@@ -15,6 +15,24 @@ class PastSession {
   });
 }
 
+class GroupMember {
+  final String name;
+  final String major;
+  final int year;
+  final int reliability;
+  final bool isAdmin;
+  final bool isYou;
+
+  const GroupMember({
+    required this.name,
+    required this.major,
+    required this.year,
+    required this.reliability,
+    this.isAdmin = false,
+    this.isYou = false,
+  });
+}
+
 class GroupModel {
   final String id;
   final String name;
@@ -35,6 +53,7 @@ class GroupModel {
   final int upcomingAttendees;
   final int upcomingTotal;
   final List<PastSession> pastSessions;
+  final List<GroupMember> members;
 
   const GroupModel({
     required this.id,
@@ -54,6 +73,7 @@ class GroupModel {
     required this.upcomingAttendees,
     required this.upcomingTotal,
     required this.pastSessions,
+    required this.members,
   });
 }
 
@@ -66,7 +86,7 @@ const List<GroupModel> mockGroups = [
     icon: LucideIcons.code,
     iconBgColor: Color(0xFFF3E8FF),
     iconColor: Color(0xFF9333EA),
-    memberInitials: ['A', 'B', 'C'],
+    memberInitials: ['T', 'K', 'S'],
     extraMemberCount: 1,
     hasUnread: true,
     upcomingDate: 'Tomorrow, Mar 2',
@@ -80,6 +100,12 @@ const List<GroupModel> mockGroups = [
       PastSession(date: 'Monday, Feb 17', time: '10:00 AM', location: 'Computer Lab B', attended: true),
       PastSession(date: 'Monday, Feb 10', time: '10:00 AM', location: 'Online', attended: false),
     ],
+    members: [
+      GroupMember(name: 'Thaw Zin Myo Aung', major: 'Software Engineering', year: 2, reliability: 95, isAdmin: true, isYou: true),
+      GroupMember(name: 'Kay Suwannara', major: 'Software Engineering', year: 2, reliability: 88),
+      GroupMember(name: 'Som Chaiyaporn', major: 'Computer Science', year: 3, reliability: 100),
+      GroupMember(name: 'Min Thant', major: 'IT', year: 2, reliability: 75),
+    ],
   ),
   GroupModel(
     id: 'calculus-review',
@@ -89,7 +115,7 @@ const List<GroupModel> mockGroups = [
     icon: LucideIcons.calculator,
     iconBgColor: Color(0xFFFFF7ED),
     iconColor: Color(0xFFF97316),
-    memberInitials: ['A', 'B', 'C'],
+    memberInitials: ['T', 'N', 'P'],
     extraMemberCount: 0,
     hasUnread: false,
     upcomingDate: 'Wednesday, Mar 4',
@@ -102,6 +128,11 @@ const List<GroupModel> mockGroups = [
       PastSession(date: 'Wednesday, Feb 26', time: '2:00 PM', location: 'Library 2F', attended: true),
       PastSession(date: 'Wednesday, Feb 19', time: '2:00 PM', location: 'Library 2F', attended: false),
     ],
+    members: [
+      GroupMember(name: 'Thaw Zin Myo Aung', major: 'Software Engineering', year: 2, reliability: 95, isAdmin: true, isYou: true),
+      GroupMember(name: 'Nadia Wirawan', major: 'Mathematics', year: 2, reliability: 92),
+      GroupMember(name: 'Prem Surapong', major: 'Engineering', year: 2, reliability: 68),
+    ],
   ),
   GroupModel(
     id: 'history-study',
@@ -111,7 +142,7 @@ const List<GroupModel> mockGroups = [
     icon: LucideIcons.bookOpen,
     iconBgColor: Color(0xFFF0FDF4),
     iconColor: Color(0xFF16A34A),
-    memberInitials: ['A', 'B', 'C'],
+    memberInitials: ['T', 'A', 'R'],
     extraMemberCount: 2,
     hasUnread: true,
     upcomingDate: 'Friday, Mar 6',
@@ -124,6 +155,13 @@ const List<GroupModel> mockGroups = [
       PastSession(date: 'Friday, Feb 28', time: '1:00 PM', location: 'Library 3F', attended: true),
       PastSession(date: 'Friday, Feb 21', time: '1:00 PM', location: 'Library 3F', attended: true),
       PastSession(date: 'Friday, Feb 14', time: '1:00 PM', location: 'Online', attended: false),
+    ],
+    members: [
+      GroupMember(name: 'Thaw Zin Myo Aung', major: 'Software Engineering', year: 2, reliability: 95, isAdmin: true, isYou: true),
+      GroupMember(name: 'Areeya Pongpan', major: 'Liberal Arts', year: 3, reliability: 83),
+      GroupMember(name: 'Ratchanon Dee', major: 'History', year: 3, reliability: 91),
+      GroupMember(name: 'Fah Sukanya', major: 'Social Science', year: 2, reliability: 77),
+      GroupMember(name: 'Bow Tanaporn', major: 'Liberal Arts', year: 1, reliability: 60),
     ],
   ),
 ];
