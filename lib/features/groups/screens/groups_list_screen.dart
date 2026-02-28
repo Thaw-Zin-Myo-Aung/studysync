@@ -21,8 +21,8 @@ class GroupsListScreen extends StatelessWidget {
         centerTitle: false,
         titleSpacing: 20,
         automaticallyImplyLeading: false,
-        title: RichText(
-          text: const TextSpan(
+        title: Text.rich(
+          const TextSpan(
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             children: [
               TextSpan(text: 'My ', style: TextStyle(color: Colors.black87)),

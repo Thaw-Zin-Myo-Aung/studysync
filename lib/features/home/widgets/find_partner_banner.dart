@@ -36,8 +36,8 @@ class FindPartnerBanner extends StatelessWidget {
           const SizedBox(height: 16),
           const Text('Need a study buddy?', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          RichText(
-            text: TextSpan(
+          Text.rich(
+            TextSpan(
               style: const TextStyle(fontSize: 13, color: Colors.white),
               children: [
                 const TextSpan(text: 'Find a partner for '),

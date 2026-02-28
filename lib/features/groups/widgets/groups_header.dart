@@ -14,18 +14,12 @@ class GroupsHeader extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-      child: RichText(
-        text: const TextSpan(
+      child: Text.rich(
+        const TextSpan(
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           children: [
-            TextSpan(
-              text: 'My ',
-              style: TextStyle(color: Colors.black87),
-            ),
-            TextSpan(
-              text: 'Groups',
-              style: TextStyle(color: AppColors.primary),
-            ),
+            TextSpan(text: 'My ', style: TextStyle(color: Colors.black87)),
+            TextSpan(text: 'Groups', style: TextStyle(color: AppColors.primary)),
           ],
         ),
       ),

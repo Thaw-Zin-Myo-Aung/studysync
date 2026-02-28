@@ -16,8 +16,8 @@ class MatchReasonRow extends StatelessWidget {
         Expanded(
           child: boldText.isEmpty
               ? Text(label, style: TextStyle(fontSize: 13, color: Colors.grey.shade700))
-              : RichText(
-                  text: TextSpan(
+              : Text.rich(
+                  TextSpan(
                     style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
                     children: [
                       TextSpan(text: label),

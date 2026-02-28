@@ -24,8 +24,8 @@ class HomeScreen extends StatelessWidget {
         shadowColor: Colors.black12,
         centerTitle: false,
         titleSpacing: 20,
-        title: RichText(
-          text: const TextSpan(
+        title: Text.rich(
+          const TextSpan(
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             children: [
               TextSpan(text: 'Study', style: TextStyle(color: Colors.black87)),
