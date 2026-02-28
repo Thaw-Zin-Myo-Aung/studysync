@@ -63,11 +63,11 @@ class DiscussionPostCard extends StatelessWidget {
           const SizedBox(height: 14),
           Row(
             children: [
-              _ActionItem(Icons.favorite_border, 'Like'),
+              const _ActionItem(Icons.favorite_border, 'Like'),
               const SizedBox(width: 20),
               _ActionItem(Icons.chat_bubble_outline, '$replyCount Replies'),
               const SizedBox(width: 20),
-              _ActionItem(Icons.share_outlined, ''),
+              const _ActionItem(Icons.share_outlined, ''),
             ],
           ),
         ],

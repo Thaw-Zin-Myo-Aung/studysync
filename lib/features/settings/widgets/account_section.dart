@@ -14,30 +14,30 @@ class AccountSection extends StatelessWidget {
         Card(
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: Column(
+          child: const Column(
             children: [
               SettingsItemRow(
                 icon: Icons.person_outlined,
-                iconBgColor: const Color(0xFFEFF6FF),
-                iconColor: const Color(0xFF60A5FA),
+                iconBgColor: Color(0xFFEFF6FF),
+                iconColor: Color(0xFF60A5FA),
                 title: "Thaw Zin",
                 subtitle: "thaw.zin@student.mfu.ac.th",
-                trailing: const Icon(Icons.chevron_right, color: Color(0xFFCBD5E1)),
+                trailing: Icon(Icons.chevron_right, color: Color(0xFFCBD5E1)),
               ),
-              const Divider(height: 1, indent: 68),
+              Divider(height: 1, indent: 68),
               SettingsItemRow(
                 icon: Icons.lock_outline,
-                iconBgColor: const Color(0xFFEFF6FF),
-                iconColor: const Color(0xFF60A5FA),
+                iconBgColor: Color(0xFFEFF6FF),
+                iconColor: Color(0xFF60A5FA),
                 title: "Change Password",
               ),
-              const Divider(height: 1, indent: 68),
+              Divider(height: 1, indent: 68),
               SettingsItemRow(
                 icon: Icons.verified_user_outlined,
-                iconBgColor: const Color(0xFFF0FDF4),
-                iconColor: const Color(0xFF22C55E),
+                iconBgColor: Color(0xFFF0FDF4),
+                iconColor: Color(0xFF22C55E),
                 title: "University Verified",
-                trailing: const Row(
+                trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(

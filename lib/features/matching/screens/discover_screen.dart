@@ -21,11 +21,11 @@ class DiscoverScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: AppColors.surface,
         titleSpacing: 16,
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Discover', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
-            Text('Find your perfect study buddy', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+            Text('Discover', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+            Text('Find your perfect study buddy', style: TextStyle(fontSize: 12, color: Colors.grey)),
           ],
         ),
         actions: [
@@ -42,7 +42,7 @@ class DiscoverScreen extends StatelessWidget {
               return Column(
                 children: [
                   const SizedBox(height: 8),
-                  Text("That's all for now!", style: const TextStyle(fontSize: 13, color: Colors.grey)),
+                  const Text("That's all for now!", style: TextStyle(fontSize: 13, color: Colors.grey)),
                   TextButton(
                     onPressed: () {},
                     child: const Text('Adjust Filters', style: TextStyle(color: AppColors.primary)),

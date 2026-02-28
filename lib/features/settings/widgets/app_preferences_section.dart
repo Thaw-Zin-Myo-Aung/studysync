@@ -14,12 +14,12 @@ class AppPreferencesSection extends StatelessWidget {
         Card(
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: SettingsItemRow(
+          child: const SettingsItemRow(
             icon: Icons.language,
-            iconBgColor: const Color(0xFFF0FDF4),
-            iconColor: const Color(0xFF10B981),
+            iconBgColor: Color(0xFFF0FDF4),
+            iconColor: Color(0xFF10B981),
             title: "Language",
-            trailing: const Row(
+            trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
