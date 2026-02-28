@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../models/group_model.dart';
 import '../widgets/discussion_tab.dart';
+import '../widgets/sessions_tab.dart';
 
 class GroupDetailScreen extends StatefulWidget {
   final String groupId;
@@ -40,7 +41,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundPage,
+      backgroundColor: AppColors.backgroundBlue,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
         elevation: 0,
@@ -89,16 +90,75 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: TabBarView(
-          controller: _tabController,
-          children: const [
-            DiscussionTab(),
-            Center(child: Text('Sessions - Coming Soon', style: TextStyle(color: Colors.grey))),
-            Center(child: Text('Members - Coming Soon', style: TextStyle(color: Colors.grey))),
-          ],
-        ),
+      body: Stack(
+        children: [
+          // Blob 1 — large primary glow, top-right
+          Positioned(
+            top: -20,
+            right: -40,
+            child: Container(
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.primary.withValues(alpha: 0.28),
+                    AppColors.primary.withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Blob 2 — medium glow, mid-left
+          Positioned(
+            top: 30,
+            left: -50,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF60A5FA).withValues(alpha: 0.22),
+                    const Color(0xFF60A5FA).withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Blob 3 — small accent, top-center
+          Positioned(
+            top: 60,
+            left: 130,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFFBAD7FF).withValues(alpha: 0.35),
+                    const Color(0xFFBAD7FF).withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Main content
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                const DiscussionTab(),
+                SessionsTab(group: group),
+                const Center(child: Text('Members - Coming Soon', style: TextStyle(color: Colors.grey))),
+              ],
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 2,
