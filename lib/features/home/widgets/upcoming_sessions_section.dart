@@ -1,56 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../groups/models/group_model.dart';
 import 'upcoming_session_card.dart';
 
 class UpcomingSessionsSection extends StatefulWidget {
-  final VoidCallback onSeeAll;
-
-  const UpcomingSessionsSection({super.key, required this.onSeeAll});
+  const UpcomingSessionsSection({super.key});
 
   @override
-  State<UpcomingSessionsSection> createState() => _UpcomingSessionsSectionState();
+  State<UpcomingSessionsSection> createState() =>
+      _UpcomingSessionsSectionState();
 }
 
 class _UpcomingSessionsSectionState extends State<UpcomingSessionsSection> {
   int _currentPage = 0;
 
-  final List<Map<String, dynamic>> sessions = [
-    {
-      'groupName': 'Math Study Group',
-      'timeUntil': 'In 2 hours',
-      'location': 'Library 3F, Room 302',
-      'timeRange': '14:00 - 16:00 PM',
-      'attendeeCount': 3,
-      'canCheckIn': false,
-    },
-    {
-      'groupName': 'Web Dev Finals',
-      'timeUntil': 'Tomorrow',
-      'location': 'Online',
-      'timeRange': '2:00 - 4:00 PM',
-      'attendeeCount': 3,
-      'canCheckIn': false,
-    },
-  ];
+  /// Derive session cards directly from mockGroups — single source of truth.
+  /// When backend is added, replace mockGroups with the API response here only.
+  List<Map<String, dynamic>> get _sessions => mockGroups.map((g) => {
+        'groupId': g.id,
+        'groupName': g.name,
+        'timeUntil': g.nextSession,
+        'location': g.upcomingLocation,
+        'locationDetail': g.upcomingLocationDetail,
+        'timeRange': g.upcomingTimeRange,
+        'attendeeCount': g.upcomingAttendees,
+        'canCheckIn': false,
+      }).toList();
 
   @override
   Widget build(BuildContext context) {
+    final sessions = _sessions;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Upcoming Sessions',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-            ),
-            TextButton(
-              onPressed: widget.onSeeAll,
-              child: const Text('See all', style: TextStyle(fontSize: 13, color: AppColors.primary)),
-            ),
-          ],
+        // Header
+        const Text(
+          'Upcoming Sessions',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         const SizedBox(height: 12),
         // PageView carousel
@@ -63,13 +52,20 @@ class _UpcomingSessionsSectionState extends State<UpcomingSessionsSection> {
             onPageChanged: (index) => setState(() => _currentPage = index),
             itemBuilder: (_, i) => Padding(
               padding: const EdgeInsets.only(right: 12),
-              child: UpcomingSessionCard(
-                groupName: sessions[i]['groupName'] as String,
-                timeUntil: sessions[i]['timeUntil'] as String,
-                location: sessions[i]['location'] as String,
-                timeRange: sessions[i]['timeRange'] as String,
-                attendeeCount: sessions[i]['attendeeCount'] as int,
-                canCheckIn: sessions[i]['canCheckIn'] as bool,
+              child: GestureDetector(
+                onTap: () => context.push(
+                  RouteConstants.groupDetail.replaceFirst(
+                      ':groupId', sessions[i]['groupId'] as String),
+                ),
+                child: UpcomingSessionCard(
+                  groupName: sessions[i]['groupName'] as String,
+                  timeUntil: sessions[i]['timeUntil'] as String,
+                  location:
+                      '${sessions[i]['location']}, ${sessions[i]['locationDetail']}',
+                  timeRange: sessions[i]['timeRange'] as String,
+                  attendeeCount: sessions[i]['attendeeCount'] as int,
+                  canCheckIn: sessions[i]['canCheckIn'] as bool,
+                ),
               ),
             ),
           ),
