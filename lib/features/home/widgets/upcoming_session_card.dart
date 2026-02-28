@@ -53,7 +53,7 @@ class UpcomingSessionCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Text(groupName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)),
+            Text(groupName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
             const SizedBox(height: 12),
             SessionInfoRow(icon: LucideIcons.mapPin, text: location),
             const SizedBox(height: 6),

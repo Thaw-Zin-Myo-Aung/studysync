@@ -48,7 +48,7 @@ class HomeScreen extends StatelessWidget {
                   child: IconButton(
                     padding: EdgeInsets.zero,
                     icon: const Icon(LucideIcons.bell, color: Colors.black87, size: 20),
-                    onPressed: () {},
+                    onPressed: () => context.go(RouteConstants.notifications),
                   ),
                 ),
                 Positioned(

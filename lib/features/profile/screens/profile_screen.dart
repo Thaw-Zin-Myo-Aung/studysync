@@ -16,11 +16,68 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundBlue,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
+      body: Stack(
+        children: [
+          // Blob 1 — large primary glow, top-right
+          Positioned(
+            top: -20,
+            right: -40,
+            child: Container(
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.primary.withValues(alpha: 0.28),
+                    AppColors.primary.withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Blob 2 — medium glow, mid-left
+          Positioned(
+            top: 30,
+            left: -50,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF60A5FA).withValues(alpha: 0.22),
+                    const Color(0xFF60A5FA).withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Blob 3 — small accent, top-center
+          Positioned(
+            top: 60,
+            left: 130,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFFBAD7FF).withValues(alpha: 0.35),
+                    const Color(0xFFBAD7FF).withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Main scrollable content
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
               const ProfileHeaderCard(
                 name: 'Thaw Zin',
                 major: 'Computer Science',
@@ -73,6 +130,8 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+        ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 3,

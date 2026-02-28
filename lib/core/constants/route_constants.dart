@@ -14,6 +14,7 @@ class RouteConstants {
   static const String groups = '/groups';
   static const String profile = '/profile';
   static const String settings = '/settings';
+  static const String notifications = '/notifications';
 
   // Nested routes
   static const String groupDetail = '/groups/:groupId';

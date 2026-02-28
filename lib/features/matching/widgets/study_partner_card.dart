@@ -53,7 +53,7 @@ class StudyPartnerCard extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         Text(major, style: const TextStyle(fontSize: 13, color: Colors.grey)),
                         const SizedBox(height: 8),
                         ReliabilityBadge(score: reliabilityScore),

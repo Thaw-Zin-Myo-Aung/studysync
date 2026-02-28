@@ -8,6 +8,7 @@ import '../../features/groups/screens/groups_list_screen.dart';
 import '../../features/groups/screens/group_detail_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
+import '../../features/notifications/screens/notifications_screen.dart';
 
 /// GoRouter configuration for StudySync app navigation
 class AppRouter {
@@ -21,6 +22,10 @@ class AppRouter {
       if (state.matchedLocation == '/') return RouteConstants.login;
       return null;
     },
+    errorBuilder: (context, state) => Scaffold(
+      appBar: AppBar(title: const Text('Page Not Found')),
+      body: Center(child: Text('No route for: ${state.uri}')),
+    ),
     routes: [
       // Authentication Route
       GoRoute(
@@ -32,6 +37,12 @@ class AppRouter {
       GoRoute(
         path: RouteConstants.home,
         builder: (context, state) => const HomeScreen(),
+      ),
+
+      // Notifications Route
+      GoRoute(
+        path: RouteConstants.notifications,
+        builder: (context, state) => const NotificationsScreen(),
       ),
 
       // Placeholder Routes
