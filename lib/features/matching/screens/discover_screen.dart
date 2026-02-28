@@ -5,6 +5,7 @@ import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../widgets/study_partner_card.dart';
+import '../widgets/filter_bottom_sheet.dart';
 
 class DiscoverScreen extends StatelessWidget {
   const DiscoverScreen({super.key});
@@ -41,7 +42,7 @@ class DiscoverScreen extends StatelessWidget {
               child: IconButton(
                 padding: EdgeInsets.zero,
                 icon: const Icon(LucideIcons.slidersHorizontal, color: Colors.black87, size: 20),
-                onPressed: () {},
+                onPressed: () => showFilterBottomSheet(context),
               ),
             ),
           ),
@@ -117,7 +118,7 @@ class DiscoverScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       const Text("That's all for now!", style: TextStyle(fontSize: 13, color: Colors.grey)),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () => showFilterBottomSheet(context),
                         child: const Text('Adjust Filters', style: TextStyle(color: AppColors.primary)),
                       ),
                     ],
