@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:studysync/core/widgets/profile_section_header.dart';
 import 'course_target_item.dart';
 
@@ -16,7 +17,7 @@ class EnrolledCoursesSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const ProfileSectionHeader(icon: Icons.menu_book_outlined, title: 'Enrolled Courses'),
+        const ProfileSectionHeader(icon: LucideIcons.bookOpen, title: 'Enrolled Courses'),
         const SizedBox(height: 12),
         ...courses.map((c) => Padding(
           padding: const EdgeInsets.only(bottom: 8),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'settings_section_header.dart';
 import 'settings_item_row.dart';
 
@@ -15,7 +16,7 @@ class AppPreferencesSection extends StatelessWidget {
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: const SettingsItemRow(
-            icon: Icons.language,
+            icon: LucideIcons.globe,
             iconBgColor: Color(0xFFF0FDF4),
             iconColor: Color(0xFF10B981),
             title: "Language",
@@ -31,7 +32,7 @@ class AppPreferencesSection extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 4),
-                Icon(Icons.chevron_right, color: Color(0xFFCBD5E1), size: 20),
+                Icon(LucideIcons.chevronRight, color: Color(0xFFCBD5E1), size: 20),
               ],
             ),
           ),
@@ -40,4 +41,3 @@ class AppPreferencesSection extends StatelessWidget {
     );
   }
 }
-

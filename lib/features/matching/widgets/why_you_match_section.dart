@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:studysync/core/widgets/schedule_match_row.dart';
 import 'package:studysync/core/widgets/match_reason_row.dart';
 
@@ -26,9 +27,9 @@ class WhyYouMatchSection extends StatelessWidget {
         const SizedBox(height: 10),
         ScheduleMatchRow(scheduleText: scheduleText, subtitle: 'Perfect schedule alignment'),
         const SizedBox(height: 10),
-        MatchReasonRow(icon: Icons.adjust_outlined, label: goalText),
+        MatchReasonRow(icon: LucideIcons.target, label: goalText),
         const SizedBox(height: 10),
-        MatchReasonRow(icon: Icons.menu_book_outlined, label: 'Shared: ', boldText: sharedCourse),
+        MatchReasonRow(icon: LucideIcons.bookOpen, label: 'Shared: ', boldText: sharedCourse),
       ],
     );
   }

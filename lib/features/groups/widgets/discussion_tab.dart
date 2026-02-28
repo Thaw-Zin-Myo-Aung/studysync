@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/discussion_post_card.dart';
 
@@ -44,7 +45,7 @@ class DiscussionTab extends StatelessWidget {
           bottom: 16,
           right: 0,
           child: GestureDetector(
-            onTap: () => print('New post'),
+            onTap: () => debugPrint('New post'),
             child: Container(
               width: 56,
               height: 56,
@@ -52,7 +53,7 @@ class DiscussionTab extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 color: AppColors.primary,
               ),
-              child: const Icon(Icons.add, color: Colors.white, size: 28),
+              child: const Icon(LucideIcons.plus, color: Colors.white, size: 28),
             ),
           ),
         ),

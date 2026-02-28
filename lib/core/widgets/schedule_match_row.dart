@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../theme/app_colors.dart';
 
 class ScheduleMatchRow extends StatelessWidget {
@@ -17,7 +18,7 @@ class ScheduleMatchRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.success),
+          const Icon(LucideIcons.calendar, size: 18, color: AppColors.success),
           const SizedBox(width: 10),
           Expanded(
             child: Column(

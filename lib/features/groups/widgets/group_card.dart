@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/group_model.dart';
 import 'group_icon_badge.dart';
@@ -70,7 +71,7 @@ class GroupCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.access_time_outlined, size: 13, color: AppColors.primary),
+                        const Icon(LucideIcons.clock, size: 13, color: AppColors.primary),
                       const SizedBox(width: 4),
                       Text(
                         group.nextSession,

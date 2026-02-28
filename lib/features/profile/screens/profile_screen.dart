@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../widgets/profile_header_card.dart';
@@ -40,7 +41,7 @@ class ProfileScreen extends StatelessWidget {
                       height: 52,
                       child: OutlinedButton.icon(
                         onPressed: () => context.go(RouteConstants.settings),
-                        icon: const Icon(Icons.settings_outlined, color: Colors.black87),
+                        icon: const Icon(LucideIcons.settings, color: Colors.black87),
                         label: const Text('Settings', style: TextStyle(color: Colors.black87)),
                         style: OutlinedButton.styleFrom(
                           backgroundColor: AppColors.surface,
@@ -55,7 +56,7 @@ class ProfileScreen extends StatelessWidget {
                       height: 52,
                       child: ElevatedButton.icon(
                         onPressed: () => context.go(RouteConstants.editProfile),
-                        icon: const Icon(Icons.edit_outlined, color: Colors.white),
+                        icon: const Icon(LucideIcons.penLine, color: Colors.white),
                         label: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
@@ -85,13 +86,12 @@ class ProfileScreen extends StatelessWidget {
           }
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), label: 'Discover'),
-          BottomNavigationBarItem(icon: Icon(Icons.group_outlined), label: 'Groups'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.compass), label: 'Discover'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.users), label: 'Groups'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profile'),
         ],
       ),
     );
   }
 }
-

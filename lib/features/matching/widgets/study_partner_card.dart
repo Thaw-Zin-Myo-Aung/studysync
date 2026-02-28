@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/match_score_badge.dart';
 import 'package:studysync/core/widgets/reliability_badge.dart';
@@ -46,7 +47,7 @@ class StudyPartnerCard extends StatelessWidget {
                     const CircleAvatar(
                       radius: 28,
                       backgroundColor: AppColors.primarySurface,
-                      child: Icon(Icons.person, color: AppColors.primary, size: 28),
+                      child: Icon(LucideIcons.user, color: AppColors.primary, size: 28),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -77,7 +78,7 @@ class StudyPartnerCard extends StatelessWidget {
                     height: 44,
                     child: OutlinedButton.icon(
                       onPressed: onPass,
-                      icon: Icon(Icons.close, color: Colors.grey.shade600, size: 18),
+                      icon: Icon(LucideIcons.x, color: Colors.grey.shade600, size: 18),
                       label: Text('Pass', style: TextStyle(color: Colors.grey.shade600)),
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: Colors.grey.shade300),
@@ -92,7 +93,7 @@ class StudyPartnerCard extends StatelessWidget {
                     height: 44,
                     child: ElevatedButton.icon(
                       onPressed: onRequest,
-                      icon: const Icon(Icons.check, color: Colors.white, size: 18),
+                      icon: const Icon(LucideIcons.check, color: Colors.white, size: 18),
                       label: const Text('Request', style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
@@ -110,4 +111,3 @@ class StudyPartnerCard extends StatelessWidget {
     );
   }
 }
-

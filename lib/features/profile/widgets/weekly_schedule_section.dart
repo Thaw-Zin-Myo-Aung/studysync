@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/profile_section_header.dart';
 
@@ -23,7 +24,7 @@ class WeeklyScheduleSection extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const ProfileSectionHeader(icon: Icons.calendar_month_outlined, title: 'My Schedule'),
+            const ProfileSectionHeader(icon: LucideIcons.calendar, title: 'My Schedule'),
             const SizedBox(height: 16),
             Row(
               children: List.generate(days.length, (i) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 
 class SettingsItemRow extends StatelessWidget {
@@ -69,7 +70,7 @@ class SettingsItemRow extends StatelessWidget {
                 ],
               ),
             ),
-            trailing ?? const Icon(Icons.chevron_right, color: AppColors.textDisabled, size: 20),
+            trailing ?? const Icon(LucideIcons.chevronRight, color: AppColors.textDisabled, size: 20),
           ],
         ),
       ),

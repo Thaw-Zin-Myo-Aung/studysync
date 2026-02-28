@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 
 class FindPartnerBanner extends StatelessWidget {
@@ -30,7 +31,7 @@ class FindPartnerBanner extends StatelessWidget {
               color: const Color(0x33FFFFFF),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.search, color: Colors.white, size: 28),
+            child: const Icon(LucideIcons.search, color: Colors.white, size: 28),
           ),
           const SizedBox(height: 16),
           const Text('Need a study buddy?', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),

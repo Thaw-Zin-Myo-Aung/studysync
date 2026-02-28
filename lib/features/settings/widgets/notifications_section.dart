@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import 'settings_section_header.dart';
 import 'settings_item_row.dart';
@@ -26,7 +27,7 @@ class _NotificationsSectionState extends State<NotificationsSection> {
           child: Column(
             children: [
               SettingsItemRow(
-                icon: Icons.notifications_outlined,
+                icon: LucideIcons.bell,
                 iconBgColor: const Color(0xFFF5F3FF),
                 iconColor: const Color(0xFF8B5CF6),
                 title: "Push Notifications",
@@ -39,7 +40,7 @@ class _NotificationsSectionState extends State<NotificationsSection> {
               ),
               const Divider(height: 1, indent: 68),
               SettingsItemRow(
-                icon: Icons.chat_bubble_outline,
+                icon: LucideIcons.messageCircle,
                 iconBgColor: const Color(0xFFFFF0F0),
                 iconColor: const Color(0xFFEF4444),
                 title: "Group Messages",
@@ -57,4 +58,3 @@ class _NotificationsSectionState extends State<NotificationsSection> {
     );
   }
 }
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/reliability_ring.dart';
 
@@ -33,7 +34,7 @@ class ProfileHeaderCard extends StatelessWidget {
                 const CircleAvatar(
                   radius: 40,
                   backgroundColor: AppColors.border,
-                  child: Icon(Icons.person, size: 40, color: AppColors.textHint),
+                  child: Icon(LucideIcons.user, size: 40, color: AppColors.textHint),
                 ),
                 Positioned(
                   bottom: 0,
@@ -45,7 +46,7 @@ class ProfileHeaderCard extends StatelessWidget {
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.edit, size: 14, color: Colors.white),
+                    child: const Icon(LucideIcons.pencil, size: 14, color: Colors.white),
                   ),
                 ),
               ],
@@ -56,7 +57,7 @@ class ProfileHeaderCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.school_outlined, size: 14, color: AppColors.textMuted),
+                const Icon(LucideIcons.school, size: 14, color: AppColors.textMuted),
                 const SizedBox(width: 8),
                 Text('$major • $year', style: const TextStyle(fontSize: 13, color: AppColors.textMuted)),
               ],
@@ -69,4 +70,3 @@ class ProfileHeaderCard extends StatelessWidget {
     );
   }
 }
-

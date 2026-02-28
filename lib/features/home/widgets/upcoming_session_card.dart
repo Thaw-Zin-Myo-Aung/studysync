@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/session_info_row.dart';
 
@@ -22,7 +23,9 @@ class UpcomingSessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return SizedBox(
+      width: 300,
+      child: Card(
       color: AppColors.surface,
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -45,18 +48,18 @@ class UpcomingSessionCard extends StatelessWidget {
                 CircleAvatar(
                   backgroundColor: Colors.grey.shade200,
                   radius: 16,
-                  child: Icon(Icons.explore_outlined, color: Colors.grey.shade500, size: 18),
+                  child: Icon(LucideIcons.compass, color: Colors.grey.shade500, size: 18),
                 ),
               ],
             ),
             const SizedBox(height: 12),
             Text(groupName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)),
             const SizedBox(height: 12),
-            SessionInfoRow(icon: Icons.location_on_outlined, text: location),
+            SessionInfoRow(icon: LucideIcons.mapPin, text: location),
             const SizedBox(height: 6),
-            SessionInfoRow(icon: Icons.access_time_outlined, text: timeRange),
+            SessionInfoRow(icon: LucideIcons.clock, text: timeRange),
             const SizedBox(height: 6),
-            SessionInfoRow(icon: Icons.group_outlined, text: '$attendeeCount Attendees confirmed'),
+            SessionInfoRow(icon: LucideIcons.users, text: '$attendeeCount Attendees confirmed'),
             const SizedBox(height: 16),
             if (canCheckIn)
               SizedBox(
@@ -89,6 +92,7 @@ class UpcomingSessionCard extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class DiscussionPostCard extends StatelessWidget {
   final String authorName;
@@ -33,7 +34,7 @@ class DiscussionPostCard extends StatelessWidget {
               const CircleAvatar(
                 radius: 20,
                 backgroundColor: Color(0xFFE2E8F0),
-                child: Icon(Icons.person_outlined, color: Color(0xFF94A3B8), size: 20),
+                child: Icon(LucideIcons.user, color: Color(0xFF94A3B8), size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -47,7 +48,7 @@ class DiscussionPostCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.more_horiz, color: Color(0xFFCBD5E1), size: 20),
+              const Icon(LucideIcons.ellipsis, color: Color(0xFFCBD5E1), size: 20),
             ],
           ),
           const SizedBox(height: 12),
@@ -63,11 +64,11 @@ class DiscussionPostCard extends StatelessWidget {
           const SizedBox(height: 14),
           Row(
             children: [
-              const _ActionItem(Icons.favorite_border, 'Like'),
+              const _ActionItem(LucideIcons.heart, 'Like'),
               const SizedBox(width: 20),
-              _ActionItem(Icons.chat_bubble_outline, '$replyCount Replies'),
+              _ActionItem(LucideIcons.messageCircle, '$replyCount Replies'),
               const SizedBox(width: 20),
-              const _ActionItem(Icons.share_outlined, ''),
+              const _ActionItem(LucideIcons.share2, ''),
             ],
           ),
         ],
@@ -95,4 +96,3 @@ class _ActionItem extends StatelessWidget {
     );
   }
 }
-

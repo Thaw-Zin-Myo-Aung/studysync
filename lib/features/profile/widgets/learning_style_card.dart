@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/profile_section_header.dart';
 
@@ -13,7 +14,7 @@ class LearningStyleCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const ProfileSectionHeader(icon: Icons.bolt_outlined, title: 'Learning Style'),
+        const ProfileSectionHeader(icon: LucideIcons.zap, title: 'Learning Style'),
         const SizedBox(height: 12),
         Card(
           color: AppColors.surface,
@@ -29,7 +30,7 @@ class LearningStyleCard extends StatelessWidget {
                     color: AppColors.amberLight,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.emoji_events_outlined, color: AppColors.amber, size: 24),
+                  child: const Icon(LucideIcons.trophy, color: AppColors.amber, size: 24),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -42,7 +43,7 @@ class LearningStyleCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right, color: Colors.grey.shade400),
+                Icon(LucideIcons.chevronRight, color: Colors.grey.shade400),
               ],
             ),
           ),
@@ -51,4 +52,3 @@ class LearningStyleCard extends StatelessWidget {
     );
   }
 }
-

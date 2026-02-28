@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class AppLogo extends StatelessWidget {
   final double size;
@@ -25,7 +26,7 @@ class AppLogo extends StatelessWidget {
         ],
       ),
       child: Icon(
-        Icons.menu_book_rounded,
+        LucideIcons.bookOpen,
         color: Colors.white,
         size: size * 0.5,
       ),

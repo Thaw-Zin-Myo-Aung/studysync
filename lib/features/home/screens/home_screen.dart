@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
-import '../widgets/home_header_card.dart';
-import '../widgets/upcoming_session_card.dart';
+import '../widgets/user_profile_card.dart';
+import '../widgets/upcoming_sessions_section.dart';
 import '../widgets/your_groups_section.dart';
 import '../widgets/find_partner_banner.dart';
 import '../../groups/models/group_model.dart';
@@ -20,40 +21,149 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: AppColors.backgroundBlue,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 2,
+        shadowColor: Colors.black12,
+        centerTitle: false,
+        titleSpacing: 20,
+        title: RichText(
+          text: const TextSpan(
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             children: [
-              HomeHeaderCard(userName: 'Thaw Zin', reliabilityScore: 95, onNotificationTap: () {}),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Upcoming Session', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
-                  TextButton(onPressed: () {}, child: const Text('See all', style: TextStyle(color: AppColors.primary, fontSize: 13))),
-                ],
-              ),
-              const SizedBox(height: 12),
-              const UpcomingSessionCard(
-                groupName: 'Math Study Group',
-                timeUntil: 'In 2 hours',
-                location: 'Library 3F, Room 302',
-                timeRange: '14:00 - 16:00 PM',
-                attendeeCount: 3,
-                canCheckIn: false,
-              ),
-              const SizedBox(height: 20),
-              YourGroupsSection(groups: mockGroups, onCreateGroup: () {}),
-              const SizedBox(height: 20),
-              FindPartnerBanner(courseName: 'Engineering Math II', onFindPartner: () => context.go(RouteConstants.discover)),
-              const SizedBox(height: 20),
+              TextSpan(text: 'Study', style: TextStyle(color: Colors.black87)),
+              TextSpan(text: 'Sync', style: TextStyle(color: AppColors.primary)),
             ],
           ),
         ),
+        actions: [
+          Center(
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.backgroundBlue,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: const Icon(LucideIcons.bell, color: Colors.black87, size: 20),
+                    onPressed: () {},
+                  ),
+                ),
+                Positioned(
+                  top: -4,
+                  right: -4,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.error,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Text(
+                      '19',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+        ],
+      ),
+      body: Stack(
+        children: [
+          // Blob 1 — large primary glow, top-right behind profile card
+          Positioned(
+            top: -20,
+            right: -30,
+            child: Container(
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.primary.withValues(alpha: 0.30),
+                    AppColors.primary.withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Blob 2 — mid-left softer glow
+          Positioned(
+            top: 40,
+            left: -50,
+            child: Container(
+              width: 180,
+              height: 180,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF60A5FA).withValues(alpha: 0.22),
+                    const Color(0xFF60A5FA).withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Blob 3 — small accent top-center
+          Positioned(
+            top: 10,
+            left: 120,
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFFA5C8FE).withValues(alpha: 0.25),
+                    const Color(0xFFA5C8FE).withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Main scrollable content
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  const UserProfileCard(
+                    fullName: 'Mr. Thaw Zin Myo Aung',
+                    reliability: 95,
+                    studentId: '6731503088',
+                    major: 'Software Engineering',
+                  ),
+                  const SizedBox(height: 20),
+                  UpcomingSessionsSection(onSeeAll: () {}),
+                  const SizedBox(height: 20),
+                  YourGroupsSection(groups: mockGroups, onCreateGroup: () {}),
+                  const SizedBox(height: 20),
+                  FindPartnerBanner(
+                    courseName: 'Engineering Math II',
+                    onFindPartner: () => context.go(RouteConstants.discover),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -69,13 +179,12 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), label: 'Discover'),
-          BottomNavigationBarItem(icon: Icon(Icons.group_outlined), label: 'Groups'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.compass), label: 'Discover'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.users), label: 'Groups'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profile'),
         ],
       ),
     );
   }
 }
-

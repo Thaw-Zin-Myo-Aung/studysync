@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../widgets/account_section.dart';
@@ -19,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
         elevation: 0,
         foregroundColor: Colors.black87,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(LucideIcons.arrowLeft),
           onPressed: () => context.pop(),
         ),
       ),
@@ -38,7 +39,7 @@ class SettingsScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  icon: const Icon(Icons.logout, color: AppColors.error),
+                  icon: const Icon(LucideIcons.logOut, color: AppColors.error),
                   label: const Text(
                     "Log Out",
                     style: TextStyle(
@@ -91,13 +92,12 @@ class SettingsScreen extends StatelessWidget {
           }
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), label: 'Discover'),
-          BottomNavigationBarItem(icon: Icon(Icons.group_outlined), label: 'Groups'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.compass), label: 'Discover'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.users), label: 'Groups'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profile'),
         ],
       ),
     );
   }
 }
-

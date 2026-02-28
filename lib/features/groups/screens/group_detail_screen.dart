@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/group_model.dart';
@@ -44,7 +45,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(LucideIcons.arrowLeft, color: Colors.black87),
           onPressed: () => context.go(RouteConstants.groups),
         ),
         title: Column(
@@ -70,8 +71,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings_outlined, color: Colors.grey.shade400),
-            onPressed: () => print('Settings'),
+            icon: Icon(LucideIcons.settings, color: Colors.grey.shade400),
+            onPressed: () => debugPrint('Settings'),
           ),
         ],
         bottom: TabBar(
@@ -113,10 +114,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           }
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), label: 'Discover'),
-          BottomNavigationBarItem(icon: Icon(Icons.group_outlined), label: 'Groups'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.compass), label: 'Discover'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.users), label: 'Groups'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profile'),
         ],
       ),
     );

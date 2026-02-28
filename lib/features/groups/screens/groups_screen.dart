@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/group_model.dart';
@@ -12,7 +13,7 @@ class GroupsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundPage,
+      backgroundColor: AppColors.backgroundBlue,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -46,7 +47,7 @@ class GroupsScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         child: IconButton(
-          icon: const Icon(Icons.add, color: Colors.white, size: 28),
+          icon: const Icon(LucideIcons.plus, color: Colors.white, size: 28),
           onPressed: () => debugPrint('Create group'),
         ),
       ),
@@ -69,10 +70,10 @@ class GroupsScreen extends StatelessWidget {
           }
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), label: 'Discover'),
-          BottomNavigationBarItem(icon: Icon(Icons.group_outlined), label: 'Groups'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.compass), label: 'Discover'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.users), label: 'Groups'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profile'),
         ],
       ),
     );

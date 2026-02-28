@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:studysync/core/constants/route_constants.dart';
 import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/app_logo.dart';
@@ -66,7 +67,7 @@ class _LoginCardState extends State<LoginCard> {
           AuthInputField(
             label: 'Email',
             hintText: 'student_ID@lamduan.mfu.ac.th',
-            prefixIcon: Icons.mail_outline,
+            prefixIcon: LucideIcons.mail,
             keyboardType: TextInputType.emailAddress,
             controller: _emailController,
           ),
@@ -74,7 +75,7 @@ class _LoginCardState extends State<LoginCard> {
           AuthInputField(
             label: 'Password',
             hintText: 'Password',
-            prefixIcon: Icons.lock_outline,
+            prefixIcon: LucideIcons.lock,
             obscureText: true,
             showToggle: true,
             controller: _passwordController,

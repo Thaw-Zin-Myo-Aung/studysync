@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/reliability_badge.dart';
 
@@ -26,7 +27,7 @@ class HomeHeaderCard extends StatelessWidget {
                     const CircleAvatar(
                       radius: 24,
                       backgroundColor: AppColors.primarySurface,
-                      child: Icon(Icons.person, color: AppColors.primary),
+                      child: Icon(LucideIcons.user, color: AppColors.primary),
                     ),
                     Positioned(
                       bottom: 0,
@@ -55,7 +56,7 @@ class HomeHeaderCard extends StatelessWidget {
                 ),
                 Stack(
                   children: [
-                    IconButton(icon: const Icon(Icons.notifications_outlined), onPressed: onNotificationTap),
+                    IconButton(icon: const Icon(LucideIcons.bell), onPressed: onNotificationTap),
                     Positioned(
                       top: 10,
                       right: 12,

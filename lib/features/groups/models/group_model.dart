@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class GroupModel {
   final String id;
@@ -32,7 +33,7 @@ const List<GroupModel> mockGroups = [
     name: 'Finals Prep - Web',
     subject: 'Web Development',
     nextSession: 'Tomorrow, 10:00 AM',
-    icon: Icons.code,
+    icon: LucideIcons.code,
     iconBgColor: Color(0xFFF3E8FF),
     iconColor: Color(0xFF9333EA),
     memberInitials: ['A', 'B', 'C'],
@@ -44,7 +45,7 @@ const List<GroupModel> mockGroups = [
     name: 'Calculus Review',
     subject: 'Calculus I',
     nextSession: 'Wed, 2:00 PM',
-    icon: Icons.calculate_outlined,
+    icon: LucideIcons.calculator,
     iconBgColor: Color(0xFFFFF7ED),
     iconColor: Color(0xFFF97316),
     memberInitials: ['A', 'B', 'C'],
@@ -56,7 +57,7 @@ const List<GroupModel> mockGroups = [
     name: 'History Study',
     subject: 'World History',
     nextSession: 'Friday, 1:00 PM',
-    icon: Icons.menu_book_outlined,
+    icon: LucideIcons.bookOpen,
     iconBgColor: Color(0xFFF0FDF4),
     iconColor: Color(0xFF16A34A),
     memberInitials: ['A', 'B', 'C'],
