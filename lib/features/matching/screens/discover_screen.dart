@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../widgets/study_partner_card.dart';
 import '../widgets/filter_bottom_sheet.dart';
+import '../widgets/add_friend_sheet.dart';
 
 class DiscoverScreen extends StatelessWidget {
   const DiscoverScreen({super.key});
@@ -150,6 +151,13 @@ class DiscoverScreen extends StatelessWidget {
             case 3: context.go(RouteConstants.profile); break;
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showAddFriendSheet(context),
+        backgroundColor: AppColors.primary,
+        shape: const CircleBorder(),
+        elevation: 3,
+        child: const Icon(LucideIcons.userPlus, color: Colors.white, size: 22),
       ),
     );
   }
