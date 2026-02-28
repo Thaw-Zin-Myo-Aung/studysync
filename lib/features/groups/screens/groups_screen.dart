@@ -15,13 +15,29 @@ class GroupsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundBlue,
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 2,
+        shadowColor: Colors.black12,
+        centerTitle: false,
+        titleSpacing: 20,
+        automaticallyImplyLeading: false,
+        title: RichText(
+          text: const TextSpan(
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            children: [
+              TextSpan(text: 'My ', style: TextStyle(color: Colors.black87)),
+              TextSpan(text: 'Groups', style: TextStyle(color: AppColors.primary)),
+            ],
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              GroupsHeader(groupCount: mockGroups.length),
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
               Expanded(
                 child: ListView.separated(
                   itemCount: mockGroups.length,

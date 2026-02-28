@@ -13,6 +13,7 @@ dependencies:
   # Navigation
   go_router: ^14.6.2  # Latest version as of Feb 2026
   lucide_icons_flutter: ^1.0.0
+  google_fonts: ^6.2.1
 
   # TODO: Add these as you implement features
   # provider: ^6.1.2

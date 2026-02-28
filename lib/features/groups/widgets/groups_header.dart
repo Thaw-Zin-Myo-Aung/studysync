@@ -12,34 +12,22 @@ class GroupsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'My Groups',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '$groupCount active groups',
-                  style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
-                ),
-              ],
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      child: RichText(
+        text: const TextSpan(
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+              text: 'My ',
+              style: TextStyle(color: Colors.black87),
             ),
-          ),
-        ],
+            TextSpan(
+              text: 'Groups',
+              style: TextStyle(color: AppColors.primary),
+            ),
+          ],
+        ),
       ),
     );
   }
