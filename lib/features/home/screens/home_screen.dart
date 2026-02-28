@@ -145,7 +145,7 @@ class HomeScreen extends StatelessWidget {
                     major: 'Software Engineering',
                   ),
                   const SizedBox(height: 20),
-                  const UpcomingSessionsSection(),
+                  UpcomingSessionsSection(onSeeAll: () {}),
                   const SizedBox(height: 20),
                   YourGroupsSection(groups: mockGroups, onCreateGroup: () {}),
                   const SizedBox(height: 20),
