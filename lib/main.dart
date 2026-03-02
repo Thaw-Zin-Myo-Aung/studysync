@@ -21,16 +21,18 @@ class StudySyncApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      // App configuration
-      title: 'StudySync',
-      debugShowCheckedModeBanner: false,
+    return Consumer(
+      builder: (context, ref, _) => MaterialApp.router(
+        // App configuration
+        title: 'StudySync',
+        debugShowCheckedModeBanner: false,
 
-      // Theme configuration
-      theme: AppTheme.light,
+        // Theme configuration
+        theme: AppTheme.light,
 
-      // GoRouter configuration
-      routerConfig: AppRouter.router,
+        // GoRouter configuration
+        routerConfig: AppRouter.createRouter(ref),
+      ),
     );
   }
 }

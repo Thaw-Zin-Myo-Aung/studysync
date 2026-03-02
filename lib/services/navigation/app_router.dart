@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/route_constants.dart';
 import '../../features/authentication/screens/login_screen.dart';
@@ -12,23 +13,48 @@ import '../../features/groups/screens/group_detail_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
+import '../../providers/auth_provider.dart';
 
 /// GoRouter configuration for StudySync app navigation
 class AppRouter {
   // Private constructor to prevent instantiation
   AppRouter._();
 
-  /// The main GoRouter instance
-  static final GoRouter router = GoRouter(
-    initialLocation: RouteConstants.login,
-    redirect: (context, state) {
-      if (state.matchedLocation == '/') return RouteConstants.login;
-      return null;
-    },
-    errorBuilder: (context, state) => Scaffold(
-      appBar: AppBar(title: const Text('Page Not Found')),
-      body: Center(child: Text('No route for: ${state.uri}')),
-    ),
+  static GoRouter createRouter(WidgetRef ref) {
+    const protectedRoutes = [
+      RouteConstants.home,
+      RouteConstants.discover,
+      RouteConstants.groups,
+      RouteConstants.groupDetail,
+      RouteConstants.profile,
+      RouteConstants.settings,
+      RouteConstants.notifications,
+      RouteConstants.editProfile,
+    ];
+
+    return GoRouter(
+      initialLocation: RouteConstants.login,
+      redirect: (context, state) {
+        final user = ref.read(authProvider);
+        final isLoggedIn = user != null;
+        final location = state.matchedLocation;
+        final isProtected = protectedRoutes.any(
+          (r) => location.startsWith(r.split('/:').first),
+        );
+        final isAuthRoute = location == RouteConstants.login ||
+                            location == RouteConstants.signup;
+
+        if (!isLoggedIn && isProtected) { return RouteConstants.login; }
+        if (isLoggedIn && isAuthRoute)  { return RouteConstants.home; }
+        if (location == '/') {
+          return isLoggedIn ? RouteConstants.home : RouteConstants.login;
+        }
+        return null;
+      },
+      errorBuilder: (context, state) => Scaffold(
+        appBar: AppBar(title: const Text('Page Not Found')),
+        body: Center(child: Text('No route for: ${state.uri}')),
+      ),
     routes: [
       // Authentication Route
       GoRoute(
@@ -97,5 +123,6 @@ class AppRouter {
         ),
       ),
     ],
-  );
+    );
+  }
 }
