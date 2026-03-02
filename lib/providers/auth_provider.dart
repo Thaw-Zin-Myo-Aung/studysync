@@ -1,29 +1,38 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_model.dart';
+import '../services/firebase/auth_service.dart';
 
-// ignore_for_file: prefer_const_constructors
+final authServiceProvider = Provider<AuthService>((_) => AuthService());
+
 class AuthNotifier extends Notifier<UserModel?> {
-  static const _mockUser = UserModel(
-    userId:            'user6731503088',
-    name:              'Thaw Zin Myo Aung',
-    email:             '6731503088@lamduan.mfu.ac.th',
-    major:             'Software Engineering',
-    year:              2,
-    reliabilityScore:  95,
-    sessionsAttended:  19,
-    sessionsScheduled: 20,
-    groupIds:          ['finals-web', 'calculus-review', 'history-study'],
-  );
+  late final AuthService _authService;
 
   @override
-  UserModel? build() => _mockUser;
-
-  void logout() {
-    state = null;
+  UserModel? build() {
+    _authService = ref.read(authServiceProvider);
+    // Kick off async init without blocking build
+    Future(_init);
+    return null;
   }
 
-  void updateUser(UserModel user) {
+  Future<void> _init() async {
+    state = await _authService.getCurrentUser();
+  }
+
+  Future<void> signUp(String email, String password,
+      String name, String major, int year) async {
+    final user = await _authService.signUp(email, password, name, major, year);
     state = user;
+  }
+
+  Future<void> signIn(String email, String password) async {
+    final user = await _authService.signIn(email, password);
+    state = user;
+  }
+
+  Future<void> signOut() async {
+    await _authService.signOut();
+    state = null;
   }
 }
 
