@@ -32,8 +32,11 @@ class AppRouter {
       RouteConstants.editProfile,
     ];
 
+    final notifier = _RouterNotifier(ref);
+
     return GoRouter(
       initialLocation: RouteConstants.login,
+      refreshListenable: notifier,
       redirect: (context, state) {
         final user = ref.read(authProvider);
         final isLoggedIn = user != null;
@@ -126,3 +129,10 @@ class AppRouter {
     );
   }
 }
+
+class _RouterNotifier extends ChangeNotifier {
+  _RouterNotifier(WidgetRef ref) {
+    ref.listen(authProvider, (_, __) => notifyListeners());
+  }
+}
+
