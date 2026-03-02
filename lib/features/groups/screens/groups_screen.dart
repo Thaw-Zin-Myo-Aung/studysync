@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../models/group_model.dart';
 import '../widgets/groups_header.dart';
+import '../widgets/add_group_sheet.dart';
 import '../widgets/group_card.dart';
 
 class GroupsScreen extends StatelessWidget {
@@ -124,7 +125,7 @@ class GroupsScreen extends StatelessWidget {
         ),
         child: IconButton(
           icon: const Icon(LucideIcons.plus, color: Colors.white, size: 28),
-          onPressed: () => debugPrint('Create group'),
+          onPressed: () => showAddGroupSheet(context),
         ),
       ),
       bottomNavigationBar: CustomBottomNavBar(

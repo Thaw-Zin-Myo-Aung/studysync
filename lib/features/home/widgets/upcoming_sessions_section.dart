@@ -3,9 +3,7 @@ import '../../../core/theme/app_colors.dart';
 import 'upcoming_session_card.dart';
 
 class UpcomingSessionsSection extends StatefulWidget {
-  final VoidCallback onSeeAll;
-
-  const UpcomingSessionsSection({super.key, required this.onSeeAll});
+  const UpcomingSessionsSection({super.key});
 
   @override
   State<UpcomingSessionsSection> createState() => _UpcomingSessionsSectionState();
@@ -38,19 +36,10 @@ class _UpcomingSessionsSectionState extends State<UpcomingSessionsSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Upcoming Sessions',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-            ),
-            TextButton(
-              onPressed: widget.onSeeAll,
-              child: const Text('See all', style: TextStyle(fontSize: 13, color: AppColors.primary)),
-            ),
-          ],
+        // Header
+        const Text(
+          'Upcoming Sessions',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         const SizedBox(height: 12),
         // PageView carousel
