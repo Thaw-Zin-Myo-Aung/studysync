@@ -1,18 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
+import '../../../providers/groups_provider.dart';
 import '../models/group_model.dart';
 import '../widgets/group_card.dart';
 import '../widgets/add_group_sheet.dart';
 
-class GroupsListScreen extends StatelessWidget {
+class GroupsListScreen extends ConsumerWidget {
   const GroupsListScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final firestoreGroups = ref.watch(groupsProvider);
+
+    // Map Firestore groups to display GroupModel
+    final groups = firestoreGroups.isEmpty
+        ? mockGroups
+        : firestoreGroups.map((g) => GroupModel(
+              id: g.groupId,
+              name: g.name,
+              subject: g.course,
+              nextSession: g.nextSessionDate.isEmpty
+                  ? 'No session scheduled'
+                  : g.nextSessionDate,
+              icon: LucideIcons.users,
+              iconBgColor: AppColors.primarySurface,
+              iconColor: AppColors.primary,
+              memberInitials: [],
+              extraMemberCount:
+                  g.memberIds.length > 3 ? g.memberIds.length - 3 : 0,
+              hasUnread: false,
+              upcomingDate: '',
+              upcomingTimeRange: '',
+              upcomingLocation: g.location,
+              upcomingLocationDetail: '',
+              upcomingAttendees: 0,
+              upcomingTotal: g.memberIds.length,
+              pastSessions: [],
+              members: [],
+            )).toList();
+
     return Scaffold(
       backgroundColor: AppColors.backgroundBlue,
       appBar: AppBar(
@@ -96,9 +127,9 @@ class GroupsListScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ListView.separated(
-                      itemCount: mockGroups.length,
+                      itemCount: groups.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (_, i) => GroupCard(group: mockGroups[i]),
+                      itemBuilder: (_, i) => GroupCard(group: groups[i]),
                     ),
                   ),
                   const SizedBox(height: 16),
