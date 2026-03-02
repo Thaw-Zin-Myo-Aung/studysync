@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'services/navigation/app_router.dart';
 
@@ -11,7 +12,7 @@ void main() {
   //   options: DefaultFirebaseOptions.currentPlatform,
   // );
 
-  runApp(const StudySyncApp());
+  runApp(const ProviderScope(child: StudySyncApp()));
 }
 
 class StudySyncApp extends StatelessWidget {

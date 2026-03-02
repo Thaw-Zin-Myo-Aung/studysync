@@ -14,9 +14,9 @@ dependencies:
   go_router: ^14.6.2  # Latest version as of Feb 2026
   lucide_icons_flutter: ^1.0.0
   google_fonts: ^6.2.1
+  flutter_riverpod: ^2.6.1
 
   # TODO: Add these as you implement features
-  # provider: ^6.1.2
   # firebase_core: ^3.10.0
   # firebase_auth: ^5.3.4
   # cloud_firestore: ^5.5.2
