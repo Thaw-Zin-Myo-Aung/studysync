@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:studysync/core/constants/route_constants.dart';
@@ -6,17 +7,19 @@ import 'package:studysync/core/theme/app_colors.dart';
 import 'package:studysync/core/widgets/app_logo.dart';
 import 'package:studysync/core/widgets/auth_input_field.dart';
 import 'package:studysync/core/widgets/primary_button.dart';
+import '../../../providers/auth_provider.dart';
 
-class LoginCard extends StatefulWidget {
+class LoginCard extends ConsumerStatefulWidget {
   const LoginCard({super.key});
 
   @override
-  State<LoginCard> createState() => _LoginCardState();
+  ConsumerState<LoginCard> createState() => _LoginCardState();
 }
 
-class _LoginCardState extends State<LoginCard> {
+class _LoginCardState extends ConsumerState<LoginCard> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -25,14 +28,29 @@ class _LoginCardState extends State<LoginCard> {
     super.dispose();
   }
 
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields')),
       );
       return;
     }
-    context.go(RouteConstants.home);
+    setState(() => _isLoading = true);
+    try {
+      await ref.read(authProvider.notifier).signIn(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+      if (mounted) context.go(RouteConstants.home);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -97,7 +115,7 @@ class _LoginCardState extends State<LoginCard> {
             ),
           ),
           const SizedBox(height: 16),
-          PrimaryButton(label: 'Log In', onPressed: _handleLogin),
+          PrimaryButton(label: 'Log In', onPressed: _handleLogin, isLoading: _isLoading),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

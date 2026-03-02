@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
@@ -6,21 +7,23 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/auth_input_field.dart';
 import '../../../core/widgets/primary_button.dart';
+import '../../../providers/auth_provider.dart';
 
-class SignupCard extends StatefulWidget {
+class SignupCard extends ConsumerStatefulWidget {
   const SignupCard({super.key});
 
   @override
-  State<SignupCard> createState() => _SignupCardState();
+  ConsumerState<SignupCard> createState() => _SignupCardState();
 }
 
-class _SignupCardState extends State<SignupCard> {
+class _SignupCardState extends ConsumerState<SignupCard> {
   final _nameController     = TextEditingController();
   final _emailController    = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController  = TextEditingController();
 
   bool _emailError = false;
+  bool _isLoading  = false;
 
   @override
   void dispose() {
@@ -31,7 +34,7 @@ class _SignupCardState extends State<SignupCard> {
     super.dispose();
   }
 
-  void _handleSignup() {
+  Future<void> _handleSignup() async {
     if (!_emailController.text.endsWith('@lamduan.mfu.ac.th')) {
       setState(() => _emailError = true);
       return;
@@ -42,8 +45,31 @@ class _SignupCardState extends State<SignupCard> {
       );
       return;
     }
-    setState(() => _emailError = false);
-    context.go(RouteConstants.onboarding);
+    if (_nameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your full name')),
+      );
+      return;
+    }
+    setState(() { _emailError = false; _isLoading = true; });
+    try {
+      await ref.read(authProvider.notifier).signUp(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+        _nameController.text.trim(),
+        'Software Engineering', // default — updated in onboarding
+        2,                      // default — updated in onboarding
+      );
+      if (mounted) context.go(RouteConstants.onboarding);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign up failed: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -101,7 +127,7 @@ class _SignupCardState extends State<SignupCard> {
             controller: _confirmController,
           ),
           const SizedBox(height: 24),
-          PrimaryButton(label: 'Create Account', onPressed: _handleSignup),
+          PrimaryButton(label: 'Create Account', onPressed: _handleSignup, isLoading: _isLoading),
           const SizedBox(height: 16),
           const Text(
             'By signing up, you agree to our Terms & Privacy Policy',
