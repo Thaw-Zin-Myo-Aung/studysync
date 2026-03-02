@@ -30,7 +30,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final _idCtrl   = TextEditingController();
   String _major   = 'Software Engineering';
   int _year       = 2;
-  List<_CourseEntry> _courses = [
+  final List<_CourseEntry> _courses = [
     _CourseEntry(name: 'Engineering Mathematics II', goal: 'B+'),
     _CourseEntry(name: 'Database Systems', goal: 'B+'),
   ];
