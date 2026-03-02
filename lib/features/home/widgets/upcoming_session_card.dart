@@ -23,16 +23,16 @@ class UpcomingSessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 300,
-      child: Card(
+    return Card(
       color: AppColors.surface,
       elevation: 1,
+      margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -52,19 +52,19 @@ class UpcomingSessionCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Text(groupName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             SessionInfoRow(icon: LucideIcons.mapPin, text: location),
-            const SizedBox(height: 6),
+            const SizedBox(height: 10),
             SessionInfoRow(icon: LucideIcons.clock, text: timeRange),
-            const SizedBox(height: 6),
+            const SizedBox(height: 10),
             SessionInfoRow(icon: LucideIcons.users, text: '$attendeeCount Attendees confirmed'),
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
             if (canCheckIn)
               SizedBox(
                 width: double.infinity,
-                height: 44,
+                height: 38,
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
@@ -78,7 +78,7 @@ class UpcomingSessionCard extends StatelessWidget {
             else
               Container(
                 width: double.infinity,
-                height: 44,
+                height: 38,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: AppColors.scheduleFreeBg,
@@ -92,8 +92,6 @@ class UpcomingSessionCard extends StatelessWidget {
           ],
         ),
       ),
-    ),
     );
   }
 }
-

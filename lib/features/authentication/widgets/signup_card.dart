@@ -43,7 +43,7 @@ class _SignupCardState extends State<SignupCard> {
       return;
     }
     setState(() => _emailError = false);
-    context.go(RouteConstants.home);
+    context.go(RouteConstants.onboarding);
   }
 
   @override

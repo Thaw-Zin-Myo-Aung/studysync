@@ -44,14 +44,15 @@ class _UpcomingSessionsSectionState extends State<UpcomingSessionsSection> {
         const SizedBox(height: 12),
         // PageView carousel
         SizedBox(
-          height: 270,
+          height: 236,
           child: PageView.builder(
             itemCount: sessions.length,
             padEnds: false,
+            physics: const PageScrollPhysics(),
             controller: PageController(viewportFraction: 0.88),
             onPageChanged: (index) => setState(() => _currentPage = index),
             itemBuilder: (_, i) => Padding(
-              padding: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.only(top: 4, right: 6, bottom: 6, left: 6),
               child: UpcomingSessionCard(
                 groupName: sessions[i]['groupName'] as String,
                 timeUntil: sessions[i]['timeUntil'] as String,
