@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/groups_provider.dart';
 import '../widgets/user_profile_card.dart';
 import '../widgets/upcoming_sessions_section.dart';
 import '../widgets/your_groups_section.dart';
 import '../widgets/find_partner_banner.dart';
 import '../../groups/models/group_model.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authProvider);
+    final groups = ref.watch(groupsProvider);
     return Scaffold(
       backgroundColor: AppColors.backgroundBlue,
       appBar: AppBar(
@@ -138,16 +142,42 @@ class HomeScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  const UserProfileCard(
-                    fullName: 'Mr. Thaw Zin Myo Aung',
-                    reliability: 95,
-                    studentId: '6731503088',
-                    major: 'Software Engineering',
+                  UserProfileCard(
+                    fullName: user?.name ?? 'Student',
+                    reliability: (user?.reliabilityScore ?? 0).toDouble(),
+                    studentId: user?.email.split('@').first ?? '',
+                    major: user?.major ?? '',
                   ),
                   const SizedBox(height: 20),
                   const UpcomingSessionsSection(),
                   const SizedBox(height: 20),
-                  YourGroupsSection(groups: mockGroups, onCreateGroup: () {}),
+                  YourGroupsSection(
+                    groups: groups.isEmpty
+                        ? mockGroups
+                        : groups.map((g) => GroupModel(
+                              id: g.groupId,
+                              name: g.name,
+                              subject: g.course,
+                              nextSession: g.nextSessionDate.isEmpty
+                                  ? 'No session scheduled'
+                                  : g.nextSessionDate,
+                              icon: LucideIcons.users,
+                              iconBgColor: AppColors.primarySurface,
+                              iconColor: AppColors.primary,
+                              memberInitials: [],
+                              extraMemberCount: 0,
+                              hasUnread: false,
+                              upcomingDate: '',
+                              upcomingTimeRange: '',
+                              upcomingLocation: g.location,
+                              upcomingLocationDetail: '',
+                              upcomingAttendees: 0,
+                              upcomingTotal: g.memberIds.length,
+                              pastSessions: [],
+                              members: [],
+                            )).toList(),
+                    onCreateGroup: () {},
+                  ),
                   const SizedBox(height: 20),
                   FindPartnerBanner(
                     courseName: 'Engineering Math II',
