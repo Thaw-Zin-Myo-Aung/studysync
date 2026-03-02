@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/route_constants.dart';
 import '../../features/authentication/screens/login_screen.dart';
 import '../../features/authentication/screens/signup_screen.dart';
+import '../../features/onboarding/screens/profile_setup_screen.dart';
+import '../../features/onboarding/screens/profile_complete_screen.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/matching/screens/discover_screen.dart';
 import '../../features/groups/screens/groups_list_screen.dart';
@@ -38,6 +40,18 @@ class AppRouter {
       GoRoute(
         path: RouteConstants.signup,
         builder: (context, state) => const SignupScreen(),
+      ),
+
+      // Onboarding Route
+      GoRoute(
+        path: RouteConstants.onboarding,
+        builder: (context, state) => const ProfileSetupScreen(),
+      ),
+
+      // Profile Complete Route
+      GoRoute(
+        path: RouteConstants.profileComplete,
+        builder: (context, state) => const ProfileCompleteScreen(),
       ),
 
       // Home Route

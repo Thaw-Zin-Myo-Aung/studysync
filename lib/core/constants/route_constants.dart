@@ -4,8 +4,10 @@ class RouteConstants {
   RouteConstants._();
 
   // Authentication routes
-  static const String login = '/login';
-  static const String signup = '/signup';
+  static const String login    = '/login';
+  static const String signup   = '/signup';
+  static const String onboarding      = '/onboarding';
+  static const String profileComplete = '/profile-complete';
   static const String emailVerification = '/email-verification';
 
   // Main app routes (with bottom navigation)
