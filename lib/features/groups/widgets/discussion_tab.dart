@@ -49,8 +49,8 @@ class DiscussionTab extends StatelessWidget {
             child: Container(
               width: 56,
               height: 56,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
                 color: AppColors.primary,
               ),
               child: const Icon(LucideIcons.plus, color: Colors.white, size: 28),

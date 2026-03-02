@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../models/group_model.dart';
 import '../widgets/group_card.dart';
+import '../widgets/add_group_sheet.dart';
 
 class GroupsListScreen extends StatelessWidget {
   const GroupsListScreen({super.key});
@@ -21,8 +22,8 @@ class GroupsListScreen extends StatelessWidget {
         centerTitle: false,
         titleSpacing: 20,
         automaticallyImplyLeading: false,
-        title: Text.rich(
-          const TextSpan(
+        title: const Text.rich(
+          TextSpan(
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             children: [
               TextSpan(text: 'My ', style: TextStyle(color: Colors.black87)),
@@ -116,13 +117,13 @@ class GroupsListScreen extends StatelessWidget {
       floatingActionButton: Container(
         width: 56,
         height: 56,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppColors.primary,
-          borderRadius: BorderRadius.circular(16),
+          shape: BoxShape.circle,
         ),
         child: IconButton(
           icon: const Icon(LucideIcons.plus, color: Colors.white, size: 28),
-          onPressed: () => debugPrint('Create group'),
+          onPressed: () => showAddGroupSheet(context),
         ),
       ),
       bottomNavigationBar: CustomBottomNavBar(

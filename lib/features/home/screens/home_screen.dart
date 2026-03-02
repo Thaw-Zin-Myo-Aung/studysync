@@ -24,8 +24,8 @@ class HomeScreen extends StatelessWidget {
         shadowColor: Colors.black12,
         centerTitle: false,
         titleSpacing: 20,
-        title: Text.rich(
-          const TextSpan(
+        title: const Text.rich(
+          TextSpan(
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             children: [
               TextSpan(text: 'Study', style: TextStyle(color: Colors.black87)),
@@ -41,7 +41,7 @@ class HomeScreen extends StatelessWidget {
                 Container(
                   width: 40,
                   height: 40,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppColors.backgroundBlue,
                     shape: BoxShape.circle,
                   ),

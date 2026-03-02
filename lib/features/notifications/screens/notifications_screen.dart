@@ -10,16 +10,16 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final newNotifications = [
-      _NotificationItem(
+      const _NotificationItem(
         icon: LucideIcons.clock,
-        iconBgColor: const Color(0xFFFFF3E0),
+        iconBgColor: Color(0xFFFFF3E0),
         iconColor: AppColors.warning,
         title: 'Session starting soon!',
         body: 'Math Study Group - Library 3F, Room 302 - in 1 hour',
         time: '1h ago',
         type: _NotifType.plain,
       ),
-      _NotificationItem(
+      const _NotificationItem(
         icon: LucideIcons.userPlus,
         iconBgColor: AppColors.backgroundBlue,
         iconColor: AppColors.primary,
@@ -33,7 +33,7 @@ class NotificationsScreen extends StatelessWidget {
     ];
 
     final earlierNotifications = [
-      _NotificationItem(
+      const _NotificationItem(
         icon: LucideIcons.messageSquare,
         iconBgColor: AppColors.backgroundBlue,
         iconColor: Colors.blueGrey,
@@ -42,9 +42,9 @@ class NotificationsScreen extends StatelessWidget {
         time: 'Yesterday',
         type: _NotifType.plain,
       ),
-      _NotificationItem(
+      const _NotificationItem(
         icon: LucideIcons.circleCheck,
-        iconBgColor: const Color(0xFFE8F5E9),
+        iconBgColor: Color(0xFFE8F5E9),
         iconColor: AppColors.success,
         title: 'How was your session?',
         body: 'Confirm attendance to keep your 95% Reliability Score.',

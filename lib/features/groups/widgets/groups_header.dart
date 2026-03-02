@@ -14,8 +14,8 @@ class GroupsHeader extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-      child: Text.rich(
-        const TextSpan(
+      child: const Text.rich(
+        TextSpan(
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           children: [
             TextSpan(text: 'My ', style: TextStyle(color: Colors.black87)),

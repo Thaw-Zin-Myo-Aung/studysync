@@ -32,7 +32,9 @@ class _MemberCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = _reliabilityColor(member.reliability);
-    return Container(
+    return GestureDetector(
+      onTap: () => _showMemberOptions(context, member),
+      child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -88,20 +90,11 @@ class _MemberCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          // Three dots + reliability circle
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              GestureDetector(
-                onTap: () => _showMemberOptions(context, member),
-                child: Icon(LucideIcons.ellipsis, size: 18, color: Colors.grey.shade400),
-              ),
-              const SizedBox(height: 8),
-              _ReliabilityCircle(score: member.reliability, color: color),
-            ],
-          ),
+          // Reliability circle
+          _ReliabilityCircle(score: member.reliability, color: color),
         ],
       ),
+    ),
     );
   }
 

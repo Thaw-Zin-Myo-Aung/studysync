@@ -220,7 +220,7 @@ class _PastSessionsCard extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: sessions.length,
-        separatorBuilder: (_, __) => Divider(height: 1, color: AppColors.border),
+        separatorBuilder: (_, __) => const Divider(height: 1, color: AppColors.border),
         itemBuilder: (context, index) {
           final s = sessions[index];
           return Padding(

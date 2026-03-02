@@ -54,9 +54,14 @@ class _LoginCardState extends State<LoginCard> {
         children: [
           const AppLogo(),
           const SizedBox(height: 16),
-          const Text(
-            'StudySync',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
+          const Text.rich(
+            TextSpan(
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              children: [
+                TextSpan(text: 'Study', style: TextStyle(color: Colors.black87)),
+                TextSpan(text: 'Sync', style: TextStyle(color: AppColors.primary)),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -99,7 +104,7 @@ class _LoginCardState extends State<LoginCard> {
             children: [
               const Text('New to StudySync? ', style: TextStyle(fontSize: 14)),
               TextButton(
-                onPressed: () => context.go(RouteConstants.home),
+                onPressed: () => context.go(RouteConstants.signup),
                 child: const Text(
                   'Create Account',
                   style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
