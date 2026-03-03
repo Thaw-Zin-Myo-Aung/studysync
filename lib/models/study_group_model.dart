@@ -12,6 +12,10 @@ class StudyGroupModel {
   final bool isActive;
   final String description;
   final int maxMembers;
+  final String? _iconName;
+
+  /// Always returns a valid icon key — falls back to 'users' for legacy docs.
+  String get iconName => _iconName ?? 'users';
 
   const StudyGroupModel({
     required this.groupId,
@@ -24,7 +28,8 @@ class StudyGroupModel {
     required this.isActive,
     required this.description,
     required this.maxMembers,
-  });
+    String? iconName,
+  }) : _iconName = iconName;
 
   StudyGroupModel copyWith({
     String? groupId,
@@ -37,6 +42,7 @@ class StudyGroupModel {
     bool? isActive,
     String? description,
     int? maxMembers,
+    String? iconName,
   }) {
     return StudyGroupModel(
       groupId:         groupId         ?? this.groupId,
@@ -49,6 +55,7 @@ class StudyGroupModel {
       isActive:        isActive        ?? this.isActive,
       description:     description     ?? this.description,
       maxMembers:      maxMembers      ?? this.maxMembers,
+      iconName:        iconName        ?? _iconName,
     );
   }
 
@@ -64,6 +71,7 @@ class StudyGroupModel {
       isActive:        json['isActive']        as bool,
       description:     json['description']     as String? ?? '',
       maxMembers:      json['maxMembers']      as int?    ?? 6,
+      iconName:        json['iconName']        as String?,
     );
   }
 
@@ -78,5 +86,6 @@ class StudyGroupModel {
     'isActive':        isActive,
     'description':     description,
     'maxMembers':      maxMembers,
+    'iconName':        iconName,
   };
 }

@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../core/constants/group_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../../../models/study_group_model.dart';
 import '../../../providers/groups_provider.dart';
 
@@ -56,16 +59,12 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
           _isEditing = false;
           _isSaving = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Group updated successfully')),
-        );
+        AppSnackBar.success(context, 'Group updated successfully');
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update: $e')),
-        );
+        AppSnackBar.error(context, 'Failed to update: $e');
       }
     }
   }
@@ -94,9 +93,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
       if (mounted) context.go(RouteConstants.groups);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete: $e')),
-        );
+        AppSnackBar.error(context, 'Failed to delete: $e');
       }
     }
   }
@@ -124,11 +121,29 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
       if (mounted) context.go(RouteConstants.groups);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to leave: $e')),
-        );
+        AppSnackBar.error(context, 'Failed to leave: $e');
       }
     }
+  }
+
+  void _showIconPicker(BuildContext context, StudyGroupModel group) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _IconPickerSheet(
+        currentIconName: group.iconName,
+        onSelect: (key) async {
+          await ref.read(groupsProvider.notifier).updateGroup(
+                groupId: group.groupId,
+                iconName: key,
+              );
+          if (context.mounted) {
+            AppSnackBar.success(context, 'Group icon updated!');
+          }
+        },
+      ),
+    );
   }
 
   @override
@@ -270,35 +285,102 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
   }
 
   Widget _buildInfoView(StudyGroupModel group, bool isAdmin) {
+    final iconData = GroupIcons.resolve(group.iconName);
+    final iconColor = GroupIcons.resolveColor(group.iconName);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // ── Group icon row (tappable for admin) ──────────────────
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(LucideIcons.image, size: 16, color: AppColors.textHint),
+            const SizedBox(width: 10),
+            const SizedBox(
+              width: 90,
+              child: Text('Icon',
+                  style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+            ),
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(iconData, size: 20, color: iconColor),
+            ),
+            if (isAdmin) ...[
+              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: () => _showIconPicker(context, group),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySurface,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text('Change',
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary)),
+                ),
+              ),
+            ],
+          ],
+        ),
+        const Divider(height: 20),
         _InfoRow(icon: LucideIcons.bookmark, label: 'Name', value: group.name),
         const Divider(height: 20),
-        _InfoRow(
-            icon: LucideIcons.bookOpen, label: 'Course', value: group.course),
+        _InfoRow(icon: LucideIcons.bookOpen, label: 'Course', value: group.course),
         const Divider(height: 20),
-        _InfoRow(
-            icon: LucideIcons.mapPin,
-            label: 'Location',
-            value: group.location),
+        _InfoRow(icon: LucideIcons.mapPin, label: 'Location', value: group.location),
         if (group.description.isNotEmpty) ...[
           const Divider(height: 20),
-          _InfoRow(
-              icon: LucideIcons.info,
-              label: 'Description',
-              value: group.description),
+          _InfoRow(icon: LucideIcons.info, label: 'Description', value: group.description),
         ],
         const Divider(height: 20),
-        _InfoRow(
-            icon: LucideIcons.usersRound,
-            label: 'Max Members',
-            value: '${group.maxMembers}'),
+        _InfoRow(icon: LucideIcons.usersRound, label: 'Max Members', value: '${group.maxMembers}'),
         const Divider(height: 20),
-        _InfoRow(
-            icon: LucideIcons.hash,
-            label: 'Group ID',
-            value: group.groupId),
+        // Group ID row with copy button
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(LucideIcons.hash, size: 16, color: AppColors.textHint),
+            const SizedBox(width: 10),
+            const SizedBox(
+              width: 90,
+              child: Text('Group ID',
+                  style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+            ),
+            Expanded(
+              child: Text(
+                group.groupId,
+                style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: group.groupId));
+                AppSnackBar.success(context, 'Group ID copied!');
+              },
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppColors.backgroundBlue,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(LucideIcons.copy,
+                    size: 15, color: AppColors.primary),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -489,4 +571,82 @@ class _DangerButton extends StatelessWidget {
   }
 }
 
+class _IconPickerSheet extends StatelessWidget {
+  final String currentIconName;
+  final ValueChanged<String> onSelect;
+  const _IconPickerSheet({
+    required this.currentIconName,
+    required this.onSelect,
+  });
 
+  @override
+  Widget build(BuildContext context) {
+    final keys = GroupIcons.all.keys.toList();
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle
+          Center(
+            child: Container(
+              width: 40, height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2)),
+            ),
+          ),
+          const Text(
+            'Choose Group Icon',
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.black87),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Tap an icon to update the group',
+            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: 20),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            alignment: WrapAlignment.center,
+            children: keys.map((key) {
+              final iconData = GroupIcons.resolve(key);
+              final iconColor = GroupIcons.resolveColor(key);
+              final isSelected = key == currentIconName;
+              return GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  onSelect(key);
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? iconColor.withValues(alpha: 0.18)
+                        : AppColors.backgroundBlue,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: isSelected ? iconColor : AppColors.border,
+                      width: isSelected ? 2 : 1,
+                    ),
+                  ),
+                  child: Icon(iconData,
+                      size: 24,
+                      color: isSelected ? iconColor : AppColors.textSecondary),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}

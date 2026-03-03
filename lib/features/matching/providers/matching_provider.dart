@@ -60,7 +60,9 @@ class MatchingNotifier extends AsyncNotifier<List<MatchModel>> {
   }
 
   Future<void> refresh() async {
+    state = const AsyncLoading();
     ref.invalidateSelf();
+    await future;
   }
 
   Future<void> sendRequest(String receiverId) async {

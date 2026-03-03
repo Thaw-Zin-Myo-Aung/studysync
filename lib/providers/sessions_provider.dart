@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/session_model.dart';
+import '../providers/auth_provider.dart';
+import '../services/firebase/notification_service.dart';
 import '../services/firebase/session_service.dart';
 import 'groups_provider.dart';
 
@@ -70,7 +72,7 @@ final groupSessionsProvider = FutureProvider.family
   return service.getSessions(groupId);
 });
 
-/// Creates a session and then invalidates providers.
+/// Creates a session, notifies group members, then invalidates providers.
 Future<void> createGroupSession(
   WidgetRef ref, {
   required String groupId,
@@ -87,6 +89,21 @@ Future<void> createGroupSession(
     time:     time,
     location: location,
   );
+
+  // Notify all other group members (respects their groupMessages setting)
+  final user = ref.read(authProvider);
+  if (user != null) {
+    final sessionLabel = title.isNotEmpty ? title : '$date at $time';
+    await NotificationService().notifyGroupMembers(
+      groupId:   groupId,
+      senderId:  user.userId,
+      type:      'session_created',
+      title:     'New Session Scheduled',
+      body:      '${user.name} scheduled: $sessionLabel on $date',
+      extraData: {'sessionTitle': title, 'date': date, 'time': time, 'location': location},
+    );
+  }
+
   ref.invalidate(groupSessionsProvider(groupId));
   ref.invalidate(upcomingSessionsProvider);
 }

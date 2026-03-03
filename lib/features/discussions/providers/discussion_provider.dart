@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/discussion_model.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../services/firebase/notification_service.dart';
 import '../models/reply_model.dart';
 import '../services/discussion_service.dart';
 
@@ -15,7 +16,7 @@ final discussionsProvider = FutureProvider.family
   return service.getDiscussions(groupId);
 });
 
-/// Creates a discussion and then invalidates the discussions provider.
+/// Creates a discussion, notifies group members, then invalidates the provider.
 Future<void> createDiscussion(
   WidgetRef ref, {
   required String groupId,
@@ -31,6 +32,17 @@ Future<void> createDiscussion(
     message:    message,
     authorName: user.name,
   );
+
+  // Notify all other group members (respects their groupMessages setting)
+  await NotificationService().notifyGroupMembers(
+    groupId:   groupId,
+    senderId:  user.userId,
+    type:      'discussion_post',
+    title:     'New Discussion in your group',
+    body:      '${user.name} posted: $topic',
+    extraData: {'topic': topic},
+  );
+
   ref.invalidate(discussionsProvider(groupId));
 }
 

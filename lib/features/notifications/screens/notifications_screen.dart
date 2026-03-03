@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/constants/route_constants.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../../../models/notification_model.dart';
 import '../../../providers/notifications_provider.dart';
 import '../../../providers/groups_provider.dart';
@@ -96,69 +97,105 @@ class NotificationsScreen extends ConsumerWidget {
                           final groupId = n.data['groupId'] as String?;
                           if (groupId != null) {
                             await ref.read(groupsProvider.notifier).joinGroup(groupId);
+                            ref.read(notificationsProvider.notifier).markRead(n.notifId);
+                            if (context.mounted) {
+                              context.go(RouteConstants.groupDetailPath(groupId));
+                            }
+                          } else {
+                            ref.read(notificationsProvider.notifier).markRead(n.notifId);
                           }
-                          ref.read(notificationsProvider.notifier).markRead(n.notifId);
                         }
                       : n.type == 'group_create_invite'
                           ? () async {
-                              final senderId = n.data['senderId'] as String? ?? '';
-                              final senderName = n.data['senderName'] as String? ?? 'Partner';
-                              final currentUser = ref.read(authProvider);
-                              if (currentUser == null) return;
-                              // Create a new group with both users
-                              await ref.read(groupsProvider.notifier).createGroup(
-                                name: '${currentUser.name} & $senderName',
-                                course: 'General Study',
-                                location: 'TBD',
-                                description: 'Study group created from Discover',
-                              );
-                              // Add the sender to the newly created group
-                              final groups = ref.read(groupsProvider);
-                              if (groups.isNotEmpty) {
-                                final newGroup = groups.last;
-                                await GroupService().joinGroupForUser(newGroup.groupId, senderId);
-                                // Reload groups
-                                final user = ref.read(authProvider);
-                                if (user != null) {
-                                  await ref.read(groupsProvider.notifier).loadGroups(user.userId);
+                              // The group is already created by the inviter.
+                              // Just join it if groupId is provided; otherwise
+                              // fall back to legacy behaviour.
+                              final groupId = n.data['groupId'] as String?;
+                              if (groupId != null && groupId.isNotEmpty) {
+                                await ref.read(groupsProvider.notifier).joinGroup(groupId);
+                                ref.read(notificationsProvider.notifier).markRead(n.notifId);
+                                if (context.mounted) {
+                                  context.go(RouteConstants.groupDetailPath(groupId));
                                 }
-                              }
-                              ref.read(notificationsProvider.notifier).markRead(n.notifId);
-                              // Notify the original sender that the group was created
-                              if (senderId.isNotEmpty) {
-                                final confirmRef = FirebaseFirestore.instance.collection('notifications').doc();
-                                await NotificationService().createNotification(NotificationModel(
-                                  notifId: confirmRef.id,
-                                  userId: senderId,
-                                  type: 'group_invite',
-                                  title: 'Group Created!',
-                                  body: '${currentUser.name} accepted your invite. A new study group has been created!',
-                                  isRead: false,
-                                  createdAt: DateTime.now(),
-                                  data: {
-                                    'groupId': groups.isNotEmpty ? groups.last.groupId : '',
-                                    'groupName': '${currentUser.name} & $senderName',
-                                  },
-                                ));
-                              }
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Study group created!')),
+                              } else {
+                                // Legacy: group not yet created — create on accept
+                                final senderId = n.data['senderId'] as String? ?? '';
+                                final senderName = n.data['senderName'] as String? ?? 'Partner';
+                                final currentUser = ref.read(authProvider);
+                                if (currentUser == null) return;
+                                await ref.read(groupsProvider.notifier).createGroup(
+                                  name: '${currentUser.name} & $senderName',
+                                  course: 'General Study',
+                                  location: 'TBD',
+                                  description: 'Study group created from Discover',
                                 );
+                                final groups = ref.read(groupsProvider);
+                                if (groups.isNotEmpty) {
+                                  final newGroup = groups.last;
+                                  await GroupService().joinGroupForUser(newGroup.groupId, senderId);
+                                  final user = ref.read(authProvider);
+                                  if (user != null) {
+                                    await ref.read(groupsProvider.notifier).loadGroups(user.userId);
+                                  }
+                                }
+                                ref.read(notificationsProvider.notifier).markRead(n.notifId);
+                                if (senderId.isNotEmpty) {
+                                  final confirmRef = FirebaseFirestore.instance.collection('notifications').doc();
+                                  await NotificationService().createNotification(NotificationModel(
+                                    notifId: confirmRef.id,
+                                    userId: senderId,
+                                    type: 'group_invite',
+                                    title: 'Group Created!',
+                                    body: '${currentUser.name} accepted your invite. A new study group has been created!',
+                                    isRead: false,
+                                    createdAt: DateTime.now(),
+                                    data: {
+                                      'groupId': groups.isNotEmpty ? groups.last.groupId : '',
+                                      'groupName': '${currentUser.name} & $senderName',
+                                    },
+                                  ));
+                                }
+                                if (context.mounted) {
+                                  final groups2 = ref.read(groupsProvider);
+                                  if (groups2.isNotEmpty) {
+                                    context.go(RouteConstants.groupDetailPath(groups2.last.groupId));
+                                  }
+                                  AppSnackBar.success(context, 'Study group created!');
+                                }
                               }
                             }
                           : n.type == 'join_request'
                               ? () async {
                                   final groupId = n.data['groupId'] as String?;
+                                  final groupName = n.data['groupName'] as String? ?? 'the group';
                                   final requesterId = n.data['requesterId'] as String?;
+                                  final requesterName = n.data['requesterName'] as String? ?? 'Someone';
                                   if (groupId != null && requesterId != null) {
                                     await GroupService().joinGroupForUser(groupId, requesterId);
                                     final user = ref.read(authProvider);
                                     if (user != null) {
                                       await ref.read(groupsProvider.notifier).loadGroups(user.userId);
                                     }
+                                    // Notify the requester that they were accepted
+                                    final acceptRef = FirebaseFirestore.instance.collection('notifications').doc();
+                                    await NotificationService().createNotification(NotificationModel(
+                                      notifId: acceptRef.id,
+                                      userId: requesterId,
+                                      type: 'join_accepted',
+                                      title: 'Request Accepted!',
+                                      body: 'Your request to join $groupName has been accepted. Tap to view the group!',
+                                      isRead: false,
+                                      createdAt: DateTime.now(),
+                                      data: {
+                                        'groupId': groupId,
+                                        'groupName': groupName,
+                                      },
+                                    ));
                                   }
                                   ref.read(notificationsProvider.notifier).markRead(n.notifId);
+                                  if (context.mounted) {
+                                    AppSnackBar.success(context, '$requesterName has been added to $groupName');
+                                  }
                                 }
                               : null,
                   onDecline: (n.type == 'group_invite' || n.type == 'group_create_invite' || n.type == 'join_request')
@@ -171,7 +208,33 @@ class NotificationsScreen extends ConsumerWidget {
                             context.go(RouteConstants.groupDetailPath(groupId));
                           }
                         }
-                      : null,
+                      : n.type == 'join_accepted'
+                          ? () {
+                              final groupId = n.data['groupId'] as String?;
+                              if (groupId != null) {
+                                ref.read(notificationsProvider.notifier).markRead(n.notifId);
+                                context.go(RouteConstants.groupDetailPath(groupId));
+                              }
+                            }
+                          : n.type == 'discussion_post'
+                              ? () {
+                                  final groupId = n.data['groupId'] as String?;
+                                  if (groupId != null) {
+                                    ref.read(notificationsProvider.notifier).markRead(n.notifId);
+                                    // tab 0 = Discussion
+                                    context.go(RouteConstants.groupDetailPathWithTab(groupId, 0));
+                                  }
+                                }
+                              : n.type == 'session_created'
+                                  ? () {
+                                      final groupId = n.data['groupId'] as String?;
+                                      if (groupId != null) {
+                                        ref.read(notificationsProvider.notifier).markRead(n.notifId);
+                                        // tab 1 = Sessions
+                                        context.go(RouteConstants.groupDetailPathWithTab(groupId, 1));
+                                      }
+                                    }
+                                  : null,
                 )),
               ],
               if (newNotifications.isNotEmpty && earlierNotifications.isNotEmpty)
@@ -191,7 +254,28 @@ class NotificationsScreen extends ConsumerWidget {
                             context.go(RouteConstants.groupDetailPath(groupId));
                           }
                         }
-                      : null,
+                      : n.type == 'join_accepted'
+                          ? () {
+                              final groupId = n.data['groupId'] as String?;
+                              if (groupId != null) {
+                                context.go(RouteConstants.groupDetailPath(groupId));
+                              }
+                            }
+                          : n.type == 'discussion_post'
+                              ? () {
+                                  final groupId = n.data['groupId'] as String?;
+                                  if (groupId != null) {
+                                    context.go(RouteConstants.groupDetailPathWithTab(groupId, 0));
+                                  }
+                                }
+                              : n.type == 'session_created'
+                                  ? () {
+                                      final groupId = n.data['groupId'] as String?;
+                                      if (groupId != null) {
+                                        context.go(RouteConstants.groupDetailPathWithTab(groupId, 1));
+                                      }
+                                    }
+                                  : null,
                 )),
               ],
             ],
@@ -226,9 +310,17 @@ class NotificationsScreen extends ConsumerWidget {
         break;
       case 'discussion_post':
         icon = LucideIcons.messageSquare;
-        iconBgColor = AppColors.backgroundBlue;
-        iconColor = Colors.blueGrey;
-        type = _NotifType.plain;
+        iconBgColor = const Color(0xFFE8F4FD);
+        iconColor = const Color(0xFF0891B2);
+        type = _NotifType.outlined;
+        acceptLabel = 'View';
+        break;
+      case 'session_created':
+        icon = LucideIcons.calendarPlus;
+        iconBgColor = const Color(0xFFF3E8FF);
+        iconColor = AppColors.purple;
+        type = _NotifType.outlined;
+        acceptLabel = 'View';
         break;
       case 'attendance_reminder':
         icon = LucideIcons.circleCheck;
@@ -250,6 +342,13 @@ class NotificationsScreen extends ConsumerWidget {
         type = _NotifType.actionable;
         acceptLabel = 'Accept';
         declineLabel = 'Decline';
+        break;
+      case 'join_accepted':
+        icon = LucideIcons.circleCheck;
+        iconBgColor = const Color(0xFFE8F5E9);
+        iconColor = AppColors.success;
+        type = _NotifType.outlined;
+        acceptLabel = 'View Group';
         break;
       case 'join_request':
         icon = LucideIcons.userCheck;

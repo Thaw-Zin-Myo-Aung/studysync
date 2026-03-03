@@ -9,6 +9,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../models/study_group_model.dart';
 import '../../../models/user_model.dart';
 import '../../../providers/groups_provider.dart';
+import '../../matching/widgets/user_profile_popup.dart';
 
 class MembersTab extends ConsumerWidget {
   final StudyGroupModel group;
@@ -296,7 +297,15 @@ class _MemberCard extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             if (!isCurrentUser) ...[
-              _ActionTile(icon: LucideIcons.userCheck, label: 'View Profile', color: AppColors.primary, onTap: () => Navigator.pop(context)),
+              _ActionTile(
+                icon: LucideIcons.userCheck,
+                label: 'View Profile',
+                color: AppColors.primary,
+                onTap: () {
+                  Navigator.pop(context);
+                  showUserProfilePopup(context, ref, memberId);
+                },
+              ),
               if (isCurrentUserAdmin && !isAdmin)
                 _ActionTile(
                   icon: LucideIcons.shieldPlus,

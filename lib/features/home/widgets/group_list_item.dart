@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 
 class GroupListItem extends StatelessWidget {
@@ -6,6 +7,8 @@ class GroupListItem extends StatelessWidget {
   final int memberCount;
   final Color avatarColor;
   final VoidCallback onTap;
+  final IconData? groupIcon;
+  final Color? groupIconColor;
 
   const GroupListItem({
     super.key,
@@ -13,10 +16,16 @@ class GroupListItem extends StatelessWidget {
     required this.memberCount,
     required this.avatarColor,
     required this.onTap,
+    this.groupIcon,
+    this.groupIconColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final icon = groupIcon ?? LucideIcons.users;
+    final iconColor = groupIconColor ?? AppColors.primary;
+    final bgColor = iconColor.withValues(alpha: 0.15);
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
@@ -40,19 +49,10 @@ class GroupListItem extends StatelessWidget {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: avatarColor,
+                color: bgColor,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Center(
-                child: Text(
-                  groupName[0],
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
+              child: Icon(icon, size: 20, color: iconColor),
             ),
             const SizedBox(width: 12),
             Expanded(

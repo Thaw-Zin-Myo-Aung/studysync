@@ -29,6 +29,7 @@ class RouteConstants {
 
   // Helper methods for parameterized routes
   static String groupDetailPath(String groupId) => '/groups/$groupId';
+  static String groupDetailPathWithTab(String groupId, int tab) => '/groups/$groupId?tab=$tab';
   static String groupSettingsPath(String groupId) => '/groups/$groupId/settings';
   static String matchDetailPath(String matchId) => '/discover/$matchId';
 }

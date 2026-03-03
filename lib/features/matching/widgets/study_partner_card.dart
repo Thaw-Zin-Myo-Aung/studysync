@@ -14,7 +14,6 @@ class StudyPartnerCard extends StatelessWidget {
   final String scheduleText;
   final String goalText;
   final String sharedCourse;
-  final VoidCallback onPass;
   final VoidCallback onCreateGroup;
   final VoidCallback onInviteToGroup;
   final VoidCallback? onViewProfile;
@@ -29,7 +28,6 @@ class StudyPartnerCard extends StatelessWidget {
     required this.scheduleText,
     required this.goalText,
     required this.sharedCourse,
-    required this.onPass,
     required this.onCreateGroup,
     required this.onInviteToGroup,
     this.onViewProfile,
@@ -91,16 +89,17 @@ class StudyPartnerCard extends StatelessWidget {
             // ── Action buttons ──
             Row(
               children: [
-                // Pass
+                // Invite to existing group
                 Expanded(
                   child: SizedBox(
                     height: 44,
                     child: OutlinedButton.icon(
-                      onPressed: onPass,
-                      icon: Icon(LucideIcons.x, color: Colors.grey.shade600, size: 18),
-                      label: Text('Pass', style: TextStyle(color: Colors.grey.shade600)),
+                      onPressed: onInviteToGroup,
+                      icon: const Icon(LucideIcons.userPlus, color: AppColors.primary, size: 16),
+                      label: const Text('Invite to Group',
+                          style: TextStyle(color: AppColors.primary, fontSize: 12)),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.grey.shade300),
+                        side: const BorderSide(color: AppColors.primary),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                     ),
@@ -122,21 +121,6 @@ class StudyPartnerCard extends StatelessWidget {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // Invite to existing group
-                SizedBox(
-                  width: 44,
-                  height: 44,
-                  child: OutlinedButton(
-                    onPressed: onInviteToGroup,
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColors.primary),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      padding: EdgeInsets.zero,
-                    ),
-                    child: const Icon(LucideIcons.userPlus, color: AppColors.primary, size: 18),
                   ),
                 ),
               ],

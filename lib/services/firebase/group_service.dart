@@ -50,6 +50,7 @@ class GroupService {
       final data = {
         'groupId':         ref.id,
         'name':            name,
+        'nameLower':       name.toLowerCase(),
         'course':          course,
         'location':        location,
         'description':     description,
@@ -74,7 +75,7 @@ class GroupService {
   // ── Search Groups ─────────────────────────────────────────────────────────
 
   /// Returns groups whose [groupId] exactly matches [query] OR whose
-  /// [name] starts with [query] (case-insensitive via range query).
+  /// [name] contains any of the query words (case-insensitive).
   Future<List<StudyGroupModel>> searchGroups(String query) async {
     try {
       final q = query.trim();
@@ -87,24 +88,39 @@ class GroupService {
           .get()
           .timeout(const Duration(seconds: 10));
 
-      // 2 — name prefix search (Firestore range trick)
-      final end = q.substring(0, q.length - 1) +
-          String.fromCharCode(q.codeUnitAt(q.length - 1) + 1);
-      final byName = await _db
+      // 2 — fetch all groups and filter client-side for case-insensitive
+      //     partial word matching (e.g. "calculus" matches "Calculus Review")
+      final allGroups = await _db
           .collection('groups')
-          .where('name', isGreaterThanOrEqualTo: q)
-          .where('name', isLessThan: end)
-          .limit(10)
+          .limit(200)
           .get()
           .timeout(const Duration(seconds: 10));
+
+      final qLower = q.toLowerCase();
+      final queryWords = qLower.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
 
       // Merge, deduplicate by groupId
       final seen = <String>{};
       final results = <StudyGroupModel>[];
-      for (final doc in [...byId.docs, ...byName.docs]) {
+
+      // Add exact ID matches first
+      for (final doc in byId.docs) {
         final g = StudyGroupModel.fromJson(doc.data());
         if (seen.add(g.groupId)) results.add(g);
       }
+
+      // Add name matches — any query word matching any word in the group name
+      for (final doc in allGroups.docs) {
+        final g = StudyGroupModel.fromJson(doc.data());
+        if (seen.contains(g.groupId)) continue;
+        final nameLower = g.name.toLowerCase();
+        final matches = queryWords.any((word) => nameLower.contains(word));
+        if (matches) {
+          seen.add(g.groupId);
+          results.add(g);
+        }
+      }
+
       return results;
     } catch (e) {
       throw Exception(e.toString());
@@ -135,14 +151,15 @@ class GroupService {
 
   Future<StudyGroupModel> joinGroupForUser(String groupId, String userId) async {
     try {
+      // Only update the group's memberIds — the admin cannot write to another
+      // user's document (Firestore rules: only owner can write their own doc).
+      // The new member's groupIds list will sync automatically the next time
+      // they load their groups (getUserGroups queries by memberIds arrayContains).
       await _db
           .collection('groups')
           .doc(groupId)
           .update({'memberIds': FieldValue.arrayUnion([userId])})
           .timeout(const Duration(seconds: 10));
-      await _db.collection('users').doc(userId).update({
-        'groupIds': FieldValue.arrayUnion([groupId]),
-      }).timeout(const Duration(seconds: 10));
       return _fetchGroup(groupId);
     } catch (e) {
       throw Exception(e.toString());
@@ -219,14 +236,19 @@ class GroupService {
     String? description,
     String? location,
     int? maxMembers,
+    String? iconName,
   }) async {
     try {
       final updates = <String, dynamic>{};
-      if (name != null) updates['name'] = name;
+      if (name != null) {
+        updates['name'] = name;
+        updates['nameLower'] = name.toLowerCase();
+      }
       if (course != null) updates['course'] = course;
       if (description != null) updates['description'] = description;
       if (location != null) updates['location'] = location;
       if (maxMembers != null) updates['maxMembers'] = maxMembers;
+      if (iconName != null) updates['iconName'] = iconName;
       if (updates.isNotEmpty) {
         await _db
             .collection('groups')

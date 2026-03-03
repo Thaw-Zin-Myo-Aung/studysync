@@ -123,9 +123,18 @@ class MatchingService {
     final total  = courses1.union(courses2);
 
     final score = total.isNotEmpty ? shared.length / total.length : 0.0;
-    final description = shared.isNotEmpty
-        ? 'Shared: ${shared.join(", ")}'
-        : 'No shared courses';
+    String description;
+    if (shared.isEmpty) {
+      description = 'No shared courses';
+    } else {
+      final sharedList = shared.toList();
+      if (sharedList.length <= 2) {
+        description = 'Shared: ${sharedList.join(", ")}';
+      } else {
+        description =
+            'Shared: ${sharedList[0]}, ${sharedList[1]}, +${sharedList.length - 2}';
+      }
+    }
 
     return {'score': score, 'description': description};
   }

@@ -5,9 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../../../models/notification_model.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../providers/groups_provider.dart';
 import '../../../services/firebase/notification_service.dart';
 import '../providers/matching_provider.dart';
 import '../widgets/study_partner_card.dart';
@@ -15,6 +17,7 @@ import '../widgets/filter_bottom_sheet.dart';
 import '../widgets/add_friend_sheet.dart';
 import '../widgets/user_profile_popup.dart';
 import '../widgets/select_group_sheet.dart';
+import '../../groups/widgets/create_group_form.dart';
 
 class DiscoverScreen extends ConsumerWidget {
   const DiscoverScreen({super.key});
@@ -179,11 +182,7 @@ class DiscoverScreen extends ConsumerWidget {
                         goalText: m.goalSimilarity,
                         sharedCourse: m.courseOverlap,
                         onViewProfile: () => showUserProfilePopup(context, ref, m.userId),
-                        onPass: () {
-                          // Dismiss locally — remove from list by refreshing
-                          // In a real app you'd track dismissed matches
-                        },
-                        onCreateGroup: () => _sendGroupCreateInvite(context, ref, m.userId, m.name),
+                        onCreateGroup: () => _showCreateGroupSheet(context, ref, m.userId, m.name),
                         onInviteToGroup: () => showSelectGroupSheet(
                           context, ref,
                           targetUserId: m.userId,
@@ -215,7 +214,7 @@ class DiscoverScreen extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showAddFriendSheet(context),
+        onPressed: () => showAddFriendSheet(context, ref),
         backgroundColor: AppColors.primary,
         shape: const CircleBorder(),
         elevation: 3,
@@ -224,41 +223,187 @@ class DiscoverScreen extends ConsumerWidget {
     );
   }
 
-  /// Sends a "group_create_invite" notification.
-  /// The group is only created when the recipient accepts.
-  void _sendGroupCreateInvite(
-      BuildContext context, WidgetRef ref, String targetUserId, String targetName) async {
-    final currentUser = ref.read(authProvider);
-    if (currentUser == null) return;
+  /// Shows a bottom sheet with the create group form.
+  /// After the group is created, sends a group_invite to the matched user
+  /// and navigates to the group detail screen.
+  void _showCreateGroupSheet(
+      BuildContext context, WidgetRef ref, String targetUserId, String targetName) {
+    final formKey = GlobalKey<FormState>();
+    final nameCtrl = TextEditingController();
+    final courseCtrl = TextEditingController();
+    final locationCtrl = TextEditingController();
+    final descriptionCtrl = TextEditingController();
+    int maxMembers = 6;
+    bool isLoading = false;
 
-    try {
-      final notifRef =
-          FirebaseFirestore.instance.collection('notifications').doc();
-      await NotificationService().createNotification(NotificationModel(
-        notifId: notifRef.id,
-        userId: targetUserId,
-        type: 'group_create_invite',
-        title: 'Study Group Invitation',
-        body:
-            '${currentUser.name} wants to create a study group with you',
-        isRead: false,
-        createdAt: DateTime.now(),
-        data: {
-          'senderId': currentUser.userId,
-          'senderName': currentUser.name,
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => StatefulBuilder(
+        builder: (sheetCtx, setSheetState) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(sheetCtx).viewInsets.bottom),
+            child: Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(sheetCtx).size.height * 0.85,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Drag handle
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 8),
+                    child: Center(
+                      child: Container(
+                        width: 40, height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Create Group with $targetName',
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(LucideIcons.x, size: 20),
+                          onPressed: () => Navigator.pop(sheetCtx),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          Consumer(
+                            builder: (ctx, cRef, _) => CreateGroupForm(
+                              formKey: formKey,
+                              nameController: nameCtrl,
+                              courseController: courseCtrl,
+                              locationController: locationCtrl,
+                              descriptionController: descriptionCtrl,
+                              maxMembers: maxMembers,
+                              onMaxMembersChanged: (v) =>
+                                  setSheetState(() => maxMembers = v),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 52,
+                            child: ElevatedButton.icon(
+                              onPressed: isLoading
+                                  ? null
+                                  : () async {
+                                      if (!formKey.currentState!.validate()) return;
+                                      setSheetState(() => isLoading = true);
+                                      try {
+                                        final currentUser = ref.read(authProvider);
+                                        if (currentUser == null) return;
+
+                                        // Create the group
+                                        await ref.read(groupsProvider.notifier).createGroup(
+                                          name: nameCtrl.text.trim(),
+                                          course: courseCtrl.text.trim(),
+                                          location: locationCtrl.text.trim(),
+                                          description: descriptionCtrl.text.trim(),
+                                          maxMembers: maxMembers,
+                                        );
+
+                                        // Get the newly created group
+                                        final groups = ref.read(groupsProvider);
+                                        final newGroup = groups.isNotEmpty ? groups.last : null;
+
+                                        if (newGroup != null) {
+                                          // Send invite to matched user
+                                          final notifRef = FirebaseFirestore.instance
+                                              .collection('notifications')
+                                              .doc();
+                                          await NotificationService().createNotification(
+                                            NotificationModel(
+                                              notifId: notifRef.id,
+                                              userId: targetUserId,
+                                              type: 'group_invite',
+                                              title: 'Group Invitation',
+                                              body: '${currentUser.name} invited you to join ${newGroup.name}',
+                                              isRead: false,
+                                              createdAt: DateTime.now(),
+                                              data: {
+                                                'groupId': newGroup.groupId,
+                                                'groupName': newGroup.name,
+                                                'senderId': currentUser.userId,
+                                                'senderName': currentUser.name,
+                                              },
+                                            ),
+                                          );
+                                        }
+
+                                        if (sheetCtx.mounted) Navigator.pop(sheetCtx);
+                                        if (context.mounted) {
+                                          AppSnackBar.success(context, 'Group created! Invitation sent to $targetName');
+                                          if (newGroup != null) {
+                                            context.go(RouteConstants.groupDetailPath(
+                                                newGroup.groupId));
+                                          }
+                                        }
+                                      } catch (e) {
+                                        if (sheetCtx.mounted) {
+                                          setSheetState(() => isLoading = false);
+                                          AppSnackBar.error(sheetCtx, 'Failed: $e');
+                                        }
+                                      }
+                                    },
+                              icon: isLoading
+                                  ? const SizedBox(
+                                      width: 18, height: 18,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2, color: Colors.white))
+                                  : const Icon(LucideIcons.users,
+                                      size: 18, color: Colors.white),
+                              label: Text(
+                                isLoading ? 'Creating...' : 'Create Group & Invite',
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14)),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
         },
-      ));
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Group invite sent to $targetName!')),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send invite: $e')),
-        );
-      }
-    }
+      ),
+    );
   }
 }

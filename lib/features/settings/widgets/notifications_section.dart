@@ -11,7 +11,6 @@ class NotificationsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pushEnabled = ref.watch(pushNotificationsProvider);
     final groupEnabled = ref.watch(groupMessagesProvider);
 
     return Column(
@@ -21,38 +20,18 @@ class NotificationsSection extends ConsumerWidget {
         Card(
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: Column(
-            children: [
-              SettingsItemRow(
-                icon: LucideIcons.bell,
-                iconBgColor: const Color(0xFFF5F3FF),
-                iconColor: const Color(0xFF8B5CF6),
-                title: "Push Notifications",
-                subtitle: "Receive reminders for sessions",
-                trailing: Switch(
-                  value: pushEnabled,
-                  onChanged: (v) {
-                    ref.read(pushNotificationsProvider.notifier).toggle(v);
-                  },
-                  activeTrackColor: AppColors.primary,
-                ),
-              ),
-              const Divider(height: 1, indent: 68),
-              SettingsItemRow(
-                icon: LucideIcons.messageCircle,
-                iconBgColor: const Color(0xFFFFF0F0),
-                iconColor: const Color(0xFFEF4444),
-                title: "Group Messages",
-                subtitle: "New discussion posts",
-                trailing: Switch(
-                  value: groupEnabled,
-                  onChanged: (v) {
-                    ref.read(groupMessagesProvider.notifier).toggle(v);
-                  },
-                  activeTrackColor: AppColors.primary,
-                ),
-              ),
-            ],
+          child: SettingsItemRow(
+            icon: LucideIcons.messageCircle,
+            iconBgColor: const Color(0xFFFFF0F0),
+            iconColor: const Color(0xFFEF4444),
+            title: "Group Activity",
+            subtitle: "Notify on new discussions and sessions",
+            trailing: Switch(
+              value: groupEnabled,
+              onChanged: (v) =>
+                  ref.read(groupMessagesProvider.notifier).toggle(v),
+              activeTrackColor: AppColors.primary,
+            ),
           ),
         ),
       ],

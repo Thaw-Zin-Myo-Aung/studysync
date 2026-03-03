@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../../../providers/auth_provider.dart';
 import '../widgets/account_section.dart';
@@ -42,9 +43,7 @@ class SettingsScreen extends ConsumerWidget {
       if (context.mounted) context.go(RouteConstants.login);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Logout failed: ${e.toString()}')),
-        );
+        AppSnackBar.error(context, 'Logout failed: ${e.toString()}');
       }
     }
   }

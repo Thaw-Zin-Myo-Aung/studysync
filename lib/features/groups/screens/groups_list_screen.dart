@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../core/constants/group_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
@@ -188,14 +189,17 @@ class _GroupCardWithSession extends ConsumerWidget {
       },
     );
 
+    final iconData  = GroupIcons.resolve(firestoreGroup.iconName);
+    final iconColor = GroupIcons.resolveColor(firestoreGroup.iconName);
+
     final group = GroupModel(
       id: firestoreGroup.groupId,
       name: firestoreGroup.name,
       subject: firestoreGroup.course,
       nextSession: nextSession ?? 'No session scheduled',
-      icon: LucideIcons.users,
-      iconBgColor: AppColors.primarySurface,
-      iconColor: AppColors.primary,
+      icon: iconData,
+      iconBgColor: iconColor.withValues(alpha: 0.15),
+      iconColor: iconColor,
       memberInitials: [],
       extraMemberCount: firestoreGroup.memberIds.length > 3
           ? firestoreGroup.memberIds.length - 3

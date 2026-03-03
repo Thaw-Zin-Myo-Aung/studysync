@@ -116,6 +116,7 @@ class AppRouter {
         path: RouteConstants.groupDetail,
         builder: (context, state) => GroupDetailScreen(
           groupId: state.pathParameters['groupId'] ?? '',
+          initialTab: int.tryParse(state.uri.queryParameters['tab'] ?? '') ?? 0,
         ),
       ),
       GoRoute(

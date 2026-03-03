@@ -19,7 +19,6 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-
   // Maps the stored learning-style key → display label + description
   static const _styleInfo = {
     'visual':   ('Visual Learner',   'Learns best with diagrams, charts & written notes'),

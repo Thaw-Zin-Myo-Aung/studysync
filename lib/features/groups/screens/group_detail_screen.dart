@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../core/constants/group_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../../../models/study_group_model.dart';
 import '../../../providers/groups_provider.dart';
@@ -17,8 +19,13 @@ import '../../../providers/auth_provider.dart';
 
 class GroupDetailScreen extends ConsumerStatefulWidget {
   final String groupId;
+  final int initialTab;
 
-  const GroupDetailScreen({super.key, required this.groupId});
+  const GroupDetailScreen({
+    super.key,
+    required this.groupId,
+    this.initialTab = 0,
+  });
 
   @override
   ConsumerState<GroupDetailScreen> createState() => _GroupDetailScreenState();
@@ -31,7 +38,11 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: widget.initialTab.clamp(0, 2),
+    );
     _tabController.addListener(() => setState(() {}));
   }
 
@@ -65,31 +76,50 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
           icon: const Icon(LucideIcons.arrowLeft, color: Colors.black87),
           onPressed: () => context.go(RouteConstants.groups),
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              group.name,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: GroupIcons.resolveColor(group.iconName).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                GroupIcons.resolve(group.iconName),
+                size: 17,
+                color: GroupIcons.resolveColor(group.iconName),
               ),
             ),
-            Text(
-              group.course,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.primary,
-              ),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  group.name,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                Text(
+                  group.course,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
         actions: [
           IconButton(
             icon: Icon(LucideIcons.settings, color: Colors.grey.shade400),
-            onPressed: () => context.go('/groups/${group.groupId}/settings'),
+            onPressed: () => context.push('/groups/${group.groupId}/settings'),
           ),
         ],
         bottom: TabBar(
@@ -176,7 +206,8 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
 
         ],
       ),
-      floatingActionButton: _tabController.index == 1
+      floatingActionButton: _tabController.index == 1 &&
+              ref.watch(authProvider)?.userId == group.adminId
           ? FloatingActionButton(
               onPressed: () => _showCreateSessionDialog(context, ref, group),
               backgroundColor: AppColors.primary,
@@ -408,11 +439,7 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
                                 location: locationCtrl.text.trim(),
                               );
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text('Session scheduled!')),
-                                );
+                                AppSnackBar.success(context, 'Session scheduled!');
                               }
                             }
                           : null,

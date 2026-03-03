@@ -29,7 +29,7 @@ class WhyYouMatchSection extends StatelessWidget {
         const SizedBox(height: 10),
         MatchReasonRow(icon: LucideIcons.target, label: goalText),
         const SizedBox(height: 10),
-        MatchReasonRow(icon: LucideIcons.bookOpen, label: 'Shared: ', boldText: sharedCourse),
+        MatchReasonRow(icon: LucideIcons.bookOpen, label: sharedCourse),
       ],
     );
   }

@@ -6,6 +6,7 @@ import '../../../core/constants/availability_constants.dart';
 import '../../../core/constants/mfu_majors.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../../../providers/auth_provider.dart';
 import '../widgets/edit_basic_info_card.dart';
 import '../widgets/edit_courses_card.dart';
@@ -190,8 +191,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   // ── Save ─────────────────────────────────────────────────────────────────
   Future<void> _save() async {
     if (_nameCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Full name cannot be empty')));
+      AppSnackBar.error(context, 'Full name cannot be empty');
       return;
     }
     final uid = ref.read(authProvider)?.userId;
@@ -223,17 +223,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ));
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Profile saved successfully!'),
-          backgroundColor: AppColors.success,
-          duration: Duration(seconds: 2),
-        ));
+        AppSnackBar.success(context, 'Profile saved successfully!');
         context.go(RouteConstants.profile);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+        AppSnackBar.error(context, 'Failed to save: $e');
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

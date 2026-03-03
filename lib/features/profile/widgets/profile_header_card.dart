@@ -46,27 +46,10 @@ class ProfileHeaderCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Stack(
-                children: [
-                  const CircleAvatar(
-                    radius: 40,
-                    backgroundColor: AppColors.border,
-                    child: Icon(LucideIcons.user, size: 40, color: AppColors.textHint),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(LucideIcons.pencil, size: 14, color: Colors.white),
-                    ),
-                  ),
-                ],
+              const CircleAvatar(
+                radius: 40,
+                backgroundColor: AppColors.border,
+                child: Icon(LucideIcons.user, size: 40, color: AppColors.textHint),
               ),
               const SizedBox(height: 16),
               Text(name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),

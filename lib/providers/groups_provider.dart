@@ -88,6 +88,7 @@ class GroupsNotifier extends Notifier<List<StudyGroupModel>> {
     String? description,
     String? location,
     int? maxMembers,
+    String? iconName,
   }) async {
     final updated = await _groupService.updateGroup(
       groupId: groupId,
@@ -96,6 +97,7 @@ class GroupsNotifier extends Notifier<List<StudyGroupModel>> {
       description: description,
       location: location,
       maxMembers: maxMembers,
+      iconName: iconName,
     );
     state = state.map((g) => g.groupId == groupId ? updated : g).toList();
   }

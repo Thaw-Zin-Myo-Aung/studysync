@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../../../models/notification_model.dart';
 import '../../../models/study_group_model.dart';
 import '../../../providers/auth_provider.dart';
@@ -85,18 +86,11 @@ class _JoinGroupSheetState extends ConsumerState<_JoinGroupSheet> {
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Join request sent! Waiting for admin approval.'),
-            backgroundColor: AppColors.primary,
-          ),
-        );
+        AppSnackBar.success(context, 'Join request sent! Waiting for admin approval.');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send request: $e')),
-        );
+        AppSnackBar.error(context, 'Failed to send request: $e');
       }
     } finally {
       if (mounted) setState(() => _joiningId = null);

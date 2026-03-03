@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../core/constants/group_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/groups_provider.dart';
+import '../../../providers/notifications_provider.dart';
 import '../../../providers/sessions_provider.dart';
 import '../widgets/user_profile_card.dart';
 import '../widgets/upcoming_sessions_section.dart';
@@ -22,6 +24,10 @@ class HomeScreen extends ConsumerWidget {
     final user     = ref.watch(authProvider);
     final groups   = ref.watch(groupsProvider);
     final sessions = ref.watch(upcomingSessionsProvider);
+    final unreadCount = ref.watch(notificationsProvider).whenOrNull(
+          data: (list) => list.where((n) => !n.isRead).length,
+        ) ??
+        0;
 
     // Map Firestore StudyGroupModel → local GroupModel for display
     final displayGroups = groups.map((g) => GroupModel(
@@ -31,9 +37,9 @@ class HomeScreen extends ConsumerWidget {
       nextSession:           g.nextSessionDate.isEmpty
                                ? 'No session scheduled'
                                : g.nextSessionDate,
-      icon:                  LucideIcons.users,
-      iconBgColor:           AppColors.primarySurface,
-      iconColor:             AppColors.primary,
+      icon:                  GroupIcons.resolve(g.iconName),
+      iconBgColor:           GroupIcons.resolveColor(g.iconName).withValues(alpha: 0.15),
+      iconColor:             GroupIcons.resolveColor(g.iconName),
       memberInitials:        [],
       extraMemberCount:      g.memberIds.length > 3
                                ? g.memberIds.length - 3 : 0,
@@ -87,25 +93,26 @@ class HomeScreen extends ConsumerWidget {
                     onPressed: () => context.go(RouteConstants.notifications),
                   ),
                 ),
-                Positioned(
-                  top: -4,
-                  right: -4,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.error,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Text(
-                      '19',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+                if (unreadCount > 0)
+                  Positioned(
+                    top: -4,
+                    right: -4,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.error,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        unreadCount > 99 ? '99+' : '$unreadCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
           ),

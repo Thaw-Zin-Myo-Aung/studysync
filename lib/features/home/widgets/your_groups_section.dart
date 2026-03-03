@@ -63,33 +63,51 @@ class _YourGroupsSectionState extends State<YourGroupsSection>
       ),
       child: Column(
         children: [
-          // Header
-          GestureDetector(
-            onTap: _toggle,
-            child: Row(
-              children: [
-                const CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Color(0xFFEEF2FF),
-                  child: Icon(LucideIcons.users, color: AppColors.textMuted, size: 18),
+          // Header — full-width tap area with ripple
+          Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            child: InkWell(
+              onTap: _toggle,
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Color(0xFFEEF2FF),
+                      child: Icon(LucideIcons.users, color: AppColors.textMuted, size: 18),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Your Groups',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                    ),
+                    const Spacer(),
+                    // Chevron in a rounded container — easy to see & hit
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: AppColors.backgroundBlue,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: AnimatedRotation(
+                        turns: _isExpanded ? 0.0 : 0.5,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        child: const Icon(
+                          LucideIcons.chevronUp,
+                          color: AppColors.primary,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Your Groups',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
-                ),
-                const Spacer(),
-                AnimatedRotation(
-                  turns: _isExpanded ? 0.0 : 0.5,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  child: const Icon(
-                    LucideIcons.chevronUp,
-                    color: AppColors.textMuted,
-                    size: 20,
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
           // Animated expandable body
@@ -135,9 +153,10 @@ class _YourGroupsSectionState extends State<YourGroupsSection>
                           padding: const EdgeInsets.only(bottom: 8),
                           child: GroupListItem(
                             groupName: g.name,
-                            memberCount:
-                                g.memberInitials.length + g.extraMemberCount,
+                            memberCount: g.memberInitials.length + g.extraMemberCount,
                             avatarColor: g.iconBgColor,
+                            groupIcon: g.icon,
+                            groupIconColor: g.iconColor,
                             onTap: () => context.go('/groups/${g.id}'),
                           ),
                         )),

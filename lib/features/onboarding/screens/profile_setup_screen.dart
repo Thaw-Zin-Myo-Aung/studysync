@@ -6,6 +6,7 @@ import '../../../core/constants/availability_constants.dart';
 import '../../../core/constants/mfu_majors.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../../../core/widgets/onboarding_progress_bar.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../services/firebase/auth_service.dart';
@@ -159,9 +160,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         if (mounted) context.go(RouteConstants.profileComplete);
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to save: ${e.toString()}')),
-          );
+          AppSnackBar.error(context, 'Failed to save: ${e.toString()}');
         }
       } finally {
         if (mounted) setState(() => _saving = false);
@@ -296,8 +295,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                                     onMajorChanged: (v) => setState(() => _major = v),
                                     selectedYear: _year,
                                     onYearChanged: (v) => setState(() => _year = v),
-                                    onAvatarTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Photo picker coming in a future update'))),
+                                    onAvatarTap: () => AppSnackBar.info(context, 'Photo picker coming in a future update'),
                                   ),
                                 ),
                                 SingleChildScrollView(

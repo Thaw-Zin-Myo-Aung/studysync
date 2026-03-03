@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../../../providers/auth_provider.dart';
 import 'settings_section_header.dart';
 import 'settings_item_row.dart';
@@ -97,18 +98,11 @@ class AccountSection extends ConsumerWidget {
                     final confirmPwd = confirmPwdCtrl.text.trim();
 
                     if (newPwd.length < 6) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text(
-                                'Password must be at least 6 characters')),
-                      );
+                      AppSnackBar.error(context, 'Password must be at least 6 characters');
                       return;
                     }
                     if (newPwd != confirmPwd) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Passwords do not match')),
-                      );
+                      AppSnackBar.error(context, 'Passwords do not match');
                       return;
                     }
 
@@ -122,17 +116,11 @@ class AccountSection extends ConsumerWidget {
                       await user.updatePassword(newPwd);
                       if (context.mounted) {
                         Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content:
-                                  Text('Password updated successfully')),
-                        );
+                        AppSnackBar.success(context, 'Password updated successfully');
                       }
                     } catch (e) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.toString())),
-                        );
+                        AppSnackBar.error(context, e.toString());
                       }
                     }
                   },
@@ -184,7 +172,6 @@ class AccountSection extends ConsumerWidget {
                 title: "Change Password",
                 onTap: () => _showChangePasswordSheet(context),
               ),
-              // ...existing code...
               const Divider(height: 1, indent: 68),
               SettingsItemRow(
                 icon: LucideIcons.shieldCheck,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../../../models/notification_model.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/groups_provider.dart';
@@ -100,9 +101,7 @@ class _Sheet extends ConsumerWidget {
                         },
                       ));
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Invitation sent to $targetUserName for ${g.name}')),
-                        );
+                        AppSnackBar.success(context, 'Invitation sent to $targetUserName for ${g.name}');
                       }
                     },
                   );
