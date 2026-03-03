@@ -7,7 +7,7 @@ import 'auth_provider.dart';
 final groupServiceProvider = Provider<GroupService>((_) => GroupService());
 
 class GroupsNotifier extends Notifier<List<StudyGroupModel>> {
-  late final GroupService _groupService;
+  late GroupService _groupService;
 
   @override
   List<StudyGroupModel> build() {

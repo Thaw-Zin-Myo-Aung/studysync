@@ -13,13 +13,14 @@ class NotificationService {
     try {
       final snapshot = await _notifications
           .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
           .limit(50)
           .get()
           .timeout(const Duration(seconds: 10));
-      return snapshot.docs
+      final results = snapshot.docs
           .map((doc) => NotificationModel.fromJson(doc.data()))
-          .toList();
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt)); // newest first
+      return results;
     } catch (e) {
       throw Exception(e.toString());
     }

@@ -8,7 +8,7 @@ final notificationServiceProvider =
 
 class NotificationsNotifier
     extends AsyncNotifier<List<NotificationModel>> {
-  late final NotificationService _service;
+  late NotificationService _service;
 
   @override
   Future<List<NotificationModel>> build() async {

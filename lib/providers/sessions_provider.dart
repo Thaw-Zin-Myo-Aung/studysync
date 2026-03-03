@@ -9,7 +9,7 @@ final sessionServiceProvider =
 /// Loads all *scheduled* sessions across every group the user belongs to,
 /// sorted by date ascending (soonest first).
 class UpcomingSessionsNotifier extends Notifier<List<SessionModel>> {
-  late final SessionService _sessionService;
+  late SessionService _sessionService;
 
   @override
   List<SessionModel> build() {

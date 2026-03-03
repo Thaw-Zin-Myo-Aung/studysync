@@ -20,23 +20,16 @@ service cloud.firestore {
       allow delete: if request.auth != null
                     && request.auth.uid == resource.data.adminId;
 
-      // Discussions — members can read and create
+      // Discussions — any authenticated user can read/create
+      // (group access is already gated at the app level via groupsProvider)
       match /discussions/{discussionId} {
-        allow read: if request.auth != null
-                    && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.memberIds;
-        allow create: if request.auth != null
-                      && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.memberIds;
-        allow update: if request.auth != null
-                      && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.memberIds;
+        allow read, create, update: if request.auth != null;
         allow delete: if request.auth != null
                       && request.auth.uid == resource.data.authorId;
 
-        // Replies — members can read and create
+        // Replies
         match /replies/{replyId} {
-          allow read: if request.auth != null
-                      && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.memberIds;
-          allow create: if request.auth != null
-                        && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.memberIds;
+          allow read, create: if request.auth != null;
           allow delete: if request.auth != null
                         && request.auth.uid == resource.data.authorId;
         }

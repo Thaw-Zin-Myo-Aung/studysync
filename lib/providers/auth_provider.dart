@@ -5,7 +5,7 @@ import '../services/firebase/auth_service.dart';
 final authServiceProvider = Provider<AuthService>((_) => AuthService());
 
 class AuthNotifier extends Notifier<UserModel?> {
-  late final AuthService _authService;
+  late AuthService _authService;
 
   @override
   UserModel? build() {
