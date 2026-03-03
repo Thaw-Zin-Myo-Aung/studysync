@@ -10,6 +10,9 @@ class UpcomingSessionCard extends StatelessWidget {
   final String timeRange;
   final int attendeeCount;
   final bool canCheckIn;
+  final bool isCheckedIn;
+  final bool isLoading;
+  final VoidCallback? onCheckIn;
 
   const UpcomingSessionCard({
     super.key,
@@ -19,6 +22,9 @@ class UpcomingSessionCard extends StatelessWidget {
     required this.timeRange,
     required this.attendeeCount,
     required this.canCheckIn,
+    this.isCheckedIn = false,
+    this.isLoading = false,
+    this.onCheckIn,
   });
 
   @override
@@ -38,57 +44,90 @@ class UpcomingSessionCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                  color: AppColors.warningLight,
+                    color: AppColors.warningLight,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(timeUntil, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.warning)),
+                  child: Text(timeUntil,
+                      style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.warning)),
                 ),
                 CircleAvatar(
                   backgroundColor: Colors.grey.shade200,
                   radius: 16,
-                  child: Icon(LucideIcons.compass, color: Colors.grey.shade500, size: 18),
+                  child: Icon(LucideIcons.compass,
+                      color: Colors.grey.shade500, size: 18),
                 ),
               ],
             ),
             const SizedBox(height: 10),
-            Text(groupName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+            Text(groupName,
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
+                overflow: TextOverflow.ellipsis),
             const SizedBox(height: 10),
             SessionInfoRow(icon: LucideIcons.mapPin, text: location),
             const SizedBox(height: 10),
             SessionInfoRow(icon: LucideIcons.clock, text: timeRange),
             const SizedBox(height: 10),
-            SessionInfoRow(icon: LucideIcons.users, text: '$attendeeCount Attendees confirmed'),
+            SessionInfoRow(
+                icon: LucideIcons.users,
+                text: '$attendeeCount Attendees confirmed'),
             const SizedBox(height: 10),
-            if (canCheckIn)
-              SizedBox(
-                width: double.infinity,
-                height: 38,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    elevation: 0,
-                  ),
-                  child: const Text('Check-in', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-                ),
-              )
-            else
-              Container(
-                width: double.infinity,
-                height: 38,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: AppColors.scheduleFreeBg,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  'Check-in  (Opens 15m before)',
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
-                ),
-              ),
+            // ── Check-in button ─────────────────────────────────
+            SizedBox(
+              width: double.infinity,
+              height: 38,
+              child: isCheckedIn
+                  ? Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5E9),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(LucideIcons.circleCheck,
+                              size: 16, color: AppColors.success),
+                          SizedBox(width: 6),
+                          Text('Attended',
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.success)),
+                        ],
+                      ),
+                    )
+                  : ElevatedButton(
+                      onPressed: isLoading ? null : onCheckIn,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        disabledBackgroundColor:
+                            AppColors.primary.withValues(alpha: 0.5),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        elevation: 0,
+                      ),
+                      child: isLoading
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                  color: Colors.white, strokeWidth: 2))
+                          : const Text('Mark as Attended',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13)),
+                    ),
+            ),
           ],
         ),
       ),

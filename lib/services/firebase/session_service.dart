@@ -48,6 +48,20 @@ class SessionService {
         'createdAt': FieldValue.serverTimestamp(),
       };
       await ref.set(data).timeout(const Duration(seconds: 10));
+
+      // Increment sessionsScheduled for every member of this group
+      final groupDoc = await _db.collection('groups').doc(groupId).get();
+      final memberIds = List<String>.from(
+          groupDoc.data()?['memberIds'] as List? ?? []);
+      if (memberIds.isNotEmpty) {
+        final batch = _db.batch();
+        for (final uid in memberIds) {
+          batch.update(_db.collection('users').doc(uid),
+              {'sessionsScheduled': FieldValue.increment(1)});
+        }
+        await batch.commit().timeout(const Duration(seconds: 10));
+      }
+
       final doc = await ref.get().timeout(const Duration(seconds: 10));
       return SessionModel.fromJson(doc.data()!);
     } catch (e) {
@@ -64,6 +78,8 @@ class SessionService {
   ) async {
     try {
       final uid = _auth.currentUser!.uid;
+
+      // 1. Write the attendance record
       await _sessions(groupId)
           .doc(sessionId)
           .collection('attendance')
@@ -73,6 +89,28 @@ class SessionService {
             'markedAt': FieldValue.serverTimestamp(),
           })
           .timeout(const Duration(seconds: 10));
+
+      // 2. Update the user's sessionsAttended count and recalculate
+      //    reliabilityScore = (sessionsAttended / sessionsScheduled) * 100
+      //    clamped to 0–100. Only increment when marking as attended (not un-attended).
+      if (attended) {
+        final userRef = _db.collection('users').doc(uid);
+        await _db.runTransaction((txn) async {
+          final snap = await txn.get(userRef);
+          if (!snap.exists) return;
+          final data = snap.data()!;
+          final attended  = (data['sessionsAttended']  as int? ?? 0) + 1;
+          final scheduled = (data['sessionsScheduled'] as int? ?? 0);
+          // sessionsScheduled should always be >= attended; guard against 0
+          final reliability = scheduled > 0
+              ? ((attended / scheduled) * 100).round().clamp(0, 100)
+              : 100; // if no sessions scheduled yet, treat as perfect
+          txn.update(userRef, {
+            'sessionsAttended': attended,
+            'reliabilityScore': reliability,
+          });
+        }).timeout(const Duration(seconds: 10));
+      }
     } catch (e) {
       throw Exception(e.toString());
     }

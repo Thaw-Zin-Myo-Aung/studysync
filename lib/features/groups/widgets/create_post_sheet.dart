@@ -72,7 +72,9 @@ void showCreatePostSheet(
                 child: ElevatedButton(
                   onPressed: () async {
                     if (topicCtrl.text.trim().isEmpty ||
-                        msgCtrl.text.trim().isEmpty) return;
+                        msgCtrl.text.trim().isEmpty) {
+                      return;
+                    }
                     Navigator.pop(sheetCtx);
                     await createDiscussion(
                       ref,

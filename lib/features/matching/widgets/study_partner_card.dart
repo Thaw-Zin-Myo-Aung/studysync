@@ -58,20 +58,33 @@ class StudyPartnerCard extends StatelessWidget {
                         child: Icon(LucideIcons.user, color: AppColors.primary, size: 28),
                       ),
                       const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                              const SizedBox(width: 4),
-                              Icon(LucideIcons.chevronRight, size: 14, color: AppColors.textHint),
-                            ],
-                          ),
-                          Text(major, style: const TextStyle(fontSize: 13, color: Colors.grey)),
-                          const SizedBox(height: 8),
-                          ReliabilityBadge(score: reliabilityScore),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Text(name,
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(LucideIcons.chevronRight,
+                                    size: 14, color: AppColors.textHint),
+                              ],
+                            ),
+                            Text(major,
+                                style: const TextStyle(
+                                    fontSize: 13, color: Colors.grey),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1),
+                            const SizedBox(height: 8),
+                            ReliabilityBadge(score: reliabilityScore),
+                          ],
+                        ),
                       ),
                     ],
                   ),

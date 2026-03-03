@@ -50,21 +50,37 @@ class AuthInputField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87)),
+        Text(label,
+            style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87)),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
           obscureText: obscure,
           keyboardType: keyboardType,
+          style: const TextStyle(fontSize: 14),
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: const TextStyle(fontSize: 13),
             filled: true,
             fillColor: AppColors.primarySurface,
             border: InputBorder.none,
             enabledBorder: border,
             focusedBorder: border,
-            prefixIcon: Icon(prefixIcon, color: Colors.grey),
+            // Shrink the prefix icon box so it doesn't eat horizontal space
+            prefixIconConstraints:
+                const BoxConstraints(minWidth: 40, minHeight: 40),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Icon(prefixIcon, color: Colors.grey, size: 18),
+            ),
+            // Reduce internal horizontal padding to give text more room
+            contentPadding: const EdgeInsets.symmetric(
+                vertical: 14, horizontal: 4),
             suffixIcon: suffix,
+            isDense: true,
           ),
         ),
         if (errorText != null) ...[
@@ -73,7 +89,11 @@ class AuthInputField extends StatelessWidget {
             children: [
               Icon(LucideIcons.triangleAlert, size: 13, color: AppColors.error),
               const SizedBox(width: 4),
-              Text(errorText!, style: const TextStyle(fontSize: 12, color: AppColors.error)),
+              Flexible(
+                child: Text(errorText!,
+                    style: const TextStyle(
+                        fontSize: 12, color: AppColors.error)),
+              ),
             ],
           ),
         ],
@@ -106,12 +126,26 @@ class _ToggleableAuthInputState extends State<_ToggleableAuthInput> {
   @override
   Widget build(BuildContext context) {
     return AuthInputField(
-      label: widget.label, hintText: widget.hintText, prefixIcon: widget.prefixIcon,
-      controller: widget.controller, keyboardType: widget.keyboardType, obscureText: _obscured,
-      errorText: widget.errorText, hasError: widget.hasError,
-    )._buildColumn(_obscured, IconButton(
-      icon: Icon(_obscured ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: Colors.grey),
-      onPressed: () => setState(() => _obscured = !_obscured),
-    ));
+      label: widget.label,
+      hintText: widget.hintText,
+      prefixIcon: widget.prefixIcon,
+      controller: widget.controller,
+      keyboardType: widget.keyboardType,
+      obscureText: _obscured,
+      errorText: widget.errorText,
+      hasError: widget.hasError,
+    )._buildColumn(
+      _obscured,
+      IconButton(
+        icon: Icon(
+          _obscured
+              ? Icons.visibility_off_outlined
+              : Icons.visibility_outlined,
+          color: Colors.grey,
+          size: 18,
+        ),
+        onPressed: () => setState(() => _obscured = !_obscured),
+      ),
+    );
   }
 }

@@ -81,9 +81,9 @@ class UserModel {
       email:             json['email']      as String,
       major:             json['major']      as String,
       year:              json['year']       as int,
-      reliabilityScore:  json['reliabilityScore']  as int,
-      sessionsAttended:  json['sessionsAttended']  as int,
-      sessionsScheduled: json['sessionsScheduled'] as int,
+      reliabilityScore:  json['reliabilityScore']  as int? ?? 0,
+      sessionsAttended:  json['sessionsAttended']  as int? ?? 0,
+      sessionsScheduled: json['sessionsScheduled'] as int? ?? 0,
       groupIds:          List<String>.from(json['groupIds'] as List? ?? []),
       courses:           List<Map<String, dynamic>>.from(
                              json['courses'] as List? ?? []),

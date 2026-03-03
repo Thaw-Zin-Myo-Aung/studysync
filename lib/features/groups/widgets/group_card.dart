@@ -42,12 +42,16 @@ class GroupCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        group.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                      Flexible(
+                        child: Text(
+                          group.name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ),
                       if (group.hasUnread) ...[
@@ -67,18 +71,24 @@ class GroupCard extends StatelessWidget {
                   Text(
                     group.subject,
                     style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                        const Icon(LucideIcons.clock, size: 13, color: AppColors.primary),
+                      const Icon(LucideIcons.clock, size: 13, color: AppColors.primary),
                       const SizedBox(width: 4),
-                      Text(
-                        group.nextSession,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
+                      Flexible(
+                        child: Text(
+                          group.nextSession,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ),
                     ],

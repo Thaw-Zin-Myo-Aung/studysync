@@ -7,6 +7,19 @@ class NotificationService {
   CollectionReference<Map<String, dynamic>> get _notifications =>
       _db.collection('notifications');
 
+  // ── Watch Notifications (real-time stream) ──────────────────────────────
+
+  Stream<List<NotificationModel>> watchNotifications(String userId) {
+    return _notifications
+        .where('userId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
+        .limit(50)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => NotificationModel.fromJson(doc.data()))
+            .toList());
+  }
+
   // ── Get Notifications ────────────────────────────────────────────────────
 
   Future<List<NotificationModel>> getNotifications(String userId) async {

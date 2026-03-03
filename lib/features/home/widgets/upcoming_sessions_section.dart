@@ -1,21 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/session_model.dart';
+import '../../../providers/sessions_provider.dart';
 import 'upcoming_session_card.dart';
 
-class UpcomingSessionsSection extends StatefulWidget {
+class UpcomingSessionsSection extends ConsumerStatefulWidget {
   final List<SessionModel> sessions;
 
   const UpcomingSessionsSection({super.key, required this.sessions});
 
   @override
-  State<UpcomingSessionsSection> createState() =>
+  ConsumerState<UpcomingSessionsSection> createState() =>
       _UpcomingSessionsSectionState();
 }
 
-class _UpcomingSessionsSectionState extends State<UpcomingSessionsSection> {
+class _UpcomingSessionsSectionState
+    extends ConsumerState<UpcomingSessionsSection> {
   int _currentPage = 0;
+  // Track which sessions the user has already checked in to this session
+  final Set<String> _checkedIn = {};
+  final Set<String> _loading   = {};
+
+  Future<void> _checkIn(SessionModel s) async {
+    if (_checkedIn.contains(s.sessionId) || _loading.contains(s.sessionId)) {
+      return;
+    }
+    setState(() => _loading.add(s.sessionId));
+    try {
+      await markGroupSessionAttendance(
+        ref,
+        groupId:   s.groupId,
+        sessionId: s.sessionId,
+        attended:  true,
+      );
+      if (mounted) setState(() => _checkedIn.add(s.sessionId));
+    } finally {
+      if (mounted) setState(() => _loading.remove(s.sessionId));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +66,7 @@ class _UpcomingSessionsSectionState extends State<UpcomingSessionsSection> {
             child: Column(
               children: [
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 52, height: 52,
                   decoration: BoxDecoration(
                     color: AppColors.primarySurface,
                     borderRadius: BorderRadius.circular(14),
@@ -58,13 +81,10 @@ class _UpcomingSessionsSectionState extends State<UpcomingSessionsSection> {
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary)),
                 const SizedBox(height: 6),
-                const Text(
-                    'Sessions scheduled in your groups\nwill appear here.',
+                const Text('Sessions scheduled in your groups\nwill appear here.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textMuted,
-                        height: 1.5)),
+                        fontSize: 12, color: AppColors.textMuted, height: 1.5)),
               ],
             ),
           )
@@ -80,16 +100,21 @@ class _UpcomingSessionsSectionState extends State<UpcomingSessionsSection> {
               onPageChanged: (i) => setState(() => _currentPage = i),
               itemBuilder: (_, i) {
                 final s = widget.sessions[i];
+                final checked = _checkedIn.contains(s.sessionId);
+                final loading = _loading.contains(s.sessionId);
                 return Padding(
                   padding: const EdgeInsets.only(
                       top: 4, right: 6, bottom: 6, left: 6),
                   child: UpcomingSessionCard(
-                    groupName: s.title.isNotEmpty ? s.title : s.date,
-                    timeUntil: s.date,
-                    location: s.location,
-                    timeRange: s.time,
+                    groupName:    s.title.isNotEmpty ? s.title : s.date,
+                    timeUntil:    s.date,
+                    location:     s.location,
+                    timeRange:    s.time,
                     attendeeCount: 0,
-                    canCheckIn: false,
+                    canCheckIn:   true,
+                    isCheckedIn:  checked,
+                    isLoading:    loading,
+                    onCheckIn:    checked ? null : () => _checkIn(s),
                   ),
                 );
               },
