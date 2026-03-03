@@ -1,88 +1,120 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../models/session_model.dart';
 import 'upcoming_session_card.dart';
 
 class UpcomingSessionsSection extends StatefulWidget {
-  const UpcomingSessionsSection({super.key});
+  final List<SessionModel> sessions;
+
+  const UpcomingSessionsSection({super.key, required this.sessions});
 
   @override
-  State<UpcomingSessionsSection> createState() => _UpcomingSessionsSectionState();
+  State<UpcomingSessionsSection> createState() =>
+      _UpcomingSessionsSectionState();
 }
 
 class _UpcomingSessionsSectionState extends State<UpcomingSessionsSection> {
   int _currentPage = 0;
-
-  final List<Map<String, dynamic>> sessions = [
-    {
-      'groupName': 'Math Study Group',
-      'timeUntil': 'In 2 hours',
-      'location': 'Library 3F, Room 302',
-      'timeRange': '14:00 - 16:00 PM',
-      'attendeeCount': 3,
-      'canCheckIn': false,
-    },
-    {
-      'groupName': 'Web Dev Finals',
-      'timeUntil': 'Tomorrow',
-      'location': 'Online',
-      'timeRange': '2:00 - 4:00 PM',
-      'attendeeCount': 3,
-      'canCheckIn': false,
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header
         const Text(
           'Upcoming Sessions',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         const SizedBox(height: 12),
-        // PageView carousel
-        SizedBox(
-          height: 236,
-          child: PageView.builder(
-            itemCount: sessions.length,
-            padEnds: false,
-            physics: const PageScrollPhysics(),
-            controller: PageController(viewportFraction: 0.88),
-            onPageChanged: (index) => setState(() => _currentPage = index),
-            itemBuilder: (_, i) => Padding(
-              padding: const EdgeInsets.only(top: 4, right: 6, bottom: 6, left: 6),
-              child: UpcomingSessionCard(
-                groupName: sessions[i]['groupName'] as String,
-                timeUntil: sessions[i]['timeUntil'] as String,
-                location: sessions[i]['location'] as String,
-                timeRange: sessions[i]['timeRange'] as String,
-                attendeeCount: sessions[i]['attendeeCount'] as int,
-                canCheckIn: sessions[i]['canCheckIn'] as bool,
-              ),
+
+        // ── Empty state ────────────────────────────────────────
+        if (widget.sessions.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySurface,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(LucideIcons.calendarOff,
+                      size: 26, color: AppColors.primary),
+                ),
+                const SizedBox(height: 14),
+                const Text('No upcoming sessions',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary)),
+                const SizedBox(height: 6),
+                const Text(
+                    'Sessions scheduled in your groups\nwill appear here.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textMuted,
+                        height: 1.5)),
+              ],
+            ),
+          )
+        else ...[
+          // ── Carousel ───────────────────────────────────────────
+          SizedBox(
+            height: 236,
+            child: PageView.builder(
+              itemCount: widget.sessions.length,
+              padEnds: false,
+              physics: const PageScrollPhysics(),
+              controller: PageController(viewportFraction: 0.88),
+              onPageChanged: (i) => setState(() => _currentPage = i),
+              itemBuilder: (_, i) {
+                final s = widget.sessions[i];
+                return Padding(
+                  padding: const EdgeInsets.only(
+                      top: 4, right: 6, bottom: 6, left: 6),
+                  child: UpcomingSessionCard(
+                    groupName: s.groupId, // replaced by group name below
+                    timeUntil: s.date,
+                    location: s.location,
+                    timeRange: s.time,
+                    attendeeCount: 0,
+                    canCheckIn: false,
+                  ),
+                );
+              },
             ),
           ),
-        ),
-        const SizedBox(height: 12),
-        // Dot indicators
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(sessions.length, (index) {
-            final isActive = index == _currentPage;
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: isActive ? 20 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: isActive ? AppColors.primary : AppColors.border,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            );
-          }),
-        ),
+          const SizedBox(height: 12),
+          // Dot indicators
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(widget.sessions.length, (i) {
+              final active = i == _currentPage;
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: active ? 20 : 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: active ? AppColors.primary : AppColors.border,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              );
+            }),
+          ),
+        ],
       ],
     );
   }

@@ -100,15 +100,47 @@ class _YourGroupsSectionState extends State<YourGroupsSection>
                 ? Column(
                     children: [
                       const SizedBox(height: 12),
-                      ...widget.groups.map((g) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: GroupListItem(
-                          groupName: g.name,
-                          memberCount: g.memberInitials.length + g.extraMemberCount,
-                          avatarColor: g.iconBgColor,
-                          onTap: () => context.go('/groups/${g.id}'),
+                      if (widget.groups.isEmpty) ...[
+                        // ── Empty state ───────────────────────────
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Column(
+                            children: [
+                              Container(
+                                width: 48, height: 48,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEEF2FF),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(LucideIcons.users,
+                                    size: 24, color: AppColors.textMuted),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text("You haven't joined any group yet",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimary)),
+                              const SizedBox(height: 4),
+                              const Text(
+                                  'Create or join a group to get started.',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textMuted)),
+                            ],
+                          ),
                         ),
-                      )),
+                      ] else
+                        ...widget.groups.map((g) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: GroupListItem(
+                            groupName: g.name,
+                            memberCount:
+                                g.memberInitials.length + g.extraMemberCount,
+                            avatarColor: g.iconBgColor,
+                            onTap: () => context.go('/groups/${g.id}'),
+                          ),
+                        )),
                       const SizedBox(height: 4),
                       Container(
                         width: double.infinity,
@@ -124,7 +156,8 @@ class _YourGroupsSectionState extends State<YourGroupsSection>
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(LucideIcons.plus, size: 16, color: AppColors.textMuted),
+                              Icon(LucideIcons.plus,
+                                  size: 16, color: AppColors.textMuted),
                               SizedBox(width: 6),
                               Text(
                                 'Create New Group',

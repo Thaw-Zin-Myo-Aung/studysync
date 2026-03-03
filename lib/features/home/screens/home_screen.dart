@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/groups_provider.dart';
+import '../../../providers/sessions_provider.dart';
 import '../widgets/user_profile_card.dart';
 import '../widgets/upcoming_sessions_section.dart';
 import '../widgets/your_groups_section.dart';
@@ -18,8 +19,39 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider);
-    final groups = ref.watch(groupsProvider);
+    final user     = ref.watch(authProvider);
+    final groups   = ref.watch(groupsProvider);
+    final sessions = ref.watch(upcomingSessionsProvider);
+
+    // Map Firestore StudyGroupModel → local GroupModel for display
+    final displayGroups = groups.map((g) => GroupModel(
+      id:                    g.groupId,
+      name:                  g.name,
+      subject:               g.course,
+      nextSession:           g.nextSessionDate.isEmpty
+                               ? 'No session scheduled'
+                               : g.nextSessionDate,
+      icon:                  LucideIcons.users,
+      iconBgColor:           AppColors.primarySurface,
+      iconColor:             AppColors.primary,
+      memberInitials:        [],
+      extraMemberCount:      g.memberIds.length > 3
+                               ? g.memberIds.length - 3 : 0,
+      hasUnread:             false,
+      upcomingDate:          '',
+      upcomingTimeRange:     '',
+      upcomingLocation:      g.location,
+      upcomingLocationDetail:'',
+      upcomingAttendees:     0,
+      upcomingTotal:         g.memberIds.length,
+      pastSessions:          [],
+      members:               [],
+    )).toList();
+
+    // First course name for find-partner banner (fallback to generic text)
+    final firstCourse = user?.courses.isNotEmpty == true
+        ? (user!.courses.first['name'] as String? ?? 'your course')
+        : 'your course';
     return Scaffold(
       backgroundColor: AppColors.backgroundBlue,
       appBar: AppBar(
@@ -143,44 +175,21 @@ class HomeScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   UserProfileCard(
-                    fullName: user?.name ?? 'Student',
+                    fullName:    user?.name         ?? 'Student',
                     reliability: (user?.reliabilityScore ?? 0).toDouble(),
-                    studentId: user?.studentId ?? '',
-                    major: user?.major ?? '',
+                    studentId:   user?.studentId    ?? '',
+                    major:       user?.major        ?? '',
                   ),
                   const SizedBox(height: 20),
-                  const UpcomingSessionsSection(),
+                  UpcomingSessionsSection(sessions: sessions),
                   const SizedBox(height: 20),
                   YourGroupsSection(
-                    groups: groups.isEmpty
-                        ? mockGroups
-                        : groups.map((g) => GroupModel(
-                              id: g.groupId,
-                              name: g.name,
-                              subject: g.course,
-                              nextSession: g.nextSessionDate.isEmpty
-                                  ? 'No session scheduled'
-                                  : g.nextSessionDate,
-                              icon: LucideIcons.users,
-                              iconBgColor: AppColors.primarySurface,
-                              iconColor: AppColors.primary,
-                              memberInitials: [],
-                              extraMemberCount: 0,
-                              hasUnread: false,
-                              upcomingDate: '',
-                              upcomingTimeRange: '',
-                              upcomingLocation: g.location,
-                              upcomingLocationDetail: '',
-                              upcomingAttendees: 0,
-                              upcomingTotal: g.memberIds.length,
-                              pastSessions: [],
-                              members: [],
-                            )).toList(),
-                    onCreateGroup: () {},
+                    groups: displayGroups,
+                    onCreateGroup: () => context.go(RouteConstants.groups),
                   ),
                   const SizedBox(height: 20),
                   FindPartnerBanner(
-                    courseName: 'Engineering Math II',
+                    courseName: firstCourse,
                     onFindPartner: () => context.go(RouteConstants.discover),
                   ),
                   const SizedBox(height: 20),
