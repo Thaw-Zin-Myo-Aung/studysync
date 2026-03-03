@@ -176,6 +176,13 @@ class _UpcomingSessionCardState
             ],
           ),
           const SizedBox(height: 14),
+          if (s.title.isNotEmpty)
+            Text(s.title,
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary)),
+          if (s.title.isNotEmpty) const SizedBox(height: 4),
           Text(s.date,
               style: const TextStyle(
                   fontSize: 22,
@@ -328,15 +335,25 @@ class _PastSessionTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Expanded(
+              Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (session.title.isNotEmpty)
+                  Text(session.title,
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87)),
                 Text(session.date,
-                    style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87)),
+                    style: TextStyle(
+                        fontSize: session.title.isNotEmpty ? 12 : 14,
+                        fontWeight: session.title.isNotEmpty
+                            ? FontWeight.w400
+                            : FontWeight.w600,
+                        color: session.title.isNotEmpty
+                            ? AppColors.textSecondary
+                            : Colors.black87)),
                 Text('${session.time} · ${session.location}',
                     style: const TextStyle(
                         fontSize: 12, color: AppColors.textSecondary)),

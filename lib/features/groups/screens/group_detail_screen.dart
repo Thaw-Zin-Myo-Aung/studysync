@@ -207,14 +207,15 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
 
   void _showCreateSessionDialog(
       BuildContext context, WidgetRef ref, StudyGroupModel group) {
+    final titleCtrl    = TextEditingController();
     final locationCtrl = TextEditingController(text: group.location);
     DateTime? pickedDate;
     TimeOfDay? startTime;
     TimeOfDay? endTime;
 
-    final dateCtrl = TextEditingController();
+    final dateCtrl      = TextEditingController();
     final startTimeCtrl = TextEditingController();
-    final endTimeCtrl = TextEditingController();
+    final endTimeCtrl   = TextEditingController();
 
     showModalBottomSheet(
       context: context,
@@ -223,6 +224,7 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
       builder: (_) => StatefulBuilder(
         builder: (sheetCtx, setSheetState) {
           final bool isValid =
+              titleCtrl.text.trim().isNotEmpty &&
               pickedDate != null && startTime != null && endTime != null;
 
           Future<void> pickDate() async {
@@ -301,6 +303,21 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
+                  // Title field
+                  TextField(
+                    controller: titleCtrl,
+                    onChanged: (_) => setSheetState(() {}),
+                    decoration: InputDecoration(
+                      hintText: 'Session title (e.g. Midterm Review)',
+                      prefixIcon:
+                          const Icon(LucideIcons.bookOpen, size: 18),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   // Date picker field
                   TextField(
                     controller: dateCtrl,
@@ -381,9 +398,10 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
                                   '${formatTimeOfDay(startTime!)} - ${formatTimeOfDay(endTime!)}';
                               await createGroupSession(
                                 ref,
-                                groupId: group.groupId,
-                                date: dateStr,
-                                time: timeStr,
+                                groupId:  group.groupId,
+                                title:    titleCtrl.text.trim(),
+                                date:     dateStr,
+                                time:     timeStr,
                                 location: locationCtrl.text.trim(),
                               );
                               if (context.mounted) {

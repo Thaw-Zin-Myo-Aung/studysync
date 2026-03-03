@@ -75,6 +75,7 @@ final groupSessionsProvider = FutureProvider.family
 Future<void> createGroupSession(
   WidgetRef ref, {
   required String groupId,
+  required String title,
   required String date,
   required String time,
   required String location,
@@ -82,6 +83,7 @@ Future<void> createGroupSession(
   final service = ref.read(sessionServiceProvider);
   await service.createSession(
     groupId:  groupId,
+    title:    title,
     date:     date,
     time:     time,
     location: location,

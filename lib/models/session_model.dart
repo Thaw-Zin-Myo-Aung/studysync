@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 class SessionModel {
   final String sessionId;
   final String groupId;
+  final String title;
   final String date;
   final String time;
   final String location;
@@ -13,6 +14,7 @@ class SessionModel {
   const SessionModel({
     required this.sessionId,
     required this.groupId,
+    required this.title,
     required this.date,
     required this.time,
     required this.location,
@@ -23,6 +25,7 @@ class SessionModel {
   SessionModel copyWith({
     String? sessionId,
     String? groupId,
+    String? title,
     String? date,
     String? time,
     String? location,
@@ -31,6 +34,7 @@ class SessionModel {
   }) => SessionModel(
     sessionId: sessionId ?? this.sessionId,
     groupId:   groupId   ?? this.groupId,
+    title:     title     ?? this.title,
     date:      date      ?? this.date,
     time:      time      ?? this.time,
     location:  location  ?? this.location,
@@ -41,6 +45,7 @@ class SessionModel {
   factory SessionModel.fromJson(Map<String, dynamic> json) => SessionModel(
     sessionId: json['sessionId'] as String,
     groupId:   json['groupId']   as String,
+    title:     json['title']     as String? ?? '',
     date:      json['date']      as String,
     time:      json['time']      as String,
     location:  json['location']  as String,
@@ -51,6 +56,7 @@ class SessionModel {
   Map<String, dynamic> toJson() => {
     'sessionId': sessionId,
     'groupId':   groupId,
+    'title':     title,
     'date':      date,
     'time':      time,
     'location':  location,

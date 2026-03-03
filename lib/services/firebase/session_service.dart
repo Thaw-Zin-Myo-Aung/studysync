@@ -30,6 +30,7 @@ class SessionService {
 
   Future<SessionModel> createSession({
     required String groupId,
+    required String title,
     required String date,
     required String time,
     required String location,
@@ -39,6 +40,7 @@ class SessionService {
       final data = {
         'sessionId': ref.id,
         'groupId':   groupId,
+        'title':     title,
         'date':      date,
         'time':      time,
         'location':  location,

@@ -84,7 +84,7 @@ class _UpcomingSessionsSectionState extends State<UpcomingSessionsSection> {
                   padding: const EdgeInsets.only(
                       top: 4, right: 6, bottom: 6, left: 6),
                   child: UpcomingSessionCard(
-                    groupName: s.groupId, // replaced by group name below
+                    groupName: s.title.isNotEmpty ? s.title : s.date,
                     timeUntil: s.date,
                     location: s.location,
                     timeRange: s.time,
