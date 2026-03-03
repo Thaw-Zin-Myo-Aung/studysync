@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
@@ -206,109 +207,214 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
 
   void _showCreateSessionDialog(
       BuildContext context, WidgetRef ref, StudyGroupModel group) {
-    final dateCtrl = TextEditingController();
-    final timeCtrl = TextEditingController();
     final locationCtrl = TextEditingController(text: group.location);
+    DateTime? pickedDate;
+    TimeOfDay? startTime;
+    TimeOfDay? endTime;
+
+    final dateCtrl = TextEditingController();
+    final startTimeCtrl = TextEditingController();
+    final endTimeCtrl = TextEditingController();
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Padding(
-        padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(2)),
-                ),
+      builder: (_) => StatefulBuilder(
+        builder: (sheetCtx, setSheetState) {
+          final bool isValid =
+              pickedDate != null && startTime != null && endTime != null;
+
+          Future<void> pickDate() async {
+            final now = DateTime.now();
+            final picked = await showDatePicker(
+              context: sheetCtx,
+              initialDate: pickedDate ?? now,
+              firstDate: now,
+              lastDate: now.add(const Duration(days: 365)),
+            );
+            if (picked != null) {
+              setSheetState(() {
+                pickedDate = picked;
+                dateCtrl.text = DateFormat('EEE, MMM d yyyy').format(picked);
+              });
+            }
+          }
+
+          Future<void> pickStartTime() async {
+            final picked = await showTimePicker(
+              context: sheetCtx,
+              initialTime: startTime ?? const TimeOfDay(hour: 14, minute: 0),
+            );
+            if (picked != null) {
+              setSheetState(() {
+                startTime = picked;
+                startTimeCtrl.text = picked.format(sheetCtx);
+              });
+            }
+          }
+
+          Future<void> pickEndTime() async {
+            final picked = await showTimePicker(
+              context: sheetCtx,
+              initialTime: endTime ?? const TimeOfDay(hour: 16, minute: 0),
+            );
+            if (picked != null) {
+              setSheetState(() {
+                endTime = picked;
+                endTimeCtrl.text = picked.format(sheetCtx);
+              });
+            }
+          }
+
+          String formatTimeOfDay(TimeOfDay t) {
+            final now = DateTime.now();
+            final dt = DateTime(now.year, now.month, now.day, t.hour, t.minute);
+            return DateFormat('h:mm a').format(dt);
+          }
+
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(sheetCtx).viewInsets.bottom),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(20)),
               ),
-              const Text('Schedule Session',
-                  style: TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              TextField(
-                controller: dateCtrl,
-                decoration: InputDecoration(
-                  hintText: 'Date (e.g. Mar 10, 2026)',
-                  prefixIcon: const Icon(LucideIcons.calendar, size: 18),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 12),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: timeCtrl,
-                decoration: InputDecoration(
-                  hintText: 'Time (e.g. 2:00 PM - 4:00 PM)',
-                  prefixIcon: const Icon(LucideIcons.clock, size: 18),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 12),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: locationCtrl,
-                decoration: InputDecoration(
-                  hintText: 'Location',
-                  prefixIcon: const Icon(LucideIcons.mapPin, size: 18),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 12),
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (dateCtrl.text.trim().isEmpty ||
-                        timeCtrl.text.trim().isEmpty) {
-                      return;
-                    }
-                    Navigator.pop(context);
-                    await createGroupSession(
-                      ref,
-                      groupId:  group.groupId,
-                      date:     dateCtrl.text.trim(),
-                      time:     timeCtrl.text.trim(),
-                      location: locationCtrl.text.trim(),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(2)),
+                    ),
                   ),
-                  child: const Text('Schedule',
+                  const Text('Schedule Session',
                       style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600)),
-                ),
+                          fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  // Date picker field
+                  TextField(
+                    controller: dateCtrl,
+                    readOnly: true,
+                    onTap: pickDate,
+                    decoration: InputDecoration(
+                      hintText: 'Select date',
+                      prefixIcon:
+                          const Icon(LucideIcons.calendar, size: 18),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Time range pickers
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: startTimeCtrl,
+                          readOnly: true,
+                          onTap: pickStartTime,
+                          decoration: InputDecoration(
+                            hintText: 'Start time',
+                            prefixIcon:
+                                const Icon(LucideIcons.clock, size: 18),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: endTimeCtrl,
+                          readOnly: true,
+                          onTap: pickEndTime,
+                          decoration: InputDecoration(
+                            hintText: 'End time',
+                            prefixIcon:
+                                const Icon(LucideIcons.clock, size: 18),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: locationCtrl,
+                    decoration: InputDecoration(
+                      hintText: 'Location',
+                      prefixIcon:
+                          const Icon(LucideIcons.mapPin, size: 18),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: isValid
+                          ? () async {
+                              Navigator.pop(sheetCtx);
+                              final dateStr = dateCtrl.text.trim();
+                              final timeStr =
+                                  '${formatTimeOfDay(startTime!)} - ${formatTimeOfDay(endTime!)}';
+                              await createGroupSession(
+                                ref,
+                                groupId: group.groupId,
+                                date: dateStr,
+                                time: timeStr,
+                                location: locationCtrl.text.trim(),
+                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text('Session scheduled!')),
+                                );
+                              }
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isValid
+                            ? AppColors.primary
+                            : Colors.grey.shade300,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text('Schedule',
+                          style: TextStyle(
+                              color: isValid
+                                  ? Colors.white
+                                  : Colors.grey.shade500,
+                              fontWeight: FontWeight.w600)),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
+import '../providers/settings_provider.dart';
 import 'settings_section_header.dart';
 import 'settings_item_row.dart';
 
-class NotificationsSection extends StatefulWidget {
+class NotificationsSection extends ConsumerWidget {
   const NotificationsSection({super.key});
 
   @override
-  State<NotificationsSection> createState() => _NotificationsSectionState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pushEnabled = ref.watch(pushNotificationsProvider);
+    final groupEnabled = ref.watch(groupMessagesProvider);
 
-class _NotificationsSectionState extends State<NotificationsSection> {
-  bool _pushEnabled = true;
-  bool _groupEnabled = true;
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -33,9 +30,11 @@ class _NotificationsSectionState extends State<NotificationsSection> {
                 title: "Push Notifications",
                 subtitle: "Receive reminders for sessions",
                 trailing: Switch(
-                  value: _pushEnabled,
-                  onChanged: (v) => setState(() => _pushEnabled = v),
-                  activeThumbColor: AppColors.primary,
+                  value: pushEnabled,
+                  onChanged: (v) {
+                    ref.read(pushNotificationsProvider.notifier).toggle(v);
+                  },
+                  activeTrackColor: AppColors.primary,
                 ),
               ),
               const Divider(height: 1, indent: 68),
@@ -46,9 +45,11 @@ class _NotificationsSectionState extends State<NotificationsSection> {
                 title: "Group Messages",
                 subtitle: "New discussion posts",
                 trailing: Switch(
-                  value: _groupEnabled,
-                  onChanged: (v) => setState(() => _groupEnabled = v),
-                  activeThumbColor: AppColors.primary,
+                  value: groupEnabled,
+                  onChanged: (v) {
+                    ref.read(groupMessagesProvider.notifier).toggle(v);
+                  },
+                  activeTrackColor: AppColors.primary,
                 ),
               ),
             ],

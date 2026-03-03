@@ -16,6 +16,7 @@ class UserModel {
   final Map<String, List<String>> availability;
   final List<String> learningStyles;
   final bool onboardingComplete;
+  final Map<String, dynamic> settings;
 
   const UserModel({
     required this.userId,
@@ -32,6 +33,7 @@ class UserModel {
     required this.availability,
     required this.learningStyles,
     required this.onboardingComplete,
+    this.settings = const {},
   });
 
   UserModel copyWith({
@@ -49,6 +51,7 @@ class UserModel {
     Map<String, List<String>>? availability,
     List<String>? learningStyles,
     bool? onboardingComplete,
+    Map<String, dynamic>? settings,
   }) {
     return UserModel(
       userId:             userId            ?? this.userId,
@@ -65,6 +68,7 @@ class UserModel {
       availability:       availability      ?? this.availability,
       learningStyles:     learningStyles    ?? this.learningStyles,
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
+      settings:           settings          ?? this.settings,
     );
   }
 
@@ -88,6 +92,7 @@ class UserModel {
                              ?? {},
       learningStyles:    List<String>.from(json['learningStyles'] as List? ?? []),
       onboardingComplete: json['onboardingComplete'] as bool? ?? false,
+      settings:          Map<String, dynamic>.from(json['settings'] as Map? ?? {}),
     );
   }
 
@@ -106,5 +111,6 @@ class UserModel {
     'availability':       availability,
     'learningStyles':     learningStyles,
     'onboardingComplete': onboardingComplete,
+    'settings':           settings,
   };
 }

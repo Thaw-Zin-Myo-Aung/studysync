@@ -66,6 +66,13 @@ service cloud.firestore {
       allow update: if request.auth != null
                     && request.auth.uid == resource.data.receiverId;
     }
+
+    // Notifications — recipient can read/update, any auth user can create
+    match /notifications/{notifId} {
+      allow read, update: if request.auth != null
+                          && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null;
+    }
   }
 }
 

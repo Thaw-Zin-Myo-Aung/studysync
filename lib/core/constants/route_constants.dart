@@ -25,4 +25,8 @@ class RouteConstants {
   static const String availabilityCalendar = '/profile/availability';
   static const String sessionSchedule = '/sessions/schedule';
   static const String matchDetail = '/discover/:matchId';
+
+  // Helper methods for parameterized routes
+  static String groupDetailPath(String groupId) => '/groups/$groupId';
+  static String matchDetailPath(String matchId) => '/discover/$matchId';
 }

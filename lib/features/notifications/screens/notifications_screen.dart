@@ -1,58 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/constants/route_constants.dart';
+import '../../../models/notification_model.dart';
+import '../../../providers/notifications_provider.dart';
+import '../../../providers/groups_provider.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final newNotifications = [
-      const _NotificationItem(
-        icon: LucideIcons.clock,
-        iconBgColor: Color(0xFFFFF3E0),
-        iconColor: AppColors.warning,
-        title: 'Session starting soon!',
-        body: 'Math Study Group - Library 3F, Room 302 - in 1 hour',
-        time: '1h ago',
-        type: _NotifType.plain,
-      ),
-      const _NotificationItem(
-        icon: LucideIcons.userPlus,
-        iconBgColor: AppColors.backgroundBlue,
-        iconColor: AppColors.primary,
-        title: 'New Group Request',
-        body: 'Kay Suwannarat invited you to join Calculus Prep Team.',
-        time: '3h ago',
-        type: _NotifType.actionable,
-        acceptLabel: 'Accept',
-        declineLabel: 'Decline',
-      ),
-    ];
-
-    final earlierNotifications = [
-      const _NotificationItem(
-        icon: LucideIcons.messageSquare,
-        iconBgColor: AppColors.backgroundBlue,
-        iconColor: Colors.blueGrey,
-        title: 'New post in Database Team',
-        body: 'Som: Does anyone have the notes from Tuesday?',
-        time: 'Yesterday',
-        type: _NotifType.plain,
-      ),
-      const _NotificationItem(
-        icon: LucideIcons.circleCheck,
-        iconBgColor: Color(0xFFE8F5E9),
-        iconColor: AppColors.success,
-        title: 'How was your session?',
-        body: 'Confirm attendance to keep your 95% Reliability Score.',
-        time: 'Yesterday',
-        type: _NotifType.outlined,
-        acceptLabel: 'Mark Attendance',
-      ),
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notifAsync = ref.watch(notificationsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundBlue,
@@ -70,7 +31,9 @@ class NotificationsScreen extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              ref.read(notificationsProvider.notifier).markAllRead();
+            },
             child: const Text(
               'Mark all read',
               style: TextStyle(fontSize: 13, color: AppColors.primary, fontWeight: FontWeight.w600),
@@ -78,18 +41,173 @@ class NotificationsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        children: [
-          const _SectionLabel(label: 'NEW'),
-          const SizedBox(height: 10),
-          ...newNotifications.map((n) => _NotifCard(item: n)),
-          const SizedBox(height: 20),
-          const _SectionLabel(label: 'EARLIER'),
-          const SizedBox(height: 10),
-          ...earlierNotifications.map((n) => _NotifCard(item: n)),
-        ],
+      body: notifAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, _) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Something went wrong', style: TextStyle(color: Colors.grey.shade600)),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => ref.read(notificationsProvider.notifier).refresh(),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+        data: (notifications) {
+          final newNotifications =
+              notifications.where((n) => !n.isRead).toList();
+          final earlierNotifications =
+              notifications.where((n) => n.isRead).toList();
+
+          if (newNotifications.isEmpty && earlierNotifications.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(LucideIcons.bellOff, size: 48, color: Colors.grey.shade400),
+                  const SizedBox(height: 12),
+                  Text(
+                    'No notifications yet',
+                    style: TextStyle(fontSize: 15, color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            children: [
+              if (newNotifications.isNotEmpty) ...[
+                const _SectionLabel(label: 'NEW'),
+                const SizedBox(height: 10),
+                ...newNotifications.map((n) => _NotifCard(
+                  item: _mapNotifToItem(n),
+                  onTap: () => ref.read(notificationsProvider.notifier).markRead(n.notifId),
+                  onAccept: n.type == 'group_invite'
+                      ? () async {
+                          final groupId = n.data['groupId'] as String?;
+                          if (groupId != null) {
+                            await ref.read(groupsProvider.notifier).joinGroup(groupId);
+                          }
+                          ref.read(notificationsProvider.notifier).markRead(n.notifId);
+                        }
+                      : null,
+                  onDecline: n.type == 'group_invite'
+                      ? () => ref.read(notificationsProvider.notifier).markRead(n.notifId)
+                      : null,
+                  onOutlinedAction: n.type == 'attendance_reminder'
+                      ? () {
+                          final groupId = n.data['groupId'] as String?;
+                          if (groupId != null) {
+                            context.go(RouteConstants.groupDetailPath(groupId));
+                          }
+                        }
+                      : null,
+                )),
+              ],
+              if (newNotifications.isNotEmpty && earlierNotifications.isNotEmpty)
+                const SizedBox(height: 20),
+              if (earlierNotifications.isNotEmpty) ...[
+                const _SectionLabel(label: 'EARLIER'),
+                const SizedBox(height: 10),
+                ...earlierNotifications.map((n) => _NotifCard(
+                  item: _mapNotifToItem(n),
+                  onTap: () {},
+                  onAccept: null,
+                  onDecline: null,
+                  onOutlinedAction: n.type == 'attendance_reminder'
+                      ? () {
+                          final groupId = n.data['groupId'] as String?;
+                          if (groupId != null) {
+                            context.go(RouteConstants.groupDetailPath(groupId));
+                          }
+                        }
+                      : null,
+                )),
+              ],
+            ],
+          );
+        },
       ),
+    );
+  }
+
+  static _NotificationItem _mapNotifToItem(NotificationModel n) {
+    final IconData icon;
+    final Color iconBgColor;
+    final Color iconColor;
+    final _NotifType type;
+    String? acceptLabel;
+    String? declineLabel;
+
+    switch (n.type) {
+      case 'session_reminder':
+        icon = LucideIcons.clock;
+        iconBgColor = const Color(0xFFFFF3E0);
+        iconColor = AppColors.warning;
+        type = _NotifType.plain;
+        break;
+      case 'group_invite':
+        icon = LucideIcons.userPlus;
+        iconBgColor = AppColors.backgroundBlue;
+        iconColor = AppColors.primary;
+        type = _NotifType.actionable;
+        acceptLabel = 'Accept';
+        declineLabel = 'Decline';
+        break;
+      case 'discussion_post':
+        icon = LucideIcons.messageSquare;
+        iconBgColor = AppColors.backgroundBlue;
+        iconColor = Colors.blueGrey;
+        type = _NotifType.plain;
+        break;
+      case 'attendance_reminder':
+        icon = LucideIcons.circleCheck;
+        iconBgColor = const Color(0xFFE8F5E9);
+        iconColor = AppColors.success;
+        type = _NotifType.outlined;
+        acceptLabel = 'Mark Attendance';
+        break;
+      case 'match_request':
+        icon = LucideIcons.userSearch;
+        iconBgColor = const Color(0xFFF3E8FF);
+        iconColor = AppColors.purple;
+        type = _NotifType.plain;
+        break;
+      default:
+        icon = LucideIcons.bell;
+        iconBgColor = AppColors.backgroundBlue;
+        iconColor = Colors.blueGrey;
+        type = _NotifType.plain;
+    }
+
+    // Format time ago
+    final diff = DateTime.now().difference(n.createdAt);
+    String time;
+    if (diff.inMinutes < 60) {
+      time = '${diff.inMinutes}m ago';
+    } else if (diff.inHours < 24) {
+      time = '${diff.inHours}h ago';
+    } else if (diff.inDays < 7) {
+      time = diff.inDays == 1 ? 'Yesterday' : '${diff.inDays}d ago';
+    } else {
+      time = '${diff.inDays ~/ 7}w ago';
+    }
+
+    return _NotificationItem(
+      icon: icon,
+      iconBgColor: iconBgColor,
+      iconColor: iconColor,
+      title: n.title,
+      body: n.body,
+      time: time,
+      type: type,
+      acceptLabel: acceptLabel,
+      declineLabel: declineLabel,
     );
   }
 }
@@ -143,116 +261,129 @@ class _SectionLabel extends StatelessWidget {
 // ─── Notification Card ────────────────────────────
 class _NotifCard extends StatelessWidget {
   final _NotificationItem item;
-  const _NotifCard({required this.item});
+  final VoidCallback onTap;
+  final VoidCallback? onAccept;
+  final VoidCallback? onDecline;
+  final VoidCallback? onOutlinedAction;
+
+  const _NotifCard({
+    required this.item,
+    required this.onTap,
+    this.onAccept,
+    this.onDecline,
+    this.onOutlinedAction,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: item.iconBgColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(item.icon, color: item.iconColor, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      item.body,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          // Actionable buttons
-          if (item.type == _NotifType.actionable && item.acceptLabel != null) ...[
-            const SizedBox(height: 12),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border, width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: item.iconBgColor,
+                    shape: BoxShape.circle,
                   ),
-                  child: Text(item.acceptLabel!, style: const TextStyle(fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600)),
+                  child: Icon(item.icon, color: item.iconColor, size: 20),
                 ),
-                const SizedBox(width: 8),
-                OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.grey.shade300),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.title,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        item.body,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(item.declineLabel ?? 'Decline', style: TextStyle(fontSize: 13, color: Colors.grey.shade700)),
                 ),
               ],
             ),
-          ],
 
-          // Outlined single button
-          if (item.type == _NotifType.outlined && item.acceptLabel != null) ...[
-            const SizedBox(height: 12),
-            OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: AppColors.success),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            // Actionable buttons
+            if (item.type == _NotifType.actionable && item.acceptLabel != null) ...[
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: onAccept,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    ),
+                    child: Text(item.acceptLabel!, style: const TextStyle(fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600)),
+                  ),
+                  const SizedBox(width: 8),
+                  OutlinedButton(
+                    onPressed: onDecline,
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    ),
+                    child: Text(item.declineLabel ?? 'Decline', style: TextStyle(fontSize: 13, color: Colors.grey.shade700)),
+                  ),
+                ],
               ),
-              child: Text(item.acceptLabel!, style: const TextStyle(fontSize: 13, color: AppColors.success, fontWeight: FontWeight.w600)),
+            ],
+
+            // Outlined single button
+            if (item.type == _NotifType.outlined && item.acceptLabel != null) ...[
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: onOutlinedAction,
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.success),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                ),
+                child: Text(item.acceptLabel!, style: const TextStyle(fontSize: 13, color: AppColors.success, fontWeight: FontWeight.w600)),
+              ),
+            ],
+
+            // Timestamp
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                item.time,
+                style: const TextStyle(fontSize: 12, color: AppColors.textHint),
+              ),
             ),
           ],
-
-          // Timestamp
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Text(
-              item.time,
-              style: const TextStyle(fontSize: 12, color: AppColors.textHint),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
-
