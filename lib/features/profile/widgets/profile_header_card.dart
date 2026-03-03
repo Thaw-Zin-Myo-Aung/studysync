@@ -75,8 +75,27 @@ class ProfileHeaderCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(LucideIcons.school, size: 14, color: AppColors.textMuted),
-                  const SizedBox(width: 8),
-                  Text('$major • $year', style: const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      major,
+                      style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(LucideIcons.calendarDays, size: 13, color: AppColors.textMuted),
+                  const SizedBox(width: 6),
+                  Text(
+                    year,
+                    style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),

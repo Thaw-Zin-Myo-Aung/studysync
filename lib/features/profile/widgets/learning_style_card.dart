@@ -43,7 +43,6 @@ class LearningStyleCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(LucideIcons.chevronRight, color: Colors.grey.shade400),
               ],
             ),
           ),

@@ -8,6 +8,9 @@ class AuthService {
 
   // ── Helper ────────────────────────────────────────────────────────────────
 
+  /// The UID of the currently signed-in Firebase user, or null.
+  String? get currentUid => _auth.currentUser?.uid;
+
   Future<UserModel> _fetchUser(String uid) async {
     final doc = await _db
         .collection('users')
@@ -15,6 +18,16 @@ class AuthService {
         .get()
         .timeout(const Duration(seconds: 10));
     return UserModel.fromJson(doc.data()!);
+  }
+
+  /// Public — fetches a user document by [uid] directly.
+  /// Returns null if the document does not exist.
+  Future<UserModel?> fetchUserById(String uid) async {
+    try {
+      return await _fetchUser(uid);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   // ── Sign Up ───────────────────────────────────────────────────────────────

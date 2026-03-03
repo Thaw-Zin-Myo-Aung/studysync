@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../core/constants/availability_constants.dart';
 import '../../../core/constants/mfu_majors.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
@@ -80,17 +81,13 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         : 'visual';
 
     // ── Availability — restore grid from stored map if present ─────
-    const days  = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
-    const slots = ['08:00','10:00','12:00','14:00','17:00','19:00'];
     final storedAvail = user?.availability ?? {};
     if (storedAvail.isNotEmpty) {
-      _availability = List.generate(7, (d) => List.generate(6, (s) {
-        final daySlots = storedAvail[days[d]] ?? [];
-        return daySlots.contains(slots[s]);
-      }));
+      _availability = availabilityMapToGrid(storedAvail);
     } else {
-      // Default demo selections
-      _availability = List.generate(7, (d) => List.generate(6, (s) {
+      // Default demo selections (Thu 7PM=slot5, Tue 7PM=slot5, Thu 2PM=slot3)
+      _availability = List.generate(kAvailabilityDayCount,
+          (d) => List.generate(kAvailabilitySlotCount, (s) {
         if (d == 3 && s == 5) return true; // Thu 7PM
         if (d == 1 && s == 5) return true; // Tue 7PM
         if (d == 3 && s == 3) return true; // Thu 2PM
@@ -146,18 +143,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         final uid = ref.read(authProvider)?.userId;
         if (uid == null) throw Exception('User not logged in');
 
-        // Convert availability grid (List<List<bool>>) to a map
-        // Days: Mon–Sun, Slots: 8AM 10AM 12PM 2PM 5PM 7PM
-        const days  = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
-        const slots = ['08:00','10:00','12:00','14:00','17:00','19:00'];
-        final availMap = <String, List<String>>{};
-        for (int d = 0; d < days.length; d++) {
-          final selected = <String>[];
-          for (int s = 0; s < slots.length; s++) {
-            if (_availability[d][s]) selected.add(slots[s]);
-          }
-          if (selected.isNotEmpty) availMap[days[d]] = selected;
-        }
+        // Convert availability grid to Firestore map using shared helper
+        final availMap = availabilityGridToMap(_availability);
 
         await AuthService().updateOnboardingStep(uid: uid, data: {
           'name':               _nameCtrl.text.trim(),

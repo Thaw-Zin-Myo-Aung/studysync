@@ -1,77 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:studysync/core/constants/availability_constants.dart';
 import 'package:studysync/core/theme/app_colors.dart';
+import 'package:studysync/core/widgets/availability_grid.dart';
 import 'package:studysync/core/widgets/profile_section_header.dart';
 
 class WeeklyScheduleSection extends StatelessWidget {
-  const WeeklyScheduleSection({super.key});
+  final Map<String, List<String>> availability;
+
+  const WeeklyScheduleSection({super.key, required this.availability});
 
   @override
   Widget build(BuildContext context) {
-    final schedule = [
-      [false, true, false, true],
-      [false, false, false, false],
-      [true, false, true, false],
-      [false, true, true, false],
-      [false, true, false, false],
-    ];
-    final days = ['M', 'T', 'W', 'T', 'F'];
+    final grid = availabilityMapToGrid(availability);
+    final hasAny = grid.any((day) => day.any((v) => v));
 
-    return Card(
-      color: AppColors.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const ProfileSectionHeader(icon: LucideIcons.calendar, title: 'My Schedule'),
-            const SizedBox(height: 16),
-            Row(
-              children: List.generate(days.length, (i) {
-                return Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: i == 0 ? 0 : 2, right: i == days.length - 1 ? 0 : 2),
-                    child: Column(
-                      children: [
-                        Text(days[i], style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey.shade500)),
-                        const SizedBox(height: 8),
-                        ...schedule[i].map((busy) => Container(
-                          height: 20,
-                          margin: const EdgeInsets.only(bottom: 6),
-                          decoration: BoxDecoration(
-                            color: busy ? AppColors.scheduleBusyBg : AppColors.scheduleFreeBg,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        )),
-                      ],
-                    ),
-                  ),
-                );
-              }),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const ProfileSectionHeader(icon: LucideIcons.calendar, title: 'My Schedule'),
+        const SizedBox(height: 12),
+        if (hasAny)
+          AvailabilityGrid(availability: grid, readOnly: true)
+        else
+          Card(
+            color: AppColors.surface,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              child: Center(
+                child: Text(
+                  'No availability set yet.',
+                  style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                ),
+              ),
             ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _dot(AppColors.scheduleLegFree),
-                const Text(' Free', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                const SizedBox(width: 16),
-                _dot(AppColors.scheduleBusyBg),
-                const Text(' Busy', style: TextStyle(fontSize: 12, color: Colors.grey)),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _dot(Color color) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+      ],
     );
   }
 }
-

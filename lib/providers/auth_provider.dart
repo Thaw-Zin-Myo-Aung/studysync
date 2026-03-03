@@ -36,8 +36,21 @@ class AuthNotifier extends Notifier<UserModel?> {
   }
 
   void updateUser(UserModel user) => state = user;
-}
 
+  /// Re-fetches the current user's full document from Firestore
+  /// and updates local state. Call this whenever a screen needs
+  /// guaranteed-fresh data (e.g. ProfileScreen on mount).
+  Future<void> refreshUser() async {
+    final uid = state?.userId ?? _authService.currentUid;
+    if (uid == null) return;
+    try {
+      final fresh = await _authService.fetchUserById(uid);
+      if (fresh != null) state = fresh;
+    } catch (_) {
+      // keep existing state on network error
+    }
+  }
+}
 final authProvider = NotifierProvider<AuthNotifier, UserModel?>(
   AuthNotifier.new,
 );
