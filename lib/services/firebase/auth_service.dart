@@ -34,17 +34,21 @@ class AuthService {
       final uid = cred.user!.uid;
       final studentId = email.split('@')[0];
       final data = {
-        'userId':            uid,
-        'studentId':         studentId,
-        'name':              name,
-        'email':             email,
-        'major':             major,
-        'year':              year,
-        'reliabilityScore':  0,
-        'sessionsAttended':  0,
-        'sessionsScheduled': 0,
-        'groupIds':          <String>[],
-        'createdAt':         FieldValue.serverTimestamp(),
+        'userId':             uid,
+        'studentId':          studentId,
+        'name':               name,
+        'email':              email,
+        'major':              major,
+        'year':               year,
+        'reliabilityScore':   0,
+        'sessionsAttended':   0,
+        'sessionsScheduled':  0,
+        'groupIds':           <String>[],
+        'courses':            <Map<String, dynamic>>[],
+        'availability':       <String, List<String>>{},
+        'learningStyles':     <String>[],
+        'onboardingComplete': false,
+        'createdAt':          FieldValue.serverTimestamp(),
       };
       await _db
           .collection('users')
@@ -106,6 +110,23 @@ class AuthService {
     });
   }
 
+  // ── Update Onboarding Step (generic) ─────────────────────────────────────
+
+  Future<void> updateOnboardingStep({
+    required String uid,
+    required Map<String, dynamic> data,
+  }) async {
+    try {
+      await _db
+          .collection('users')
+          .doc(uid)
+          .update(data)
+          .timeout(const Duration(seconds: 10));
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   // ── Update Profile ────────────────────────────────────────────────────────
 
   Future<void> updateProfile({
@@ -113,14 +134,10 @@ class AuthService {
     required String major,
     required int year,
   }) async {
-    try {
-      await _db.collection('users').doc(uid).update({
-        'major': major,
-        'year':  year,
-      }).timeout(const Duration(seconds: 10));
-    } catch (e) {
-      throw Exception(e.toString());
-    }
+    await updateOnboardingStep(uid: uid, data: {
+      'major': major,
+      'year':  year,
+    });
   }
 }
 
