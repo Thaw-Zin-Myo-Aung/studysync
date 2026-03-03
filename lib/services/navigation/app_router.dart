@@ -10,6 +10,7 @@ import '../../features/home/screens/home_screen.dart';
 import '../../features/matching/screens/discover_screen.dart';
 import '../../features/groups/screens/groups_list_screen.dart';
 import '../../features/groups/screens/group_detail_screen.dart';
+import '../../features/groups/screens/create_group_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
 import '../../features/profile/screens/edit_profile_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
@@ -104,6 +105,10 @@ class AppRouter {
       GoRoute(
         path: RouteConstants.groups,
         builder: (context, state) => const GroupsListScreen(),
+      ),
+      GoRoute(
+        path: RouteConstants.createGroup,
+        builder: (context, state) => const CreateGroupScreen(),
       ),
       GoRoute(
         path: RouteConstants.groupDetail,

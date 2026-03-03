@@ -10,6 +10,8 @@ class StudyGroupModel {
   final String nextSessionDate;
   final String location;
   final bool isActive;
+  final String description;
+  final int maxMembers;
 
   const StudyGroupModel({
     required this.groupId,
@@ -20,6 +22,8 @@ class StudyGroupModel {
     required this.nextSessionDate,
     required this.location,
     required this.isActive,
+    required this.description,
+    required this.maxMembers,
   });
 
   StudyGroupModel copyWith({
@@ -31,6 +35,8 @@ class StudyGroupModel {
     String? nextSessionDate,
     String? location,
     bool? isActive,
+    String? description,
+    int? maxMembers,
   }) {
     return StudyGroupModel(
       groupId:         groupId         ?? this.groupId,
@@ -41,6 +47,8 @@ class StudyGroupModel {
       nextSessionDate: nextSessionDate ?? this.nextSessionDate,
       location:        location        ?? this.location,
       isActive:        isActive        ?? this.isActive,
+      description:     description     ?? this.description,
+      maxMembers:      maxMembers      ?? this.maxMembers,
     );
   }
 
@@ -54,6 +62,8 @@ class StudyGroupModel {
       nextSessionDate: json['nextSessionDate'] as String,
       location:        json['location']        as String,
       isActive:        json['isActive']        as bool,
+      description:     json['description']     as String? ?? '',
+      maxMembers:      json['maxMembers']      as int?    ?? 6,
     );
   }
 
@@ -66,6 +76,7 @@ class StudyGroupModel {
     'nextSessionDate': nextSessionDate,
     'location':        location,
     'isActive':        isActive,
+    'description':     description,
+    'maxMembers':      maxMembers,
   };
 }
-

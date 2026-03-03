@@ -34,11 +34,15 @@ class GroupsNotifier extends Notifier<List<StudyGroupModel>> {
     required String name,
     required String course,
     required String location,
+    String description = '',
+    int maxMembers = 6,
   }) async {
     final group = await _groupService.createGroup(
-      name: name,
-      course: course,
-      location: location,
+      name:        name,
+      course:      course,
+      location:    location,
+      description: description,
+      maxMembers:  maxMembers,
     );
     state = [...state, group];
   }

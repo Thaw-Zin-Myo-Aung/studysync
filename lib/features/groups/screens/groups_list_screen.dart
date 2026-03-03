@@ -17,32 +17,30 @@ class GroupsListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final firestoreGroups = ref.watch(groupsProvider);
 
-    // Map Firestore groups to display GroupModel
-    final groups = firestoreGroups.isEmpty
-        ? mockGroups
-        : firestoreGroups.map((g) => GroupModel(
-              id: g.groupId,
-              name: g.name,
-              subject: g.course,
-              nextSession: g.nextSessionDate.isEmpty
-                  ? 'No session scheduled'
-                  : g.nextSessionDate,
-              icon: LucideIcons.users,
-              iconBgColor: AppColors.primarySurface,
-              iconColor: AppColors.primary,
-              memberInitials: [],
-              extraMemberCount:
-                  g.memberIds.length > 3 ? g.memberIds.length - 3 : 0,
-              hasUnread: false,
-              upcomingDate: '',
-              upcomingTimeRange: '',
-              upcomingLocation: g.location,
-              upcomingLocationDetail: '',
-              upcomingAttendees: 0,
-              upcomingTotal: g.memberIds.length,
-              pastSessions: [],
-              members: [],
-            )).toList();
+    // Map Firestore groups → local GroupModel for display
+    final groups = firestoreGroups.map((g) => GroupModel(
+          id: g.groupId,
+          name: g.name,
+          subject: g.course,
+          nextSession: g.nextSessionDate.isEmpty
+              ? 'No session scheduled'
+              : g.nextSessionDate,
+          icon: LucideIcons.users,
+          iconBgColor: AppColors.primarySurface,
+          iconColor: AppColors.primary,
+          memberInitials: [],
+          extraMemberCount:
+              g.memberIds.length > 3 ? g.memberIds.length - 3 : 0,
+          hasUnread: false,
+          upcomingDate: '',
+          upcomingTimeRange: '',
+          upcomingLocation: g.location,
+          upcomingLocationDetail: '',
+          upcomingAttendees: 0,
+          upcomingTotal: g.memberIds.length,
+          pastSessions: [],
+          members: [],
+        )).toList();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundBlue,
@@ -126,16 +124,47 @@ class GroupsListScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   Expanded(
-                    child: ListView.separated(
-                      itemCount: groups.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (_, i) => GroupCard(group: groups[i]),
-                    ),
+                    child: groups.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 64, height: 64,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primarySurface,
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  child: const Icon(LucideIcons.users,
+                                      size: 32, color: AppColors.primary),
+                                ),
+                                const SizedBox(height: 16),
+                                const Text("You haven't joined any group yet",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.textPrimary)),
+                                const SizedBox(height: 6),
+                                const Text(
+                                    'Tap + to create or join a study group.',
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: AppColors.textMuted)),
+                              ],
+                            ),
+                          )
+                        : ListView.separated(
+                            itemCount: groups.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 12),
+                            itemBuilder: (_, i) => GroupCard(group: groups[i]),
+                          ),
                   ),
                   const SizedBox(height: 16),
                   const Text(
                     'Tap a group to chat or view schedule',
-                    style: TextStyle(fontSize: 12, color: AppColors.textDisabled),
+                    style: TextStyle(
+                        fontSize: 12, color: AppColors.textDisabled),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -146,8 +175,7 @@ class GroupsListScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: Container(
-        width: 56,
-        height: 56,
+        width: 56, height: 56,
         decoration: const BoxDecoration(
           color: AppColors.primary,
           shape: BoxShape.circle,
