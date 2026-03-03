@@ -9,6 +9,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final bool obscureText;
   final TextCapitalization textCapitalization;
+  final bool readOnly;
 
   const CustomTextField({
     super.key,
@@ -19,6 +20,7 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
     this.textCapitalization = TextCapitalization.none,
+    this.readOnly = false,
   });
 
   @override
@@ -42,6 +44,11 @@ class CustomTextField extends StatelessWidget {
           keyboardType: keyboardType,
           obscureText: obscureText,
           textCapitalization: textCapitalization,
+          readOnly: readOnly,
+          style: TextStyle(
+            color: readOnly ? AppColors.textMuted : AppColors.textPrimary,
+            fontSize: 14,
+          ),
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: const TextStyle(color: AppColors.textHint, fontSize: 14),
@@ -49,7 +56,9 @@ class CustomTextField extends StatelessWidget {
                 ? Icon(prefixIcon, color: Colors.grey, size: 20)
                 : null,
             filled: true,
-            fillColor: AppColors.primarySurface,
+            fillColor: readOnly
+                ? AppColors.border.withValues(alpha: 0.35)
+                : AppColors.primarySurface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide.none,

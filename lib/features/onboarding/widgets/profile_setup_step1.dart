@@ -1,7 +1,13 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../core/constants/mfu_majors.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_text_field.dart';
+
+String _schoolFor(String major) => mfuMajorSchools[major] ?? '';
+
+// ── Widget ───────────────────────────────────────────────────────────────────
 
 class ProfileSetupStep1 extends StatelessWidget {
   final TextEditingController nameController;
@@ -23,15 +29,9 @@ class ProfileSetupStep1 extends StatelessWidget {
     required this.onAvatarTap,
   });
 
-  static const List<String> _majors = [
-    'Software Engineering', 'Computer Science', 'Information Technology',
-    'Data Science', 'Business Administration', 'International Business',
-    'Tourism Management', 'Nursing', 'Chinese Studies', 'English Studies',
-  ];
-
   static const List<String> _yearLabels = ['1st', '2nd', '3rd', '4th'];
 
-  static final _segmentBorder = OutlineInputBorder(
+  static final _inputBorder = OutlineInputBorder(
     borderRadius: BorderRadius.circular(14),
     borderSide: BorderSide.none,
   );
@@ -61,7 +61,8 @@ class ProfileSetupStep1 extends StatelessWidget {
                     CircleAvatar(
                       radius: 16,
                       backgroundColor: AppColors.primary,
-                      child: const Icon(LucideIcons.camera, size: 14, color: Colors.white),
+                      child: const Icon(LucideIcons.camera, size: 14,
+                          color: Colors.white),
                     ),
                   ],
                 ),
@@ -85,43 +86,132 @@ class ProfileSetupStep1 extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // ── Student ID ─────────────────────────────────
+        // ── Student ID (read-only, auto-filled) ────────
         CustomTextField(
           label: 'Student ID',
-          hintText: '10-digit Student ID',
+          hintText: 'Auto-filled from your account',
           prefixIcon: LucideIcons.hash,
           controller: studentIdController,
           keyboardType: TextInputType.number,
+          readOnly: true,
         ),
         const SizedBox(height: 16),
 
-        // ── Major dropdown ─────────────────────────────
+        // ── Major searchable dropdown ──────────────────
         const Text('Major',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87)),
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87)),
         const SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          initialValue: selectedMajor,
+        DropdownSearch<String>(
+          items: (filter, _) => filter.isEmpty
+              ? mfuMajors
+              : mfuMajors
+                  .where((m) =>
+                      m.toLowerCase().contains(filter.toLowerCase()) ||
+                      _schoolFor(m)
+                          .toLowerCase()
+                          .contains(filter.toLowerCase()))
+                  .toList(),
+          selectedItem: mfuMajors.contains(selectedMajor)
+              ? selectedMajor
+              : null,
           onChanged: (v) { if (v != null) onMajorChanged(v); },
-          items: _majors.map((m) => DropdownMenuItem(
-            value: m,
-            child: Text(m, style: const TextStyle(fontSize: 14)),
-          )).toList(),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: AppColors.primarySurface,
-            prefixIcon: const Icon(LucideIcons.graduationCap, color: Colors.grey, size: 20),
-            border: _segmentBorder,
-            enabledBorder: _segmentBorder,
-            focusedBorder: _segmentBorder,
+          // ── Popup with search box ──────────────────
+          popupProps: PopupProps.menu(
+            showSearchBox: true,
+            searchFieldProps: TextFieldProps(
+              decoration: InputDecoration(
+                hintText: 'Search major or school…',
+                hintStyle: const TextStyle(
+                    fontSize: 13, color: AppColors.textHint),
+                prefixIcon: const Icon(LucideIcons.search,
+                    size: 18, color: AppColors.textMuted),
+                filled: true,
+                fillColor: AppColors.backgroundPage,
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 10),
+              ),
+            ),
+            itemBuilder: (ctx, item, isDisabled, isSelected) {
+              final school = _schoolFor(item);
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Show school header only when first item of that group
+                  if (mfuMajors.indexOf(item) == 0 ||
+                      _schoolFor(mfuMajors[
+                              mfuMajors.indexOf(item) - 1]) !=
+                          school)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 2),
+                      child: Text(school,
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primary,
+                              letterSpacing: 0.4)),
+                    ),
+                  ListTile(
+                    dense: true,
+                    title: Text(item,
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.normal)),
+                    trailing: isSelected
+                        ? Icon(LucideIcons.check,
+                            size: 16, color: AppColors.primary)
+                        : null,
+                  ),
+                ],
+              );
+            },
+            menuProps: MenuProps(
+              borderRadius: BorderRadius.circular(14),
+              elevation: 4,
+            ),
+            constraints: const BoxConstraints(maxHeight: 320),
+            emptyBuilder: (_, __) => const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('No majors found',
+                  style: TextStyle(
+                      fontSize: 14, color: AppColors.textMuted)),
+            ),
           ),
-          dropdownColor: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
+          // ── Closed field appearance ────────────────
+          decoratorProps: DropDownDecoratorProps(
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: AppColors.primarySurface,
+              hintText: 'Select your major',
+              hintStyle: const TextStyle(
+                  fontSize: 14, color: AppColors.textHint),
+              prefixIcon: const Icon(LucideIcons.graduationCap,
+                  color: Colors.grey, size: 20),
+              border: _inputBorder,
+              enabledBorder: _inputBorder,
+              focusedBorder: _inputBorder,
+            ),
+          ),
         ),
         const SizedBox(height: 16),
 
         // ── Year chips ─────────────────────────────────
         const Text('Year',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87)),
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87)),
         const SizedBox(height: 10),
         Row(
           children: List.generate(4, (i) {
@@ -137,10 +227,14 @@ class ProfileSetupStep1 extends StatelessWidget {
                     height: 44,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.primary : AppColors.surface,
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.surface,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: isSelected ? AppColors.primary : AppColors.border,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.border,
                         width: 1.5,
                       ),
                     ),
@@ -148,7 +242,9 @@ class ProfileSetupStep1 extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isSelected ? Colors.white : AppColors.textSecondary,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textSecondary,
                         )),
                   ),
                 ),
@@ -161,5 +257,3 @@ class ProfileSetupStep1 extends StatelessWidget {
     );
   }
 }
-
-

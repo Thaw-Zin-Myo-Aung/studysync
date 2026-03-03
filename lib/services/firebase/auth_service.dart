@@ -32,8 +32,10 @@ class AuthService {
         password: password,
       );
       final uid = cred.user!.uid;
+      final studentId = email.split('@')[0];
       final data = {
         'userId':            uid,
+        'studentId':         studentId,
         'name':              name,
         'email':             email,
         'major':             major,
@@ -102,6 +104,23 @@ class AuthService {
         return null;
       }
     });
+  }
+
+  // ── Update Profile ────────────────────────────────────────────────────────
+
+  Future<void> updateProfile({
+    required String uid,
+    required String major,
+    required int year,
+  }) async {
+    try {
+      await _db.collection('users').doc(uid).update({
+        'major': major,
+        'year':  year,
+      }).timeout(const Duration(seconds: 10));
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 }
 

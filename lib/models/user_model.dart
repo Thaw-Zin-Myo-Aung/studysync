@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 @immutable
 class UserModel {
   final String userId;
+  final String studentId;
   final String name;
   final String email;
   final String major;
@@ -14,6 +15,7 @@ class UserModel {
 
   const UserModel({
     required this.userId,
+    required this.studentId,
     required this.name,
     required this.email,
     required this.major,
@@ -26,6 +28,7 @@ class UserModel {
 
   UserModel copyWith({
     String? userId,
+    String? studentId,
     String? name,
     String? email,
     String? major,
@@ -37,6 +40,7 @@ class UserModel {
   }) {
     return UserModel(
       userId:            userId            ?? this.userId,
+      studentId:         studentId         ?? this.studentId,
       name:              name              ?? this.name,
       email:             email             ?? this.email,
       major:             major             ?? this.major,
@@ -51,6 +55,8 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       userId:            json['userId']            as String,
+      studentId:         json['studentId'] as String? ??
+                             (json['email'] as String).split('@')[0],
       name:              json['name']              as String,
       email:             json['email']             as String,
       major:             json['major']             as String,
@@ -64,6 +70,7 @@ class UserModel {
 
   Map<String, dynamic> toJson() => {
     'userId':            userId,
+    'studentId':         studentId,
     'name':              name,
     'email':             email,
     'major':             major,

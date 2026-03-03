@@ -11,6 +11,7 @@ import '../../features/matching/screens/discover_screen.dart';
 import '../../features/groups/screens/groups_list_screen.dart';
 import '../../features/groups/screens/group_detail_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
+import '../../features/profile/screens/edit_profile_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
 import '../../providers/auth_provider.dart';
@@ -120,10 +121,7 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteConstants.editProfile,
-        builder: (context, state) => Scaffold(
-          appBar: AppBar(title: const Text('Edit Profile')),
-          body: const Center(child: Text('Edit Profile - Coming Soon')),
-        ),
+        builder: (context, state) => const EditProfileScreen(),
       ),
     ],
     );

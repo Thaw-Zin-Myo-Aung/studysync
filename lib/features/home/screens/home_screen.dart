@@ -145,7 +145,7 @@ class HomeScreen extends ConsumerWidget {
                   UserProfileCard(
                     fullName: user?.name ?? 'Student',
                     reliability: (user?.reliabilityScore ?? 0).toDouble(),
-                    studentId: user?.email.split('@').first ?? '',
+                    studentId: user?.studentId ?? '',
                     major: user?.major ?? '',
                   ),
                   const SizedBox(height: 20),

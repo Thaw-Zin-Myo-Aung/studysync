@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/onboarding_progress_bar.dart';
+import '../../../providers/auth_provider.dart';
 import '../widgets/profile_setup_step1.dart';
 import '../widgets/profile_setup_step2.dart';
 import '../widgets/profile_setup_step3.dart';
@@ -16,14 +18,14 @@ class _CourseEntry {
   Map<String, String> toMap() => {'name': name, 'goal': goal};
 }
 
-class ProfileSetupScreen extends StatefulWidget {
+class ProfileSetupScreen extends ConsumerStatefulWidget {
   const ProfileSetupScreen({super.key});
 
   @override
-  State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
+  ConsumerState<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
 }
 
-class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
+class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   int _step = 0;
   late final PageController _pageController;
   final _nameCtrl = TextEditingController(text: 'Thaw Zin Myo Aung');
@@ -41,6 +43,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   void initState() {
     super.initState();
     _pageController = PageController();
+    // Pre-fill student ID from authenticated user
+    final user = ref.read(authProvider);
+    _idCtrl.text = user?.studentId ?? user?.email.split('@').first ?? '';
     _availability = List.generate(7, (d) => List.generate(6, (s) {
       if (d == 3 && s == 5) return true; // Thu 7PM
       if (d == 1 && s == 5) return true; // Tue 7PM

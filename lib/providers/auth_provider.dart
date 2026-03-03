@@ -34,6 +34,8 @@ class AuthNotifier extends Notifier<UserModel?> {
     await _authService.signOut();
     state = null;
   }
+
+  void updateUser(UserModel user) => state = user;
 }
 
 final authProvider = NotifierProvider<AuthNotifier, UserModel?>(
