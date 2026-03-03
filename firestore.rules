@@ -2,10 +2,12 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Users — only the owner can read/write their own profile
+    // Users — any authenticated user can read (needed for member resolution & matching)
+    // Only the owner can write their own profile
     match /users/{userId} {
-      allow read, write: if request.auth != null
-                         && request.auth.uid == userId;
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+                   && request.auth.uid == userId;
     }
 
     // Groups — any authenticated user can read
@@ -17,6 +19,28 @@ service cloud.firestore {
                     && request.auth.uid in resource.data.memberIds;
       allow delete: if request.auth != null
                     && request.auth.uid == resource.data.adminId;
+
+      // Discussions — members can read and create
+      match /discussions/{discussionId} {
+        allow read: if request.auth != null
+                    && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.memberIds;
+        allow create: if request.auth != null
+                      && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.memberIds;
+        allow update: if request.auth != null
+                      && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.memberIds;
+        allow delete: if request.auth != null
+                      && request.auth.uid == resource.data.authorId;
+
+        // Replies — members can read and create
+        match /replies/{replyId} {
+          allow read: if request.auth != null
+                      && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.memberIds;
+          allow create: if request.auth != null
+                        && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.memberIds;
+          allow delete: if request.auth != null
+                        && request.auth.uid == resource.data.authorId;
+        }
+      }
 
       // Sessions — members only
       match /sessions/{sessionId} {

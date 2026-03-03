@@ -1,37 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
-import '../models/group_model.dart';
+import '../../../models/study_group_model.dart';
+import '../../../providers/groups_provider.dart';
+import '../../../providers/sessions_provider.dart';
 import '../widgets/discussion_tab.dart';
 import '../widgets/sessions_tab.dart';
 import '../widgets/members_tab.dart';
 
-class GroupDetailScreen extends StatefulWidget {
+class GroupDetailScreen extends ConsumerStatefulWidget {
   final String groupId;
 
   const GroupDetailScreen({super.key, required this.groupId});
 
   @override
-  State<GroupDetailScreen> createState() => _GroupDetailScreenState();
+  ConsumerState<GroupDetailScreen> createState() => _GroupDetailScreenState();
 }
 
-class _GroupDetailScreenState extends State<GroupDetailScreen>
+class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late GroupModel group;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
-    group = mockGroups.firstWhere(
-      (g) => g.id == widget.groupId,
-      orElse: () => mockGroups.first,
-    );
   }
 
   @override
@@ -42,6 +40,18 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final groups = ref.watch(groupsProvider);
+    final StudyGroupModel? group = groups
+        .cast<StudyGroupModel?>()
+        .firstWhere((g) => g?.groupId == widget.groupId, orElse: () => null);
+
+    if (group == null) {
+      return const Scaffold(
+        backgroundColor: AppColors.backgroundBlue,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.backgroundBlue,
       appBar: AppBar(
@@ -64,7 +74,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               ),
             ),
             Text(
-              group.subject,
+              group.course,
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -154,17 +164,18 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                const DiscussionTab(),
+                DiscussionTab(groupId: group.groupId),
                 SessionsTab(group: group),
                 MembersTab(group: group),
               ],
             ),
           ),
+
         ],
       ),
       floatingActionButton: _tabController.index == 1
           ? FloatingActionButton(
-              onPressed: () {},
+              onPressed: () => _showCreateSessionDialog(context, ref, group),
               backgroundColor: AppColors.primary,
               shape: const CircleBorder(),
               elevation: 3,
@@ -189,6 +200,115 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
             case 3: context.go(RouteConstants.profile);  break;
           }
         },
+      ),
+    );
+  }
+
+  void _showCreateSessionDialog(
+      BuildContext context, WidgetRef ref, StudyGroupModel group) {
+    final dateCtrl = TextEditingController();
+    final timeCtrl = TextEditingController();
+    final locationCtrl = TextEditingController(text: group.location);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Padding(
+        padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2)),
+                ),
+              ),
+              const Text('Schedule Session',
+                  style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: dateCtrl,
+                decoration: InputDecoration(
+                  hintText: 'Date (e.g. Mar 10, 2026)',
+                  prefixIcon: const Icon(LucideIcons.calendar, size: 18),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 12),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: timeCtrl,
+                decoration: InputDecoration(
+                  hintText: 'Time (e.g. 2:00 PM - 4:00 PM)',
+                  prefixIcon: const Icon(LucideIcons.clock, size: 18),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 12),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: locationCtrl,
+                decoration: InputDecoration(
+                  hintText: 'Location',
+                  prefixIcon: const Icon(LucideIcons.mapPin, size: 18),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 12),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (dateCtrl.text.trim().isEmpty ||
+                        timeCtrl.text.trim().isEmpty) {
+                      return;
+                    }
+                    Navigator.pop(context);
+                    await createGroupSession(
+                      ref,
+                      groupId:  group.groupId,
+                      date:     dateCtrl.text.trim(),
+                      time:     timeCtrl.text.trim(),
+                      location: locationCtrl.text.trim(),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Schedule',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600)),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

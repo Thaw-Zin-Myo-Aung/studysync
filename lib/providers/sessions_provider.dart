@@ -63,5 +63,43 @@ final upcomingSessionsProvider =
   UpcomingSessionsNotifier.new,
 );
 
+// ── Sessions for a single group (used by SessionsTab) ──────────────────────
+
+final groupSessionsProvider = FutureProvider.family
+    .autoDispose<List<SessionModel>, String>((ref, groupId) async {
+  final service = ref.read(sessionServiceProvider);
+  return service.getSessions(groupId);
+});
+
+/// Creates a session and then invalidates providers.
+Future<void> createGroupSession(
+  WidgetRef ref, {
+  required String groupId,
+  required String date,
+  required String time,
+  required String location,
+}) async {
+  final service = ref.read(sessionServiceProvider);
+  await service.createSession(
+    groupId:  groupId,
+    date:     date,
+    time:     time,
+    location: location,
+  );
+  ref.invalidate(groupSessionsProvider(groupId));
+  ref.invalidate(upcomingSessionsProvider);
+}
+
+/// Marks attendance for a session.
+Future<void> markGroupSessionAttendance(
+  WidgetRef ref, {
+  required String groupId,
+  required String sessionId,
+  required bool attended,
+}) async {
+  final service = ref.read(sessionServiceProvider);
+  await service.markAttendance(groupId, sessionId, attended);
+}
+
 
 

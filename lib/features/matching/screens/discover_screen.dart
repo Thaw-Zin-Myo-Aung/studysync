@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
+import '../providers/matching_provider.dart';
 import '../widgets/study_partner_card.dart';
 import '../widgets/filter_bottom_sheet.dart';
 import '../widgets/add_friend_sheet.dart';
 
-class DiscoverScreen extends StatelessWidget {
+class DiscoverScreen extends ConsumerWidget {
   const DiscoverScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final mockMatches = [
-      {'name': 'Jane', 'major': 'Software Eng', 'matchScore': 92, 'reliability': 88.0, 'schedule': 'Both free Thursday 7-9 PM', 'goal': 'Both targeting B+ in Math', 'course': 'Database Systems'},
-      {'name': 'Sarah', 'major': 'Computer Science', 'matchScore': 85, 'reliability': 94.0, 'schedule': 'Both free Friday 1-3 PM', 'goal': 'Both preparing for Midterm', 'course': 'Data Structures'},
-      {'name': 'James', 'major': 'IT', 'matchScore': 78, 'reliability': 82.0, 'schedule': 'Both free Monday Morning', 'goal': 'Pass/Fail focus', 'course': 'Web Technologies'},
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final matchesAsync = ref.watch(matchingProvider);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundBlue,
@@ -108,34 +106,86 @@ class DiscoverScreen extends StatelessWidget {
           ),
           // Main scrollable content
           SafeArea(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: mockMatches.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                if (index == mockMatches.length) {
-                  return Column(
-                    children: [
-                      const SizedBox(height: 8),
-                      const Text("That's all for now!", style: TextStyle(fontSize: 13, color: Colors.grey)),
-                      TextButton(
-                        onPressed: () => showFilterBottomSheet(context),
-                        child: const Text('Adjust Filters', style: TextStyle(color: AppColors.primary)),
-                      ),
-                    ],
+            child: matchesAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Could not load matches'),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () => ref.read(matchingProvider.notifier).refresh(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+              data: (matches) {
+                if (matches.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(LucideIcons.search, size: 48, color: AppColors.textHint),
+                        const SizedBox(height: 12),
+                        const Text('No matches found yet',
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                        const SizedBox(height: 4),
+                        const Text('Complete your profile to find study partners!',
+                            style: TextStyle(fontSize: 13, color: AppColors.textHint)),
+                        const SizedBox(height: 12),
+                        TextButton(
+                          onPressed: () => ref.read(matchingProvider.notifier).refresh(),
+                          child: const Text('Refresh'),
+                        ),
+                      ],
+                    ),
                   );
                 }
-                final m = mockMatches[index];
-                return StudyPartnerCard(
-                  name: m['name'] as String,
-                  major: m['major'] as String,
-                  matchScore: m['matchScore'] as int,
-                  reliabilityScore: m['reliability'] as double,
-                  scheduleText: m['schedule'] as String,
-                  goalText: m['goal'] as String,
-                  sharedCourse: m['course'] as String,
-                  onPass: () {},
-                  onRequest: () {},
+                return RefreshIndicator(
+                  onRefresh: () => ref.read(matchingProvider.notifier).refresh(),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: matches.length + 1,
+                    separatorBuilder: (_, __) => const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      if (index == matches.length) {
+                        return Column(
+                          children: [
+                            const SizedBox(height: 8),
+                            const Text("That's all for now!", style: TextStyle(fontSize: 13, color: Colors.grey)),
+                            TextButton(
+                              onPressed: () => showFilterBottomSheet(context),
+                              child: const Text('Adjust Filters', style: TextStyle(color: AppColors.primary)),
+                            ),
+                          ],
+                        );
+                      }
+                      final m = matches[index];
+                      return StudyPartnerCard(
+                        name: m.name,
+                        major: m.major,
+                        matchScore: m.matchScore,
+                        reliabilityScore: m.reliabilityScore.toDouble(),
+                        scheduleText: m.scheduleOverlap,
+                        goalText: m.goalSimilarity,
+                        sharedCourse: m.courseOverlap,
+                        onPass: () {
+                          // Dismiss locally — remove from list by refreshing
+                          // In a real app you'd track dismissed matches
+                        },
+                        onRequest: () async {
+                          await ref.read(matchingProvider.notifier).sendRequest(m.userId);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Request sent to ${m.name}!')),
+                            );
+                          }
+                        },
+                      );
+                    },
+                  ),
                 );
               },
             ),
@@ -146,9 +196,15 @@ class DiscoverScreen extends StatelessWidget {
         currentIndex: 1,
         onTap: (index) {
           switch (index) {
-            case 0: context.go(RouteConstants.home);    break;
-            case 2: context.go(RouteConstants.groups);  break;
-            case 3: context.go(RouteConstants.profile); break;
+            case 0:
+              context.go(RouteConstants.home);
+              break;
+            case 2:
+              context.go(RouteConstants.groups);
+              break;
+            case 3:
+              context.go(RouteConstants.profile);
+              break;
           }
         },
       ),
@@ -162,4 +218,3 @@ class DiscoverScreen extends StatelessWidget {
     );
   }
 }
-

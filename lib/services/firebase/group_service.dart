@@ -129,4 +129,48 @@ class GroupService {
       throw Exception(e.toString());
     }
   }
+
+  // ── Leave Group ───────────────────────────────────────────────────────────
+
+  Future<void> leaveGroup(String groupId) async {
+    try {
+      final uid = _auth.currentUser!.uid;
+      await _db.collection('groups').doc(groupId).update({
+        'memberIds': FieldValue.arrayRemove([uid]),
+      }).timeout(const Duration(seconds: 10));
+      await _db.collection('users').doc(uid).update({
+        'groupIds': FieldValue.arrayRemove([groupId]),
+      }).timeout(const Duration(seconds: 10));
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  // ── Remove Member ─────────────────────────────────────────────────────────
+
+  Future<void> removeMember(String groupId, String memberId) async {
+    try {
+      await _db.collection('groups').doc(groupId).update({
+        'memberIds': FieldValue.arrayRemove([memberId]),
+      }).timeout(const Duration(seconds: 10));
+      await _db.collection('users').doc(memberId).update({
+        'groupIds': FieldValue.arrayRemove([groupId]),
+      }).timeout(const Duration(seconds: 10));
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  // ── Make Admin ────────────────────────────────────────────────────────────
+
+  Future<StudyGroupModel> makeAdmin(String groupId, String memberId) async {
+    try {
+      await _db.collection('groups').doc(groupId).update({
+        'adminId': memberId,
+      }).timeout(const Duration(seconds: 10));
+      return _fetchGroup(groupId);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }
