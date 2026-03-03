@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../models/notification_model.dart';
 import '../../../models/study_group_model.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../providers/groups_provider.dart';
 import '../../../services/firebase/group_service.dart';
+import '../../../services/firebase/notification_service.dart';
 
 void showJoinGroupSheet(BuildContext context) {
   showModalBottomSheet(
@@ -54,20 +58,44 @@ class _JoinGroupSheetState extends ConsumerState<_JoinGroupSheet> {
   Future<void> _join(String groupId) async {
     setState(() => _joiningId = groupId);
     try {
-      await ref.read(groupsProvider.notifier).joinGroup(groupId);
+      final currentUser = ref.read(authProvider);
+      if (currentUser == null) return;
+
+      // Find the group to get admin info
+      final group = _results.firstWhere((g) => g.groupId == groupId);
+
+      // Send join_request notification to admin
+      final notifRef =
+          FirebaseFirestore.instance.collection('notifications').doc();
+      await NotificationService().createNotification(NotificationModel(
+        notifId: notifRef.id,
+        userId: group.adminId,
+        type: 'join_request',
+        title: 'Join Request',
+        body: '${currentUser.name} wants to join ${group.name}',
+        isRead: false,
+        createdAt: DateTime.now(),
+        data: {
+          'groupId': group.groupId,
+          'groupName': group.name,
+          'requesterId': currentUser.userId,
+          'requesterName': currentUser.name,
+        },
+      ));
+
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Successfully joined the group!'),
-            backgroundColor: AppColors.success,
+            content: Text('Join request sent! Waiting for admin approval.'),
+            backgroundColor: AppColors.primary,
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to join: $e')),
+          SnackBar(content: Text('Failed to send request: $e')),
         );
       }
     } finally {
@@ -341,7 +369,7 @@ class _GroupResultTile extends StatelessWidget {
                           width: 14, height: 14,
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: Colors.white))
-                      : const Text('Join',
+                      : const Text('Request',
                           style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600)),

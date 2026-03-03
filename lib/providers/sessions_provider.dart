@@ -9,11 +9,10 @@ final sessionServiceProvider =
 /// Loads all *scheduled* sessions across every group the user belongs to,
 /// sorted by date ascending (soonest first).
 class UpcomingSessionsNotifier extends Notifier<List<SessionModel>> {
-  late SessionService _sessionService;
+  SessionService get _sessionService => ref.read(sessionServiceProvider);
 
   @override
   List<SessionModel> build() {
-    _sessionService = ref.read(sessionServiceProvider);
 
     // Re-load whenever the groups list changes
     ref.listen(groupsProvider, (_, groups) {

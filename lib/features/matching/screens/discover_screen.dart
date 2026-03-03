@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,10 +6,15 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
+import '../../../models/notification_model.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../services/firebase/notification_service.dart';
 import '../providers/matching_provider.dart';
 import '../widgets/study_partner_card.dart';
 import '../widgets/filter_bottom_sheet.dart';
 import '../widgets/add_friend_sheet.dart';
+import '../widgets/user_profile_popup.dart';
+import '../widgets/select_group_sheet.dart';
 
 class DiscoverScreen extends ConsumerWidget {
   const DiscoverScreen({super.key});
@@ -41,7 +47,7 @@ class DiscoverScreen extends ConsumerWidget {
               child: IconButton(
                 padding: EdgeInsets.zero,
                 icon: const Icon(LucideIcons.slidersHorizontal, color: Colors.black87, size: 20),
-                onPressed: () => showFilterBottomSheet(context),
+                onPressed: () => showFilterBottomSheet(context, ref),
               ),
             ),
           ),
@@ -156,7 +162,7 @@ class DiscoverScreen extends ConsumerWidget {
                             const SizedBox(height: 8),
                             const Text("That's all for now!", style: TextStyle(fontSize: 13, color: Colors.grey)),
                             TextButton(
-                              onPressed: () => showFilterBottomSheet(context),
+                              onPressed: () => showFilterBottomSheet(context, ref),
                               child: const Text('Adjust Filters', style: TextStyle(color: AppColors.primary)),
                             ),
                           ],
@@ -164,6 +170,7 @@ class DiscoverScreen extends ConsumerWidget {
                       }
                       final m = matches[index];
                       return StudyPartnerCard(
+                        userId: m.userId,
                         name: m.name,
                         major: m.major,
                         matchScore: m.matchScore,
@@ -171,18 +178,17 @@ class DiscoverScreen extends ConsumerWidget {
                         scheduleText: m.scheduleOverlap,
                         goalText: m.goalSimilarity,
                         sharedCourse: m.courseOverlap,
+                        onViewProfile: () => showUserProfilePopup(context, ref, m.userId),
                         onPass: () {
                           // Dismiss locally — remove from list by refreshing
                           // In a real app you'd track dismissed matches
                         },
-                        onRequest: () async {
-                          await ref.read(matchingProvider.notifier).sendRequest(m.userId);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Request sent to ${m.name}!')),
-                            );
-                          }
-                        },
+                        onCreateGroup: () => _sendGroupCreateInvite(context, ref, m.userId, m.name),
+                        onInviteToGroup: () => showSelectGroupSheet(
+                          context, ref,
+                          targetUserId: m.userId,
+                          targetUserName: m.name,
+                        ),
                       );
                     },
                   ),
@@ -216,5 +222,43 @@ class DiscoverScreen extends ConsumerWidget {
         child: const Icon(LucideIcons.userPlus, color: Colors.white, size: 22),
       ),
     );
+  }
+
+  /// Sends a "group_create_invite" notification.
+  /// The group is only created when the recipient accepts.
+  void _sendGroupCreateInvite(
+      BuildContext context, WidgetRef ref, String targetUserId, String targetName) async {
+    final currentUser = ref.read(authProvider);
+    if (currentUser == null) return;
+
+    try {
+      final notifRef =
+          FirebaseFirestore.instance.collection('notifications').doc();
+      await NotificationService().createNotification(NotificationModel(
+        notifId: notifRef.id,
+        userId: targetUserId,
+        type: 'group_create_invite',
+        title: 'Study Group Invitation',
+        body:
+            '${currentUser.name} wants to create a study group with you',
+        isRead: false,
+        createdAt: DateTime.now(),
+        data: {
+          'senderId': currentUser.userId,
+          'senderName': currentUser.name,
+        },
+      ));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Group invite sent to $targetName!')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send invite: $e')),
+        );
+      }
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -37,8 +38,15 @@ class ReplyModel {
       authorId:   json['authorId']   as String? ?? '',
       authorName: json['authorName'] as String? ?? '',
       message:    json['message']    as String? ?? '',
-      timestamp:  json['timestamp']?.toString() ?? '',
+      timestamp:  _parseTimestamp(json['timestamp']),
     );
+  }
+
+  static String _parseTimestamp(dynamic value) {
+    if (value == null) return '';
+    if (value is Timestamp) return value.toDate().toIso8601String();
+    if (value is String) return value;
+    return '';
   }
 
   Map<String, dynamic> toJson() => {

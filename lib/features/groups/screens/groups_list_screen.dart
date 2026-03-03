@@ -5,7 +5,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
+import '../../../models/study_group_model.dart';
 import '../../../providers/groups_provider.dart';
+import '../../../providers/sessions_provider.dart';
 import '../models/group_model.dart';
 import '../widgets/group_card.dart';
 import '../widgets/add_group_sheet.dart';
@@ -17,32 +19,8 @@ class GroupsListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final firestoreGroups = ref.watch(groupsProvider);
 
-    // Map Firestore groups → local GroupModel for display
-    final groups = firestoreGroups.map((g) => GroupModel(
-          id: g.groupId,
-          name: g.name,
-          subject: g.course,
-          nextSession: g.nextSessionDate.isEmpty
-              ? 'No session scheduled'
-              : g.nextSessionDate,
-          icon: LucideIcons.users,
-          iconBgColor: AppColors.primarySurface,
-          iconColor: AppColors.primary,
-          memberInitials: [],
-          extraMemberCount:
-              g.memberIds.length > 3 ? g.memberIds.length - 3 : 0,
-          hasUnread: false,
-          upcomingDate: '',
-          upcomingTimeRange: '',
-          upcomingLocation: g.location,
-          upcomingLocationDetail: '',
-          upcomingAttendees: 0,
-          upcomingTotal: g.memberIds.length,
-          pastSessions: [],
-          members: [],
-        )).toList();
-
     return Scaffold(
+      // ...existing scaffold code unchanged...
       backgroundColor: AppColors.backgroundBlue,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
@@ -63,68 +41,52 @@ class GroupsListScreen extends ConsumerWidget {
       ),
       body: Stack(
         children: [
-          // Blob 1 — large primary glow, top-right
           Positioned(
-            top: -20,
-            right: -40,
+            top: -20, right: -40,
             child: Container(
-              width: 220,
-              height: 220,
+              width: 220, height: 220,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.primary.withValues(alpha: 0.28),
-                    AppColors.primary.withValues(alpha: 0.0),
-                  ],
-                ),
+                gradient: RadialGradient(colors: [
+                  AppColors.primary.withValues(alpha: 0.28),
+                  AppColors.primary.withValues(alpha: 0.0),
+                ]),
               ),
             ),
           ),
-          // Blob 2 — medium glow, mid-left
           Positioned(
-            top: 30,
-            left: -50,
+            top: 30, left: -50,
             child: Container(
-              width: 200,
-              height: 200,
+              width: 200, height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFF60A5FA).withValues(alpha: 0.22),
-                    const Color(0xFF60A5FA).withValues(alpha: 0.0),
-                  ],
-                ),
+                gradient: RadialGradient(colors: [
+                  const Color(0xFF60A5FA).withValues(alpha: 0.22),
+                  const Color(0xFF60A5FA).withValues(alpha: 0.0),
+                ]),
               ),
             ),
           ),
-          // Blob 3 — small accent, top-center
           Positioned(
-            top: 60,
-            left: 130,
+            top: 60, left: 130,
             child: Container(
-              width: 120,
-              height: 120,
+              width: 120, height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFFBAD7FF).withValues(alpha: 0.35),
-                    const Color(0xFFBAD7FF).withValues(alpha: 0.0),
-                  ],
-                ),
+                gradient: RadialGradient(colors: [
+                  const Color(0xFFBAD7FF).withValues(alpha: 0.35),
+                  const Color(0xFFBAD7FF).withValues(alpha: 0.0),
+                ]),
               ),
             ),
           ),
-          // Main content
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   Expanded(
-                    child: groups.isEmpty
+                    child: firestoreGroups.isEmpty
                         ? Center(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -154,10 +116,12 @@ class GroupsListScreen extends ConsumerWidget {
                             ),
                           )
                         : ListView.separated(
-                            itemCount: groups.length,
+                            itemCount: firestoreGroups.length,
                             separatorBuilder: (_, __) =>
                                 const SizedBox(height: 12),
-                            itemBuilder: (_, i) => GroupCard(group: groups[i]),
+                            itemBuilder: (_, i) => _GroupCardWithSession(
+                              firestoreGroup: firestoreGroups[i],
+                            ),
                           ),
                   ),
                   const SizedBox(height: 16),
@@ -198,3 +162,56 @@ class GroupsListScreen extends ConsumerWidget {
     );
   }
 }
+
+/// Watches the sessions for a single group and passes the next upcoming
+/// session label (title + date) down to [GroupCard].
+class _GroupCardWithSession extends ConsumerWidget {
+  final StudyGroupModel firestoreGroup;
+  const _GroupCardWithSession({required this.firestoreGroup});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sessionsAsync =
+        ref.watch(groupSessionsProvider(firestoreGroup.groupId));
+
+    final nextSession = sessionsAsync.whenOrNull(
+      data: (sessions) {
+        final upcoming = sessions
+            .where((s) => s.status == 'scheduled')
+            .toList()
+          ..sort((a, b) => a.date.compareTo(b.date));
+        if (upcoming.isEmpty) return null;
+        final s = upcoming.first;
+        return s.title.isNotEmpty
+            ? '${s.title} · ${s.date}'
+            : s.date;
+      },
+    );
+
+    final group = GroupModel(
+      id: firestoreGroup.groupId,
+      name: firestoreGroup.name,
+      subject: firestoreGroup.course,
+      nextSession: nextSession ?? 'No session scheduled',
+      icon: LucideIcons.users,
+      iconBgColor: AppColors.primarySurface,
+      iconColor: AppColors.primary,
+      memberInitials: [],
+      extraMemberCount: firestoreGroup.memberIds.length > 3
+          ? firestoreGroup.memberIds.length - 3
+          : 0,
+      hasUnread: false,
+      upcomingDate: '',
+      upcomingTimeRange: '',
+      upcomingLocation: firestoreGroup.location,
+      upcomingLocationDetail: '',
+      upcomingAttendees: 0,
+      upcomingTotal: firestoreGroup.memberIds.length,
+      pastSessions: [],
+      members: [],
+    );
+
+    return GroupCard(group: group);
+  }
+}
+

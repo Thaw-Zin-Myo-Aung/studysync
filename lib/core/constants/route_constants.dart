@@ -21,6 +21,7 @@ class RouteConstants {
   // Nested routes
   static const String groupDetail = '/groups/:groupId';
   static const String createGroup = '/groups/create';
+  static const String groupSettings = '/groups/:groupId/settings';
   static const String editProfile = '/profile/edit';
   static const String availabilityCalendar = '/profile/availability';
   static const String sessionSchedule = '/sessions/schedule';
@@ -28,5 +29,6 @@ class RouteConstants {
 
   // Helper methods for parameterized routes
   static String groupDetailPath(String groupId) => '/groups/$groupId';
+  static String groupSettingsPath(String groupId) => '/groups/$groupId/settings';
   static String matchDetailPath(String matchId) => '/discover/$matchId';
 }

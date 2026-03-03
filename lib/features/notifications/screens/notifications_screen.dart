@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +8,9 @@ import '../../../core/constants/route_constants.dart';
 import '../../../models/notification_model.dart';
 import '../../../providers/notifications_provider.dart';
 import '../../../providers/groups_provider.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../services/firebase/group_service.dart';
+import '../../../services/firebase/notification_service.dart';
 
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
@@ -95,8 +99,69 @@ class NotificationsScreen extends ConsumerWidget {
                           }
                           ref.read(notificationsProvider.notifier).markRead(n.notifId);
                         }
-                      : null,
-                  onDecline: n.type == 'group_invite'
+                      : n.type == 'group_create_invite'
+                          ? () async {
+                              final senderId = n.data['senderId'] as String? ?? '';
+                              final senderName = n.data['senderName'] as String? ?? 'Partner';
+                              final currentUser = ref.read(authProvider);
+                              if (currentUser == null) return;
+                              // Create a new group with both users
+                              await ref.read(groupsProvider.notifier).createGroup(
+                                name: '${currentUser.name} & $senderName',
+                                course: 'General Study',
+                                location: 'TBD',
+                                description: 'Study group created from Discover',
+                              );
+                              // Add the sender to the newly created group
+                              final groups = ref.read(groupsProvider);
+                              if (groups.isNotEmpty) {
+                                final newGroup = groups.last;
+                                await GroupService().joinGroupForUser(newGroup.groupId, senderId);
+                                // Reload groups
+                                final user = ref.read(authProvider);
+                                if (user != null) {
+                                  await ref.read(groupsProvider.notifier).loadGroups(user.userId);
+                                }
+                              }
+                              ref.read(notificationsProvider.notifier).markRead(n.notifId);
+                              // Notify the original sender that the group was created
+                              if (senderId.isNotEmpty) {
+                                final confirmRef = FirebaseFirestore.instance.collection('notifications').doc();
+                                await NotificationService().createNotification(NotificationModel(
+                                  notifId: confirmRef.id,
+                                  userId: senderId,
+                                  type: 'group_invite',
+                                  title: 'Group Created!',
+                                  body: '${currentUser.name} accepted your invite. A new study group has been created!',
+                                  isRead: false,
+                                  createdAt: DateTime.now(),
+                                  data: {
+                                    'groupId': groups.isNotEmpty ? groups.last.groupId : '',
+                                    'groupName': '${currentUser.name} & $senderName',
+                                  },
+                                ));
+                              }
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Study group created!')),
+                                );
+                              }
+                            }
+                          : n.type == 'join_request'
+                              ? () async {
+                                  final groupId = n.data['groupId'] as String?;
+                                  final requesterId = n.data['requesterId'] as String?;
+                                  if (groupId != null && requesterId != null) {
+                                    await GroupService().joinGroupForUser(groupId, requesterId);
+                                    final user = ref.read(authProvider);
+                                    if (user != null) {
+                                      await ref.read(groupsProvider.notifier).loadGroups(user.userId);
+                                    }
+                                  }
+                                  ref.read(notificationsProvider.notifier).markRead(n.notifId);
+                                }
+                              : null,
+                  onDecline: (n.type == 'group_invite' || n.type == 'group_create_invite' || n.type == 'join_request')
                       ? () => ref.read(notificationsProvider.notifier).markRead(n.notifId)
                       : null,
                   onOutlinedAction: n.type == 'attendance_reminder'
@@ -177,6 +242,22 @@ class NotificationsScreen extends ConsumerWidget {
         iconBgColor = const Color(0xFFF3E8FF);
         iconColor = AppColors.purple;
         type = _NotifType.plain;
+        break;
+      case 'group_create_invite':
+        icon = LucideIcons.usersRound;
+        iconBgColor = const Color(0xFFE8F5E9);
+        iconColor = AppColors.success;
+        type = _NotifType.actionable;
+        acceptLabel = 'Accept';
+        declineLabel = 'Decline';
+        break;
+      case 'join_request':
+        icon = LucideIcons.userCheck;
+        iconBgColor = const Color(0xFFFFF3E0);
+        iconColor = AppColors.warning;
+        type = _NotifType.actionable;
+        acceptLabel = 'Accept';
+        declineLabel = 'Decline';
         break;
       default:
         icon = LucideIcons.bell;

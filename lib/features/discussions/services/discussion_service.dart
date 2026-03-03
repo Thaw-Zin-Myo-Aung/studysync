@@ -108,6 +108,30 @@ class DiscussionService {
     }
   }
 
+  // ── Toggle Like ───────────────────────────────────────────────────────────
+
+  Future<void> toggleLike(String groupId, String discussionId) async {
+    try {
+      final uid = _auth.currentUser!.uid;
+      final ref = _discussions(groupId).doc(discussionId);
+      final doc = await ref.get().timeout(const Duration(seconds: 10));
+      final likedBy = List<String>.from(doc.data()?['likedBy'] as List? ?? []);
+      if (likedBy.contains(uid)) {
+        await ref.update({
+          'likedBy':   FieldValue.arrayRemove([uid]),
+          'likeCount': FieldValue.increment(-1),
+        }).timeout(const Duration(seconds: 10));
+      } else {
+        await ref.update({
+          'likedBy':   FieldValue.arrayUnion([uid]),
+          'likeCount': FieldValue.increment(1),
+        }).timeout(const Duration(seconds: 10));
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   // ── Delete Discussion ─────────────────────────────────────────────────────
 
   Future<void> deleteDiscussion(String groupId, String discussionId) async {

@@ -10,6 +10,7 @@ import '../../features/home/screens/home_screen.dart';
 import '../../features/matching/screens/discover_screen.dart';
 import '../../features/groups/screens/groups_list_screen.dart';
 import '../../features/groups/screens/group_detail_screen.dart';
+import '../../features/groups/screens/group_settings_screen.dart';
 import '../../features/groups/screens/create_group_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
 import '../../features/profile/screens/edit_profile_screen.dart';
@@ -28,6 +29,7 @@ class AppRouter {
       RouteConstants.discover,
       RouteConstants.groups,
       RouteConstants.groupDetail,
+      RouteConstants.groupSettings,
       RouteConstants.profile,
       RouteConstants.settings,
       RouteConstants.notifications,
@@ -113,6 +115,12 @@ class AppRouter {
       GoRoute(
         path: RouteConstants.groupDetail,
         builder: (context, state) => GroupDetailScreen(
+          groupId: state.pathParameters['groupId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: RouteConstants.groupSettings,
+        builder: (context, state) => GroupSettingsScreen(
           groupId: state.pathParameters['groupId'] ?? '',
         ),
       ),

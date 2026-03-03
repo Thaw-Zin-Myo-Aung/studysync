@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/study_group_model.dart';
+import '../../models/user_model.dart';
 
 class GroupService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -130,6 +131,24 @@ class GroupService {
     }
   }
 
+  // ── Join Group For User (admin adding another user) ───────────────────────
+
+  Future<StudyGroupModel> joinGroupForUser(String groupId, String userId) async {
+    try {
+      await _db
+          .collection('groups')
+          .doc(groupId)
+          .update({'memberIds': FieldValue.arrayUnion([userId])})
+          .timeout(const Duration(seconds: 10));
+      await _db.collection('users').doc(userId).update({
+        'groupIds': FieldValue.arrayUnion([groupId]),
+      }).timeout(const Duration(seconds: 10));
+      return _fetchGroup(groupId);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   // ── Leave Group ───────────────────────────────────────────────────────────
 
   Future<void> leaveGroup(String groupId) async {
@@ -169,6 +188,72 @@ class GroupService {
         'adminId': memberId,
       }).timeout(const Duration(seconds: 10));
       return _fetchGroup(groupId);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  // ── Lookup User by Student ID ─────────────────────────────────────────────
+
+  Future<UserModel?> lookupUserByStudentId(String studentId) async {
+    try {
+      final snapshot = await _db
+          .collection('users')
+          .where('studentId', isEqualTo: studentId)
+          .limit(1)
+          .get()
+          .timeout(const Duration(seconds: 10));
+      if (snapshot.docs.isEmpty) return null;
+      return UserModel.fromJson(snapshot.docs.first.data());
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  // ── Update Group ──────────────────────────────────────────────────────────
+
+  Future<StudyGroupModel> updateGroup({
+    required String groupId,
+    String? name,
+    String? course,
+    String? description,
+    String? location,
+    int? maxMembers,
+  }) async {
+    try {
+      final updates = <String, dynamic>{};
+      if (name != null) updates['name'] = name;
+      if (course != null) updates['course'] = course;
+      if (description != null) updates['description'] = description;
+      if (location != null) updates['location'] = location;
+      if (maxMembers != null) updates['maxMembers'] = maxMembers;
+      if (updates.isNotEmpty) {
+        await _db
+            .collection('groups')
+            .doc(groupId)
+            .update(updates)
+            .timeout(const Duration(seconds: 10));
+      }
+      return _fetchGroup(groupId);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  // ── Delete Group ──────────────────────────────────────────────────────────
+
+  Future<void> deleteGroup(String groupId) async {
+    try {
+      final group = await _fetchGroup(groupId);
+      final batch = _db.batch();
+      // Remove groupId from every member's groupIds
+      for (final uid in group.memberIds) {
+        batch.update(_db.collection('users').doc(uid), {
+          'groupIds': FieldValue.arrayRemove([groupId]),
+        });
+      }
+      batch.delete(_db.collection('groups').doc(groupId));
+      await batch.commit().timeout(const Duration(seconds: 15));
     } catch (e) {
       throw Exception(e.toString());
     }

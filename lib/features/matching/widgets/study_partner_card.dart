@@ -6,6 +6,7 @@ import 'package:studysync/core/widgets/reliability_badge.dart';
 import 'why_you_match_section.dart';
 
 class StudyPartnerCard extends StatelessWidget {
+  final String userId;
   final String name;
   final String major;
   final int matchScore;
@@ -14,10 +15,13 @@ class StudyPartnerCard extends StatelessWidget {
   final String goalText;
   final String sharedCourse;
   final VoidCallback onPass;
-  final VoidCallback onRequest;
+  final VoidCallback onCreateGroup;
+  final VoidCallback onInviteToGroup;
+  final VoidCallback? onViewProfile;
 
   const StudyPartnerCard({
     super.key,
+    required this.userId,
     required this.name,
     required this.major,
     required this.matchScore,
@@ -26,7 +30,9 @@ class StudyPartnerCard extends StatelessWidget {
     required this.goalText,
     required this.sharedCourse,
     required this.onPass,
-    required this.onRequest,
+    required this.onCreateGroup,
+    required this.onInviteToGroup,
+    this.onViewProfile,
   });
 
   @override
@@ -40,39 +46,52 @@ class StudyPartnerCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              children: [
-                Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 28,
-                      backgroundColor: AppColors.primarySurface,
-                      child: Icon(LucideIcons.user, color: AppColors.primary, size: 28),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        Text(major, style: const TextStyle(fontSize: 13, color: Colors.grey)),
-                        const SizedBox(height: 8),
-                        ReliabilityBadge(score: reliabilityScore),
-                      ],
-                    ),
-                  ],
-                ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: MatchScoreBadge(score: matchScore),
-                ),
-              ],
+            // ── Header — tappable for profile popup ──
+            GestureDetector(
+              onTap: onViewProfile,
+              behavior: HitTestBehavior.opaque,
+              child: Stack(
+                children: [
+                  Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 28,
+                        backgroundColor: AppColors.primarySurface,
+                        child: Icon(LucideIcons.user, color: AppColors.primary, size: 28),
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                              const SizedBox(width: 4),
+                              Icon(LucideIcons.chevronRight, size: 14, color: AppColors.textHint),
+                            ],
+                          ),
+                          Text(major, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+                          const SizedBox(height: 8),
+                          ReliabilityBadge(score: reliabilityScore),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: MatchScoreBadge(score: matchScore),
+                  ),
+                ],
+              ),
             ),
             const Divider(height: 32),
             WhyYouMatchSection(scheduleText: scheduleText, goalText: goalText, sharedCourse: sharedCourse),
             const SizedBox(height: 16),
+            // ── Action buttons ──
             Row(
               children: [
+                // Pass
                 Expanded(
                   child: SizedBox(
                     height: 44,
@@ -87,20 +106,37 @@ class StudyPartnerCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
+                // Create Group
                 Expanded(
                   child: SizedBox(
                     height: 44,
                     child: ElevatedButton.icon(
-                      onPressed: onRequest,
-                      icon: const Icon(LucideIcons.check, color: Colors.white, size: 18),
-                      label: const Text('Request', style: TextStyle(color: Colors.white)),
+                      onPressed: onCreateGroup,
+                      icon: const Icon(LucideIcons.plus, color: Colors.white, size: 16),
+                      label: const Text('Create Group',
+                          style: TextStyle(color: Colors.white, fontSize: 12)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                     ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Invite to existing group
+                SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: OutlinedButton(
+                    onPressed: onInviteToGroup,
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AppColors.primary),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: const Icon(LucideIcons.userPlus, color: AppColors.primary, size: 18),
                   ),
                 ),
               ],

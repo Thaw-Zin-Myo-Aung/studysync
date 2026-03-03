@@ -7,11 +7,10 @@ import 'auth_provider.dart';
 final groupServiceProvider = Provider<GroupService>((_) => GroupService());
 
 class GroupsNotifier extends Notifier<List<StudyGroupModel>> {
-  late GroupService _groupService;
+  GroupService get _groupService => ref.read(groupServiceProvider);
 
   @override
   List<StudyGroupModel> build() {
-    _groupService = ref.read(groupServiceProvider);
     // Auto-load when auth state changes
     ref.listen(authProvider, (_, user) {
       if (user != null) {
@@ -53,6 +52,12 @@ class GroupsNotifier extends Notifier<List<StudyGroupModel>> {
     state = [...state, group];
   }
 
+  /// Add a specific user to a group (used by admin or notification accept).
+  Future<void> joinGroupForUser(String groupId, String userId) async {
+    final group = await _groupService.joinGroupForUser(groupId, userId);
+    state = state.map((g) => g.groupId == groupId ? group : g).toList();
+  }
+
   Future<void> leaveGroup(String groupId) async {
     await _groupService.leaveGroup(groupId);
     state = state.where((g) => g.groupId != groupId).toList();
@@ -74,6 +79,30 @@ class GroupsNotifier extends Notifier<List<StudyGroupModel>> {
   Future<void> makeAdmin(String groupId, String memberId) async {
     final updated = await _groupService.makeAdmin(groupId, memberId);
     state = state.map((g) => g.groupId == groupId ? updated : g).toList();
+  }
+
+  Future<void> updateGroup({
+    required String groupId,
+    String? name,
+    String? course,
+    String? description,
+    String? location,
+    int? maxMembers,
+  }) async {
+    final updated = await _groupService.updateGroup(
+      groupId: groupId,
+      name: name,
+      course: course,
+      description: description,
+      location: location,
+      maxMembers: maxMembers,
+    );
+    state = state.map((g) => g.groupId == groupId ? updated : g).toList();
+  }
+
+  Future<void> deleteGroup(String groupId) async {
+    await _groupService.deleteGroup(groupId);
+    state = state.where((g) => g.groupId != groupId).toList();
   }
 }
 

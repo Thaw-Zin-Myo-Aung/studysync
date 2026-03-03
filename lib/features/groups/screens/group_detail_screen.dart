@@ -10,8 +10,10 @@ import '../../../models/study_group_model.dart';
 import '../../../providers/groups_provider.dart';
 import '../../../providers/sessions_provider.dart';
 import '../widgets/discussion_tab.dart';
+import '../widgets/invite_member_sheet.dart';
 import '../widgets/sessions_tab.dart';
 import '../widgets/members_tab.dart';
+import '../../../providers/auth_provider.dart';
 
 class GroupDetailScreen extends ConsumerStatefulWidget {
   final String groupId;
@@ -87,7 +89,7 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
         actions: [
           IconButton(
             icon: Icon(LucideIcons.settings, color: Colors.grey.shade400),
-            onPressed: () => debugPrint('Settings'),
+            onPressed: () => context.go('/groups/${group.groupId}/settings'),
           ),
         ],
         bottom: TabBar(
@@ -182,9 +184,10 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
               elevation: 3,
               child: const Icon(LucideIcons.calendarPlus, color: Colors.white, size: 22),
             )
-          : _tabController.index == 2
+          : _tabController.index == 2 &&
+                  ref.watch(authProvider)?.userId == group.adminId
               ? FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () => showInviteMemberSheet(context, ref, group),
                   backgroundColor: AppColors.primary,
                   shape: const CircleBorder(),
                   elevation: 3,

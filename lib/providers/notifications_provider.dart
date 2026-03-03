@@ -8,11 +8,10 @@ final notificationServiceProvider =
 
 class NotificationsNotifier
     extends AsyncNotifier<List<NotificationModel>> {
-  late NotificationService _service;
+  NotificationService get _service => ref.read(notificationServiceProvider);
 
   @override
   Future<List<NotificationModel>> build() async {
-    _service = ref.read(notificationServiceProvider);
     final user = ref.watch(authProvider);
     if (user == null) return [];
     return _service.getNotifications(user.userId);

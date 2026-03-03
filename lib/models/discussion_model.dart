@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -10,6 +11,8 @@ class DiscussionModel {
   final String message;
   final String timestamp;
   final int replyCount;
+  final int likeCount;
+  final List<String> likedBy; // list of userIds who liked
 
   const DiscussionModel({
     required this.discussionId,
@@ -20,6 +23,8 @@ class DiscussionModel {
     required this.message,
     required this.timestamp,
     required this.replyCount,
+    this.likeCount = 0,
+    this.likedBy = const [],
   });
 
   DiscussionModel copyWith({
@@ -31,6 +36,8 @@ class DiscussionModel {
     String? message,
     String? timestamp,
     int? replyCount,
+    int? likeCount,
+    List<String>? likedBy,
   }) =>
       DiscussionModel(
         discussionId: discussionId ?? this.discussionId,
@@ -41,6 +48,8 @@ class DiscussionModel {
         message:      message      ?? this.message,
         timestamp:    timestamp    ?? this.timestamp,
         replyCount:   replyCount   ?? this.replyCount,
+        likeCount:    likeCount    ?? this.likeCount,
+        likedBy:      likedBy      ?? this.likedBy,
       );
 
   factory DiscussionModel.fromJson(Map<String, dynamic> json) {
@@ -51,9 +60,18 @@ class DiscussionModel {
       authorName:   json['authorName']   as String? ?? '',
       topic:        json['topic']        as String? ?? '',
       message:      json['message']      as String? ?? '',
-      timestamp:    json['timestamp']?.toString()   ?? '',
+      timestamp:    _parseTimestamp(json['timestamp']),
       replyCount:   json['replyCount']   as int?    ?? 0,
+      likeCount:    json['likeCount']    as int?    ?? 0,
+      likedBy:      List<String>.from(json['likedBy'] as List? ?? []),
     );
+  }
+
+  static String _parseTimestamp(dynamic value) {
+    if (value == null) return '';
+    if (value is Timestamp) return value.toDate().toIso8601String();
+    if (value is String) return value;
+    return '';
   }
 
   Map<String, dynamic> toJson() => {
@@ -65,6 +83,8 @@ class DiscussionModel {
         'message':      message,
         'timestamp':    timestamp,
         'replyCount':   replyCount,
+        'likeCount':    likeCount,
+        'likedBy':      likedBy,
       };
 }
 

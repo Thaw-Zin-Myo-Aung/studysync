@@ -46,6 +46,17 @@ final repliesProvider = FutureProvider.family
   return service.getReplies(groupId, discussionId);
 });
 
+/// Toggles like on a discussion and invalidates the discussions provider.
+Future<void> toggleDiscussionLike(
+  WidgetRef ref, {
+  required String groupId,
+  required String discussionId,
+}) async {
+  final service = ref.read(discussionServiceProvider);
+  await service.toggleLike(groupId, discussionId);
+  ref.invalidate(discussionsProvider(groupId));
+}
+
 /// Adds a reply and then invalidates both the replies and discussions providers.
 Future<void> addReply(
   WidgetRef ref, {

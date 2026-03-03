@@ -5,11 +5,10 @@ import '../services/firebase/auth_service.dart';
 final authServiceProvider = Provider<AuthService>((_) => AuthService());
 
 class AuthNotifier extends Notifier<UserModel?> {
-  late AuthService _authService;
+  AuthService get _authService => ref.read(authServiceProvider);
 
   @override
   UserModel? build() {
-    _authService = ref.read(authServiceProvider);
     // Kick off async init without blocking build
     Future(_init);
     return null;
