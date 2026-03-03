@@ -96,14 +96,14 @@ class _SignupCardState extends ConsumerState<SignupCard> {
           const SizedBox(height: 24),
           AuthInputField(
             label: 'Full Name',
-            hintText: 'e.g. Thaw Zin Myo Aung',
+            hintText: 'e.g. Your Full Name',
             prefixIcon: LucideIcons.user,
             controller: _nameController,
           ),
           const SizedBox(height: 16),
           AuthInputField(
             label: 'MFU Email',
-            hintText: 'yourname@lamduan.mfu.ac.th',
+            hintText: 'student_ID@lamduan.mfu.ac.th',
             prefixIcon: LucideIcons.mail,
             keyboardType: TextInputType.emailAddress,
             controller: _emailController,

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../core/constants/mfu_majors.dart';
 import '../../../core/constants/route_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/onboarding_progress_bar.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../services/firebase/auth_service.dart';
 import '../widgets/profile_setup_step1.dart';
 import '../widgets/profile_setup_step2.dart';
 import '../widgets/profile_setup_step3.dart';
@@ -28,30 +30,73 @@ class ProfileSetupScreen extends ConsumerStatefulWidget {
 class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   int _step = 0;
   late final PageController _pageController;
-  final _nameCtrl = TextEditingController(text: 'Thaw Zin Myo Aung');
+  final _nameCtrl = TextEditingController();
   final _idCtrl   = TextEditingController();
-  String _major   = 'Software Engineering';
-  int _year       = 2;
-  final List<_CourseEntry> _courses = [
-    _CourseEntry(name: 'Engineering Mathematics II', goal: 'B+'),
-    _CourseEntry(name: 'Database Systems', goal: 'B+'),
-  ];
+  late String _major;
+  late int _year;
+  late List<_CourseEntry> _courses;
   late List<List<bool>> _availability;
-  String _learningStyle = 'visual';
+  late String _learningStyle;
+  bool _saving = false;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
-    // Pre-fill student ID from authenticated user
+
     final user = ref.read(authProvider);
-    _idCtrl.text = user?.studentId ?? user?.email.split('@').first ?? '';
-    _availability = List.generate(7, (d) => List.generate(6, (s) {
-      if (d == 3 && s == 5) return true; // Thu 7PM
-      if (d == 1 && s == 5) return true; // Tue 7PM
-      if (d == 3 && s == 3) return true; // Thu 2PM
-      return false;
-    }));
+
+    // ── Pre-fill text fields ───────────────────────────
+    _nameCtrl.text = user?.name ?? '';
+    _idCtrl.text   = user?.studentId ?? user?.email.split('@').first ?? '';
+
+    // ── Major — use stored value if valid, else first MFU major ───
+    _major = (user?.major != null && mfuMajors.contains(user!.major))
+        ? user.major
+        : mfuMajors.first;
+
+    // ── Year — use stored value if in range 1–4, else 1 ──────────
+    _year = (user?.year != null && user!.year >= 1 && user.year <= 4)
+        ? user.year
+        : 1;
+
+    // ── Courses — restore from stored data if present ─────────────
+    final storedCourses = user?.courses ?? [];
+    _courses = storedCourses.isNotEmpty
+        ? storedCourses
+            .map((c) => _CourseEntry(
+                  name: c['name']?.toString() ?? '',
+                  goal: c['goal']?.toString() ?? 'B+',
+                ))
+            .toList()
+        : [
+            _CourseEntry(name: 'Engineering Mathematics II', goal: 'B+'),
+            _CourseEntry(name: 'Database Systems', goal: 'B+'),
+          ];
+
+    // ── Learning style — restore or default to 'visual' ───────────
+    _learningStyle = (user?.learningStyles.isNotEmpty == true)
+        ? user!.learningStyles.first
+        : 'visual';
+
+    // ── Availability — restore grid from stored map if present ─────
+    const days  = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+    const slots = ['08:00','10:00','12:00','14:00','17:00','19:00'];
+    final storedAvail = user?.availability ?? {};
+    if (storedAvail.isNotEmpty) {
+      _availability = List.generate(7, (d) => List.generate(6, (s) {
+        final daySlots = storedAvail[days[d]] ?? [];
+        return daySlots.contains(slots[s]);
+      }));
+    } else {
+      // Default demo selections
+      _availability = List.generate(7, (d) => List.generate(6, (s) {
+        if (d == 3 && s == 5) return true; // Thu 7PM
+        if (d == 1 && s == 5) return true; // Tue 7PM
+        if (d == 3 && s == 3) return true; // Thu 2PM
+        return false;
+      }));
+    }
   }
 
   @override
@@ -90,14 +135,50 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   void _toggleAvailability(int day, int slot) =>
       setState(() => _availability[day][slot] = !_availability[day][slot]);
 
-  void _next() {
+  Future<void> _next() async {
     if (_step < 3) {
       _pageController.nextPage(
           duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
       setState(() => _step++);
     } else {
-      // TODO: persist data before navigating
-      context.go(RouteConstants.profileComplete);
+      setState(() => _saving = true);
+      try {
+        final uid = ref.read(authProvider)?.userId;
+        if (uid == null) throw Exception('User not logged in');
+
+        // Convert availability grid (List<List<bool>>) to a map
+        // Days: Mon–Sun, Slots: 8AM 10AM 12PM 2PM 5PM 7PM
+        const days  = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+        const slots = ['08:00','10:00','12:00','14:00','17:00','19:00'];
+        final availMap = <String, List<String>>{};
+        for (int d = 0; d < days.length; d++) {
+          final selected = <String>[];
+          for (int s = 0; s < slots.length; s++) {
+            if (_availability[d][s]) selected.add(slots[s]);
+          }
+          if (selected.isNotEmpty) availMap[days[d]] = selected;
+        }
+
+        await AuthService().updateOnboardingStep(uid: uid, data: {
+          'name':               _nameCtrl.text.trim(),
+          'major':              _major,
+          'year':               _year,
+          'courses':            _courses.map((c) => c.toMap()).toList(),
+          'availability':       availMap,
+          'learningStyles':     [_learningStyle],
+          'onboardingComplete': true,
+        });
+
+        if (mounted) context.go(RouteConstants.profileComplete);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to save: ${e.toString()}')),
+          );
+        }
+      } finally {
+        if (mounted) setState(() => _saving = false);
+      }
     }
   }
 
@@ -327,14 +408,22 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                                             height: 52,
                                             width: double.infinity,
                                             child: ElevatedButton.icon(
-                                              icon: const Icon(LucideIcons.circleCheck,
-                                                  color: Colors.white, size: 20),
-                                              label: const Text('Complete',
-                                                  style: TextStyle(
+                                              icon: _saving
+                                                  ? const SizedBox(
+                                                      height: 20,
+                                                      width: 20,
+                                                      child: CircularProgressIndicator(
+                                                          strokeWidth: 2,
+                                                          color: Colors.white))
+                                                  : const Icon(LucideIcons.circleCheck,
+                                                      color: Colors.white, size: 20),
+                                              label: Text(
+                                                  _saving ? 'Saving…' : 'Complete',
+                                                  style: const TextStyle(
                                                       fontSize: 15,
                                                       fontWeight: FontWeight.w700,
                                                       color: Colors.white)),
-                                              onPressed: _next,
+                                              onPressed: _saving ? null : _next,
                                               style: ElevatedButton.styleFrom(
                                                 backgroundColor: AppColors.success,
                                                 foregroundColor: Colors.white,
