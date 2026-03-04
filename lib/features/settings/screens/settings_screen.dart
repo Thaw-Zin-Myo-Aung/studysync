@@ -121,10 +121,15 @@ class SettingsScreen extends ConsumerWidget {
           ),
           // Main scrollable content
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            child: RefreshIndicator(
+              onRefresh: () async {
+                await ref.read(authProvider.notifier).refreshUser();
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const AccountSection(),
                   const SizedBox(height: 16),
@@ -166,6 +171,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ),
+        ),
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(

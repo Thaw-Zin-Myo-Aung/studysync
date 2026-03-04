@@ -177,9 +177,16 @@ class HomeScreen extends ConsumerWidget {
           ),
           // Main scrollable content
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(groupsProvider);
+                ref.invalidate(upcomingSessionsProvider);
+                await ref.read(authProvider.notifier).refreshUser();
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                child: Column(
                 children: [
                   UserProfileCard(
                     fullName:    user?.name         ?? 'Student',
@@ -204,6 +211,7 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           ),
+        ),
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(
