@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../../../models/study_group_model.dart';
 import '../../../providers/groups_provider.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../providers/sessions_provider.dart';
 import '../models/group_model.dart';
 import '../widgets/group_card.dart';
@@ -82,58 +83,73 @@ class GroupsListScreen extends ConsumerWidget {
             ),
           ),
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: firestoreGroups.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
+            child: RefreshIndicator(
+              onRefresh: () async {
+                final user = ref.read(authProvider);
+                if (user != null) {
+                  await ref.read(groupsProvider.notifier).loadGroups(user.userId);
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: firestoreGroups.isEmpty
+                          ? ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
                               children: [
-                                Container(
-                                  width: 64, height: 64,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primarySurface,
-                                    borderRadius: BorderRadius.circular(18),
+                                const SizedBox(height: 80),
+                                Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 64, height: 64,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primarySurface,
+                                          borderRadius: BorderRadius.circular(18),
+                                        ),
+                                        child: const Icon(LucideIcons.users,
+                                            size: 32, color: AppColors.primary),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const Text("You haven't joined any group yet",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              color: AppColors.textPrimary)),
+                                      const SizedBox(height: 6),
+                                      const Text(
+                                          'Tap + to create or join a study group.',
+                                          style: TextStyle(
+                                              fontSize: 13,
+                                              color: AppColors.textMuted)),
+                                    ],
                                   ),
-                                  child: const Icon(LucideIcons.users,
-                                      size: 32, color: AppColors.primary),
                                 ),
-                                const SizedBox(height: 16),
-                                const Text("You haven't joined any group yet",
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary)),
-                                const SizedBox(height: 6),
-                                const Text(
-                                    'Tap + to create or join a study group.',
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        color: AppColors.textMuted)),
                               ],
+                            )
+                          : ListView.separated(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemCount: firestoreGroups.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 12),
+                              itemBuilder: (_, i) => _GroupCardWithSession(
+                                firestoreGroup: firestoreGroups[i],
+                              ),
                             ),
-                          )
-                        : ListView.separated(
-                            itemCount: firestoreGroups.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 12),
-                            itemBuilder: (_, i) => _GroupCardWithSession(
-                              firestoreGroup: firestoreGroups[i],
-                            ),
-                          ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Tap a group to chat or view schedule',
-                    style: TextStyle(
-                        fontSize: 12, color: AppColors.textDisabled),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Tap a group to chat or view schedule',
+                      style: TextStyle(
+                          fontSize: 12, color: AppColors.textDisabled),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
             ),
           ),

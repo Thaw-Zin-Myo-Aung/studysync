@@ -124,10 +124,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
           // Main scrollable content
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
+            child: RefreshIndicator(
+              onRefresh: () => ref.read(authProvider.notifier).refreshUser(),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
                   ProfileHeaderCard(
                     name: user.name,
                     major: user.major,
@@ -191,6 +194,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             ),
           ),
+        ),
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(

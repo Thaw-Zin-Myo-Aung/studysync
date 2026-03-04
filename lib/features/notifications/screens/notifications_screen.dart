@@ -83,8 +83,11 @@ class NotificationsScreen extends ConsumerWidget {
             );
           }
 
-          return ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          return RefreshIndicator(
+            onRefresh: () async => ref.invalidate(notificationsProvider),
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             children: [
               if (newNotifications.isNotEmpty) ...[
                 const _SectionLabel(label: 'NEW'),
@@ -279,7 +282,8 @@ class NotificationsScreen extends ConsumerWidget {
                 )),
               ],
             ],
-          );
+          ),
+        );
         },
       ),
     );
