@@ -238,5 +238,6 @@ firebase deploy --only firestore:indexes
 
 **Thaw Zin Myo Aung**  
 Student ID: 6731503088  
-Mae Fah Luang University — School of Information Technology  
+Software Engineering
+Mae Fah Luang University — School of Applied Digital Technology  
 Course: Mobile Application Development (2nd Semester, 2nd Year)
