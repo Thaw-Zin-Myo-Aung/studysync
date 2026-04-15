@@ -48,3 +48,8 @@ app.*.map.json
 
 # ENV files
 .env
+
+# Keystore — NEVER commit these
+*.jks
+*.keystore
+android/key.properties
