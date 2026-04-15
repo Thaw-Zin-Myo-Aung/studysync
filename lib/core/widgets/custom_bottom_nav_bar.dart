@@ -22,12 +22,13 @@ class CustomBottomNavBar extends StatelessWidget {
     ];
 
     return Container(
-      height: 64,
       color: AppColors.primary,
       child: SafeArea(
         top: false,
-        child: Row(
-          children: List.generate(items.length, (index) {
+        child: SizedBox(
+          height: 64,
+          child: Row(
+            children: List.generate(items.length, (index) {
             final isActive = index == currentIndex;
             final iconColor = isActive
                 ? Colors.white
@@ -66,6 +67,7 @@ class CustomBottomNavBar extends StatelessWidget {
               ),
             );
           }),
+        ),
         ),
       ),
     );

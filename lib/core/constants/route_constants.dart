@@ -3,6 +3,9 @@ class RouteConstants {
   // Private constructor to prevent instantiation
   RouteConstants._();
 
+  // Landing (public marketing page)
+  static const String landing  = '/';
+
   // Authentication routes
   static const String login    = '/login';
   static const String signup   = '/signup';

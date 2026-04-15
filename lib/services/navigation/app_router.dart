@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/route_constants.dart';
+import '../../features/landing/screens/landing_screen.dart';
 import '../../features/authentication/screens/login_screen.dart';
 import '../../features/authentication/screens/signup_screen.dart';
 import '../../features/onboarding/screens/profile_setup_screen.dart';
@@ -39,7 +40,7 @@ class AppRouter {
     final notifier = _RouterNotifier(ref);
 
     return GoRouter(
-      initialLocation: RouteConstants.login,
+      initialLocation: RouteConstants.landing,
       refreshListenable: notifier,
       redirect: (context, state) {
         final user = ref.read(authProvider);
@@ -51,11 +52,11 @@ class AppRouter {
         final isAuthRoute = location == RouteConstants.login ||
                             location == RouteConstants.signup;
 
+        // Protected routes require login
         if (!isLoggedIn && isProtected) { return RouteConstants.login; }
+        // Auth routes redirect already-logged-in users to home
         if (isLoggedIn && isAuthRoute)  { return RouteConstants.home; }
-        if (location == '/') {
-          return isLoggedIn ? RouteConstants.home : RouteConstants.login;
-        }
+        // '/' is the public landing page — never redirect it
         return null;
       },
       errorBuilder: (context, state) => Scaffold(
@@ -63,6 +64,12 @@ class AppRouter {
         body: Center(child: Text('No route for: ${state.uri}')),
       ),
     routes: [
+      // Landing Route (public marketing page)
+      GoRoute(
+        path: RouteConstants.landing,
+        builder: (context, state) => const LandingScreen(),
+      ),
+
       // Authentication Route
       GoRoute(
         path: RouteConstants.login,
