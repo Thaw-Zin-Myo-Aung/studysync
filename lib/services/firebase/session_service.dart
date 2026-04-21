@@ -78,22 +78,30 @@ class SessionService {
   ) async {
     try {
       final uid = _auth.currentUser!.uid;
-
-      // 1. Write the attendance record
-      await _sessions(groupId)
+      final attendanceRef = _sessions(groupId)
           .doc(sessionId)
           .collection('attendance')
-          .doc(uid)
+          .doc(uid);
+
+      // Check existing attendance so we do not double-count reliability.
+      final existing = await attendanceRef
+          .get()
+          .timeout(const Duration(seconds: 10));
+      final wasAttended = existing.data()?['attended'] as bool? ?? false;
+
+      // 1. Write or update the attendance record
+      await attendanceRef
           .set({
             'attended': attended,
             'markedAt': FieldValue.serverTimestamp(),
-          })
+          }, SetOptions(merge: true))
           .timeout(const Duration(seconds: 10));
 
       // 2. Update the user's sessionsAttended count and recalculate
       //    reliabilityScore = (sessionsAttended / sessionsScheduled) * 100
-      //    clamped to 0–100. Only increment when marking as attended (not un-attended).
-      if (attended) {
+      //    clamped to 0–100. Only increment when marking as attended
+      //    and it was not already attended.
+      if (attended && !wasAttended) {
         final userRef = _db.collection('users').doc(uid);
         await _db.runTransaction((txn) async {
           final snap = await txn.get(userRef);

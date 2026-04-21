@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/session_model.dart';
 import '../../../providers/sessions_provider.dart';
+import '../../../providers/auth_provider.dart';
 import 'upcoming_session_card.dart';
 
 class UpcomingSessionsSection extends ConsumerStatefulWidget {
@@ -23,10 +25,40 @@ class _UpcomingSessionsSectionState
   final Set<String> _checkedIn = {};
   final Set<String> _loading   = {};
 
+  DateTime? _parseSessionStart(SessionModel s) {
+    try {
+      final date = DateFormat('EEE, MMM d yyyy').parseStrict(s.date);
+      final startLabel = s.time.split('-').first.trim();
+      final startTime = DateFormat('h:mm a').parseStrict(startLabel);
+      return DateTime(
+        date.year,
+        date.month,
+        date.day,
+        startTime.hour,
+        startTime.minute,
+      );
+    } catch (_) {
+      try {
+        final date = DateFormat('EEE, MMM d yyyy').parseStrict(s.date);
+        return DateTime(date.year, date.month, date.day);
+      } catch (_) {
+        return null;
+      }
+    }
+  }
+
+  bool _canCheckIn(SessionModel s) {
+    final start = _parseSessionStart(s);
+    if (start == null) return false;
+    final now = DateTime.now();
+    return now.isAfter(start) || now.isAtSameMomentAs(start);
+  }
+
   Future<void> _checkIn(SessionModel s) async {
     if (_checkedIn.contains(s.sessionId) || _loading.contains(s.sessionId)) {
       return;
     }
+    if (!_canCheckIn(s)) return;
     setState(() => _loading.add(s.sessionId));
     try {
       await markGroupSessionAttendance(
@@ -35,7 +67,13 @@ class _UpcomingSessionsSectionState
         sessionId: s.sessionId,
         attended:  true,
       );
-      if (mounted) setState(() => _checkedIn.add(s.sessionId));
+      await ref.read(authProvider.notifier).refreshUser();
+      if (mounted) {
+        setState(() {
+          _checkedIn.add(s.sessionId);
+          _currentPage = 0;
+        });
+      }
     } finally {
       if (mounted) setState(() => _loading.remove(s.sessionId));
     }
@@ -43,6 +81,10 @@ class _UpcomingSessionsSectionState
 
   @override
   Widget build(BuildContext context) {
+    final visibleSessions = widget.sessions
+        .where((s) => !_checkedIn.contains(s.sessionId))
+        .toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -54,7 +96,7 @@ class _UpcomingSessionsSectionState
         const SizedBox(height: 12),
 
         // ── Empty state ────────────────────────────────────────
-        if (widget.sessions.isEmpty)
+        if (visibleSessions.isEmpty)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
@@ -93,15 +135,16 @@ class _UpcomingSessionsSectionState
           SizedBox(
             height: 236,
             child: PageView.builder(
-              itemCount: widget.sessions.length,
+              itemCount: visibleSessions.length,
               padEnds: false,
               physics: const PageScrollPhysics(),
               controller: PageController(viewportFraction: 0.88),
               onPageChanged: (i) => setState(() => _currentPage = i),
               itemBuilder: (_, i) {
-                final s = widget.sessions[i];
+                final s = visibleSessions[i];
                 final checked = _checkedIn.contains(s.sessionId);
                 final loading = _loading.contains(s.sessionId);
+                final canCheckIn = _canCheckIn(s);
                 return Padding(
                   padding: const EdgeInsets.only(
                       top: 4, right: 6, bottom: 6, left: 6),
@@ -111,7 +154,7 @@ class _UpcomingSessionsSectionState
                     location:     s.location,
                     timeRange:    s.time,
                     attendeeCount: 0,
-                    canCheckIn:   true,
+                    canCheckIn:   canCheckIn,
                     isCheckedIn:  checked,
                     isLoading:    loading,
                     onCheckIn:    checked ? null : () => _checkIn(s),
@@ -124,7 +167,7 @@ class _UpcomingSessionsSectionState
           // Dot indicators
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(widget.sessions.length, (i) {
+            children: List.generate(visibleSessions.length, (i) {
               final active = i == _currentPage;
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 300),

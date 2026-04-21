@@ -106,7 +106,7 @@ class UpcomingSessionCard extends StatelessWidget {
                       ),
                     )
                   : ElevatedButton(
-                      onPressed: isLoading ? null : onCheckIn,
+                      onPressed: (!canCheckIn || isLoading) ? null : onCheckIn,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         disabledBackgroundColor:
@@ -121,8 +121,11 @@ class UpcomingSessionCard extends StatelessWidget {
                               height: 16,
                               child: CircularProgressIndicator(
                                   color: Colors.white, strokeWidth: 2))
-                          : const Text('Mark as Attended',
-                              style: TextStyle(
+                          : Text(
+                              canCheckIn
+                                  ? 'Mark as Attended'
+                                  : 'Not started yet',
+                              style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 13)),

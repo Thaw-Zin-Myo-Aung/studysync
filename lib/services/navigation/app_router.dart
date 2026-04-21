@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/foundation.dart';
 import '../../core/constants/route_constants.dart';
 import '../../features/landing/screens/landing_screen.dart';
 import '../../features/authentication/screens/login_screen.dart';
@@ -40,7 +41,9 @@ class AppRouter {
     final notifier = _RouterNotifier(ref);
 
     return GoRouter(
-      initialLocation: RouteConstants.landing,
+      initialLocation: kIsWeb
+          ? RouteConstants.landing
+          : RouteConstants.login,
       refreshListenable: notifier,
       redirect: (context, state) {
         final user = ref.read(authProvider);
@@ -51,12 +54,15 @@ class AppRouter {
         );
         final isAuthRoute = location == RouteConstants.login ||
                             location == RouteConstants.signup;
+        final isLanding = location == RouteConstants.landing;
 
+        // Mobile/desktop app should skip landing and go to sign in.
+        if (!kIsWeb && isLanding) { return RouteConstants.login; }
         // Protected routes require login
         if (!isLoggedIn && isProtected) { return RouteConstants.login; }
         // Auth routes redirect already-logged-in users to home
         if (isLoggedIn && isAuthRoute)  { return RouteConstants.home; }
-        // '/' is the public landing page — never redirect it
+        // '/' is the public landing page on web — never redirect it
         return null;
       },
       errorBuilder: (context, state) => Scaffold(
@@ -154,4 +160,3 @@ class _RouterNotifier extends ChangeNotifier {
     ref.listen(authProvider, (_, __) => notifyListeners());
   }
 }
-
