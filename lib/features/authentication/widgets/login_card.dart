@@ -226,7 +226,7 @@ class _LoginCardState extends ConsumerState<LoginCard> {
                     overflow: TextOverflow.ellipsis),
               ),
               TextButton(
-                onPressed: () => context.go(RouteConstants.signup),
+                onPressed: () => context.push(RouteConstants.signup),
                 child: const Text('Create Account',
                     style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
               ),

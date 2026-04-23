@@ -280,7 +280,7 @@ class _SignupCardState extends ConsumerState<SignupCard> {
            const SizedBox(height: 16),
            PrimaryButton(
                label: 'Create Account',
-               onPressed: _agreedToTerms ? () => _handleSignup() : null,
+               onPressed: _agreedToTerms && !_isLoading ? _handleSignup : null,
                isLoading: _isLoading),
           const SizedBox(height: 16),
           const Text(

@@ -50,15 +50,14 @@ class AppRouter {
       redirect: (context, state) {
         final user = ref.read(authProvider);
         final isLoggedIn = user != null;
-        final location = state.matchedLocation;
+        final location = state.uri.path;
         final groupIdSegments =
             (state.pathParameters['groupId'] ?? '').split('/');
         final isProtected = protectedRoutes.any(
           (r) => location.startsWith(r.split('/:').first) ||
                  (r == RouteConstants.groupDetail && groupIdSegments.isNotEmpty),
         );
-        final isAuthRoute = location == RouteConstants.login ||
-                            location == RouteConstants.signup;
+        final isLoginRoute = location == RouteConstants.login;
         final isLanding = location == RouteConstants.landing;
 
         // Mobile/desktop app should skip landing and go to sign in.
@@ -66,7 +65,7 @@ class AppRouter {
         // Protected routes require login
         if (!isLoggedIn && isProtected) { return RouteConstants.login; }
         // Auth routes redirect already-logged-in users to home
-        if (isLoggedIn && isAuthRoute)  { return RouteConstants.home; }
+        if (isLoggedIn && isLoginRoute) { return RouteConstants.home; }
         // '/' is the public landing page on web — never redirect it
         return null;
       },
