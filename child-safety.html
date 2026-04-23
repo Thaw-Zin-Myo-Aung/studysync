@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StudySync — Child Safety Standards</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #1a56db;
+      --blue-light: #e8f0fe;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #f9fafb;
+      --white: #ffffff;
+      --sidebar-w: 260px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 32px; height: 60px;
+      gap: 12px;
+    }
+    .logo-mark {
+      width: 32px; height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark svg { width: 18px; height: 18px; }
+    .logo-text { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+    .logo-text span { color: var(--blue); }
+    .header-badge {
+      margin-left: auto;
+      font-size: 12px; font-weight: 500;
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 3px 10px; border-radius: 20px;
+    }
+
+    /* ── LAYOUT ── */
+    .layout {
+      display: flex;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      gap: 40px;
+    }
+
+    /* ── SIDEBAR ── */
+    aside {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+    }
+    .sidebar-sticky {
+      position: sticky; top: 80px;
+    }
+    .sidebar-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+    .sidebar-nav { list-style: none; }
+    .sidebar-nav li { margin-bottom: 2px; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 12px;
+      border-radius: 7px;
+      text-decoration: none;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .sidebar-nav a:hover { background: var(--blue-light); color: var(--blue); }
+    .sidebar-nav a.active { background: var(--blue-light); color: var(--blue); font-weight: 600; }
+    .sidebar-nav .num {
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted);
+      min-width: 20px;
+    }
+    .sidebar-nav a.active .num { color: var(--blue); }
+
+    /* ── MAIN ── */
+    main { flex: 1; min-width: 0; }
+
+    .page-eyebrow {
+      font-size: 12px; font-weight: 600;
+      color: var(--blue);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    .page-title {
+      font-size: 28px; font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+    .page-meta {
+      font-size: 13px; color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .summary-box {
+      background: var(--blue-light);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin-bottom: 40px;
+      font-size: 14px;
+      color: #1e3a8a;
+      line-height: 1.6;
+    }
+    .summary-box strong { font-weight: 600; }
+
+    /* ── SECTIONS ── */
+    .section { margin-bottom: 48px; scroll-margin-top: 80px; }
+
+    .section-header {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 11px; font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      min-width: 24px;
+    }
+    .section-title {
+      font-size: 17px; font-weight: 700;
+      color: var(--text);
+    }
+
+    p { margin-bottom: 14px; color: #374151; }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol { padding-left: 20px; margin-bottom: 14px; }
+    li { margin-bottom: 6px; color: #374151; }
+
+    .contact-box {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-top: 16px;
+    }
+    .contact-box p { margin-bottom: 6px; font-size: 14px; }
+    .contact-box a { color: var(--blue); text-decoration: none; }
+    .contact-box a:hover { text-decoration: underline; }
+    .contact-label { font-weight: 600; color: var(--text); }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--white);
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </svg>
+  </div>
+  <div class="logo-text">Study<span>Sync</span></div>
+  <span class="header-badge">Legal</span>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="sidebar-sticky">
+      <div class="sidebar-label">On this page</div>
+      <ul class="sidebar-nav">
+        <li><a href="#s1" class="active"><span class="num">01</span>Our Commitment</a></li>
+        <li><a href="#s2"><span class="num">02</span>Prohibited Content</a></li>
+        <li><a href="#s3"><span class="num">03</span>Reporting Mechanisms</a></li>
+        <li><a href="#s4"><span class="num">04</span>Compliance</a></li>
+        <li><a href="#s5"><span class="num">05</span>Point of Contact</a></li>
+        <li><a href="#s6"><span class="num">06</span>Policy Updates</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main>
+    <div class="page-eyebrow">Legal · StudySync</div>
+    <h1 class="page-title">Child Safety Standards</h1>
+    <p class="page-meta">Last updated: April 2026 &nbsp;·&nbsp; Mae Fah Luang University</p>
+
+    <div class="summary-box">
+      <strong>Summary:</strong> StudySync strictly prohibits any content or behavior that exploits or endangers minors. Users can report safety concerns in-app or by contacting us directly. We comply with all applicable child safety laws and cooperate with relevant authorities.
+    </div>
+
+    <section class="section" id="s1">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Our Commitment</h2>
+      </div>
+      <p>StudySync is committed to providing a safe platform for all users. We strictly prohibit any content, behavior, or activity that exploits, abuses, or endangers children in any way, including child sexual abuse and exploitation (CSAE).</p>
+      <p>StudySync is designed exclusively for university students aged 18 and older. We take child safety obligations seriously and maintain zero tolerance for any violation of these standards.</p>
+    </section>
+
+    <section class="section" id="s2">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Prohibited Content &amp; Behavior</h2>
+      </div>
+      <p>The following are strictly prohibited on StudySync:</p>
+      <ul>
+        <li>Child sexual abuse material (CSAM) in any form</li>
+        <li>Grooming, solicitation, or exploitation of minors</li>
+        <li>Any content that sexualizes or endangers children</li>
+        <li>Sharing personal information of minors without consent</li>
+        <li>Any communication intended to gain inappropriate access to a minor</li>
+      </ul>
+      <p>Accounts found violating these rules are permanently banned and reported to relevant authorities without exception.</p>
+    </section>
+
+    <section class="section" id="s3">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Reporting Mechanisms</h2>
+      </div>
+      <p>StudySync provides in-app reporting tools that allow users to report any child safety concern directly. All reports are reviewed promptly and appropriate action is taken.</p>
+      <ul>
+        <li>In-app report button available on all user profiles and content</li>
+        <li>Reports are reviewed within 24 to 48 hours</li>
+        <li>Confirmed violations result in immediate account suspension and permanent ban</li>
+        <li>Severe cases are reported to national and regional authorities</li>
+      </ul>
+    </section>
+
+    <section class="section" id="s4">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Compliance</h2>
+      </div>
+      <p>StudySync complies with all applicable child safety laws and regulations. We report confirmed cases of CSAM to relevant national and regional authorities, including the National Center for Missing and Exploited Children (NCMEC) where applicable.</p>
+      <p>We maintain internal procedures to detect, report, and respond to child safety violations, and regularly review these practices to ensure continued compliance.</p>
+    </section>
+
+    <section class="section" id="s5">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Designated Point of Contact</h2>
+      </div>
+      <p>For child safety concerns, compliance inquiries, or to report CSAE-related issues, please contact our designated point of contact who is ready and able to speak about our CSAM prevention practices:</p>
+      <div class="contact-box">
+        <p><span class="contact-label">Email:</span> <a href="mailto:vittayasak@mfu.ac.th">vittayasak@mfu.ac.th</a></p>
+        <p><span class="contact-label">Organization:</span> StudySync — Mae Fah Luang University</p>
+        <p><span class="contact-label">Response time:</span> Within 48 hours</p>
+      </div>
+    </section>
+
+    <section class="section" id="s6">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Policy Updates</h2>
+      </div>
+      <p>We may update these standards periodically to reflect changes in law, platform features, or best practices. Material changes will be communicated via in-app notice. Continued use of StudySync constitutes acceptance of the most current version of this policy.</p>
+    </section>
+  </main>
+</div>
+
+<footer>
+  &copy; 2026 StudySync · Mae Fah Luang University ·
+  <a href="mailto:vittayasak@mfu.ac.th">vittayasak@mfu.ac.th</a>
+</footer>
+
+<script>
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -68,6 +68,7 @@ class _UpcomingSessionsSectionState
         attended:  true,
       );
       await ref.read(authProvider.notifier).refreshUser();
+      ref.invalidate(upcomingSessionsProvider);
       if (mounted) {
         setState(() {
           _checkedIn.add(s.sessionId);

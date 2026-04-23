@@ -43,7 +43,28 @@ class UpcomingSessionsNotifier extends Notifier<List<SessionModel>> {
       final all = results.expand((list) => list).toList();
       // Keep only scheduled sessions, sort soonest first
       all.sort((a, b) => a.date.compareTo(b.date));
-      state = all.where((s) => s.status == 'scheduled').toList();
+      final scheduled = all.where((s) => s.status == 'scheduled').toList();
+      if (scheduled.isEmpty) {
+        state = [];
+        return;
+      }
+
+      final user = ref.read(authProvider);
+      if (user == null) {
+        state = scheduled;
+        return;
+      }
+
+      final attendedFlags = await Future.wait(
+        scheduled.map((s) => _sessionService.hasUserAttended(s.groupId, s.sessionId)),
+      );
+      final visible = <SessionModel>[];
+      for (var i = 0; i < scheduled.length; i++) {
+        if (!attendedFlags[i]) {
+          visible.add(scheduled[i]);
+        }
+      }
+      state = visible;
     } catch (_) {
       state = [];
     }
@@ -118,6 +139,5 @@ Future<void> markGroupSessionAttendance(
   final service = ref.read(sessionServiceProvider);
   await service.markAttendance(groupId, sessionId, attended);
 }
-
 
 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/session_model.dart';
 import '../../../models/study_group_model.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../providers/sessions_provider.dart';
 
 class SessionsTab extends ConsumerWidget {
@@ -139,10 +141,40 @@ class _UpcomingSessionCardState
   bool _attended = false;
   bool _loading = false;
 
+  DateTime? _parseSessionStart(SessionModel s) {
+    try {
+      final date = DateFormat('EEE, MMM d yyyy').parseStrict(s.date);
+      final startLabel = s.time.split('-').first.trim();
+      final startTime = DateFormat('h:mm a').parseStrict(startLabel);
+      return DateTime(
+        date.year,
+        date.month,
+        date.day,
+        startTime.hour,
+        startTime.minute,
+      );
+    } catch (_) {
+      try {
+        final date = DateFormat('EEE, MMM d yyyy').parseStrict(s.date);
+        return DateTime(date.year, date.month, date.day);
+      } catch (_) {
+        return null;
+      }
+    }
+  }
+
+  bool _canMarkAttendance(SessionModel s) {
+    final start = _parseSessionStart(s);
+    if (start == null) return false;
+    final now = DateTime.now();
+    return now.isAfter(start) || now.isAtSameMomentAs(start);
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = widget.session;
     final g = widget.group;
+    final canMark = _canMarkAttendance(s);
 
     return Container(
       decoration: BoxDecoration(
@@ -216,14 +248,16 @@ class _UpcomingSessionCardState
             width: double.infinity,
             height: 46,
             child: ElevatedButton(
-              onPressed: (_attended || _loading)
+              onPressed: (_attended || _loading || !canMark)
                   ? null
                   : () => _markAttendance(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _attended
                     ? const Color(0xFFE8F5E9)
                     : AppColors.backgroundBlue,
-                disabledBackgroundColor: const Color(0xFFE8F5E9),
+                disabledBackgroundColor: _attended
+                    ? const Color(0xFFE8F5E9)
+                    : AppColors.backgroundBlue.withValues(alpha: 0.5),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
@@ -234,13 +268,17 @@ class _UpcomingSessionCardState
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2))
                   : Text(
-                      _attended ? '✓ Attended' : 'Mark as Attended',
+                      _attended
+                          ? '✓ Attended'
+                          : (canMark ? 'Mark as Attended' : 'Not started yet'),
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: _attended
                               ? AppColors.success
-                              : Colors.grey.shade500),
+                              : (canMark
+                                  ? Colors.grey.shade500
+                                  : AppColors.textDisabled)),
                     ),
             ),
           ),
@@ -258,6 +296,8 @@ class _UpcomingSessionCardState
         sessionId: widget.session.sessionId,
         attended:  true,
       );
+      await ref.read(authProvider.notifier).refreshUser();
+      ref.invalidate(upcomingSessionsProvider);
       if (mounted) setState(() { _attended = true; _loading = false; });
     } catch (_) {
       if (mounted) setState(() => _loading = false);
@@ -320,63 +360,43 @@ class _PastSessionTile extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               color: isCancelled
                   ? AppColors.errorLight
-                  : AppColors.successLight,
-              shape: BoxShape.circle,
+                  : const Color(0xFFE0F2FE),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              isCancelled ? LucideIcons.x : LucideIcons.check,
-              size: 18,
-              color: isCancelled ? AppColors.error : AppColors.success,
+              isCancelled ? LucideIcons.circleX : LucideIcons.circleCheck,
+              color: isCancelled ? AppColors.error : AppColors.primary,
+              size: 20,
             ),
           ),
-          const SizedBox(width: 12),
-              Expanded(
+          const SizedBox(width: 14),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (session.title.isNotEmpty)
-                  Text(session.title,
-                      style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black87)),
-                Text(session.date,
-                    style: TextStyle(
-                        fontSize: session.title.isNotEmpty ? 12 : 14,
-                        fontWeight: session.title.isNotEmpty
-                            ? FontWeight.w400
-                            : FontWeight.w600,
-                        color: session.title.isNotEmpty
-                            ? AppColors.textSecondary
-                            : Colors.black87)),
-                Text('${session.time} · ${session.location}',
+                Text(session.title.isNotEmpty ? session.title : session.date,
+                    style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary)),
+                const SizedBox(height: 4),
+                Text('${session.date} • ${session.time}',
                     style: const TextStyle(
                         fontSize: 12, color: AppColors.textSecondary)),
               ],
             ),
           ),
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: isCancelled
-                  ? AppColors.errorLight
-                  : AppColors.successLight,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              isCancelled ? 'Cancelled' : 'Completed',
-              style: TextStyle(
-                fontSize: 11,
+          Text(
+            isCancelled ? 'Cancelled' : 'Completed',
+            style: TextStyle(
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isCancelled ? AppColors.error : AppColors.success,
-              ),
-            ),
+                color: isCancelled ? AppColors.error : AppColors.success),
           ),
         ],
       ),
