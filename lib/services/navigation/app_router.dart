@@ -48,14 +48,15 @@ class AppRouter {
           : RouteConstants.login,
       refreshListenable: notifier,
       redirect: (context, state) {
+        if (notifier.isInitializing) return null;
         final user = ref.read(authProvider);
         final isLoggedIn = user != null;
         final location = state.uri.path;
-        final groupIdSegments =
-            (state.pathParameters['groupId'] ?? '').split('/');
+        final groupId = state.pathParameters['groupId'];
         final isProtected = protectedRoutes.any(
           (r) => location.startsWith(r.split('/:').first) ||
-                 (r == RouteConstants.groupDetail && groupIdSegments.isNotEmpty),
+                 (r == RouteConstants.groupDetail &&
+                  groupId != null && groupId.isNotEmpty),
         );
         final isLoginRoute = location == RouteConstants.login;
         final isLanding = location == RouteConstants.landing;
@@ -168,7 +169,12 @@ class AppRouter {
 }
 
 class _RouterNotifier extends ChangeNotifier {
+  bool isInitializing = true;
+
   _RouterNotifier(WidgetRef ref) {
-    ref.listen(authProvider, (_, __) => notifyListeners());
+    ref.listen(authProvider, (_, __) {
+      if (isInitializing) isInitializing = false;
+      notifyListeners();
+    });
   }
 }
