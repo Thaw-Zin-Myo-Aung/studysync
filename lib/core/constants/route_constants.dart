@@ -20,6 +20,9 @@ class RouteConstants {
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String notifications = '/notifications';
+  static const String privacyPolicy    = '/privacy-policy';
+  static const String termsConditions  = '/terms-conditions';
+  static const String childSafety      = '/child-safety';
 
   // Nested routes
   static const String groupDetail = '/groups/:groupId';

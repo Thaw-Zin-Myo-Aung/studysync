@@ -10,6 +10,7 @@ import '../../../providers/auth_provider.dart';
 import '../widgets/account_section.dart';
 import '../widgets/notifications_section.dart';
 import '../widgets/app_preferences_section.dart';
+import '../widgets/settings_section_header.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -136,6 +137,62 @@ class SettingsScreen extends ConsumerWidget {
                   const NotificationsSection(),
                   const SizedBox(height: 16),
                   const AppPreferencesSection(),
+                  const SizedBox(height: 16),
+                  const SettingsSectionHeader(title: 'Legal'),
+                  Card(
+                    elevation: 0,
+                    color: AppColors.surface,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(LucideIcons.shield,
+                              color: AppColors.primary),
+                          title: const Text(
+                            'Privacy Policy',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary),
+                          ),
+                          trailing: const Icon(LucideIcons.chevronRight,
+                              color: AppColors.textDisabled),
+                          onTap: () =>
+                              context.push(RouteConstants.privacyPolicy),
+                        ),
+                        const Divider(height: 1, color: AppColors.border),
+                        ListTile(
+                          leading: const Icon(LucideIcons.fileText,
+                              color: AppColors.primary),
+                          title: const Text(
+                            'Terms & Conditions',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary),
+                          ),
+                          trailing: const Icon(LucideIcons.chevronRight,
+                              color: AppColors.textDisabled),
+                          onTap: () =>
+                              context.push(RouteConstants.termsConditions),
+                        ),
+                        const Divider(height: 1, color: AppColors.border),
+                        ListTile(
+                          leading: const Icon(LucideIcons.shieldCheck,
+                              color: AppColors.primary),
+                          title: const Text(
+                            'Child Safety',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary),
+                          ),
+                          trailing: const Icon(LucideIcons.chevronRight,
+                              color: AppColors.textDisabled),
+                          onTap: () =>
+                              context.push(RouteConstants.childSafety),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 32),
                   SizedBox(
                     width: double.infinity,

@@ -15,9 +15,11 @@ import '../../features/groups/screens/group_detail_screen.dart';
 import '../../features/groups/screens/group_settings_screen.dart';
 import '../../features/groups/screens/create_group_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
-import '../../features/profile/screens/edit_profile_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
+import '../../features/legal/screens/privacy_policy_screen.dart';
+import '../../features/legal/screens/terms_conditions_screen.dart';
+import '../../features/legal/screens/child_safety_screen.dart';
 import '../../providers/auth_provider.dart';
 
 /// GoRouter configuration for StudySync app navigation
@@ -49,8 +51,11 @@ class AppRouter {
         final user = ref.read(authProvider);
         final isLoggedIn = user != null;
         final location = state.matchedLocation;
+        final groupIdSegments =
+            (state.pathParameters['groupId'] ?? '').split('/');
         final isProtected = protectedRoutes.any(
-          (r) => location.startsWith(r.split('/:').first),
+          (r) => location.startsWith(r.split('/:').first) ||
+                 (r == RouteConstants.groupDetail && groupIdSegments.isNotEmpty),
         );
         final isAuthRoute = location == RouteConstants.login ||
                             location == RouteConstants.signup;
@@ -147,8 +152,16 @@ class AppRouter {
         builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
-        path: RouteConstants.editProfile,
-        builder: (context, state) => const EditProfileScreen(),
+        path: RouteConstants.privacyPolicy,
+        builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      GoRoute(
+        path: RouteConstants.termsConditions,
+        builder: (context, state) => const TermsConditionsScreen(),
+      ),
+      GoRoute(
+        path: RouteConstants.childSafety,
+        builder: (context, state) => const ChildSafetyScreen(),
       ),
     ],
     );

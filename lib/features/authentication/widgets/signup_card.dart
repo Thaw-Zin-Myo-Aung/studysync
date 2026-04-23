@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,6 +24,7 @@ class _SignupCardState extends ConsumerState<SignupCard> {
   final _confirmController  = TextEditingController();
 
   bool _isLoading = false;
+  bool _agreedToTerms = false;
 
   // ── Live validation state ────────────────────────────────────────────────
   bool _emailTouched    = false;
@@ -232,10 +234,54 @@ class _SignupCardState extends ConsumerState<SignupCard> {
           ],
 
           const SizedBox(height: 24),
-          PrimaryButton(
-              label: 'Create Account',
-              onPressed: _handleSignup,
-              isLoading: _isLoading),
+          Row(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               Checkbox(
+                 value: _agreedToTerms,
+                 activeColor: AppColors.primary,
+                 onChanged: (value) =>
+                     setState(() => _agreedToTerms = value ?? false),
+               ),
+               Expanded(
+                 child: Padding(
+                   padding: const EdgeInsets.only(top: 10),
+                   child: RichText(
+                     text: TextSpan(
+                       style: const TextStyle(
+                         fontSize: 12,
+                         color: AppColors.textSecondary,
+                         height: 1.4,
+                       ),
+                       children: [
+                         const TextSpan(text: 'I agree to the '),
+                         TextSpan(
+                           text: 'Terms & Conditions',
+                           style: const TextStyle(color: AppColors.primary),
+                           recognizer: TapGestureRecognizer()
+                             ..onTap = () =>
+                                 context.push(RouteConstants.termsConditions),
+                         ),
+                         const TextSpan(text: ' and '),
+                         TextSpan(
+                           text: 'Privacy Policy',
+                           style: const TextStyle(color: AppColors.primary),
+                           recognizer: TapGestureRecognizer()
+                             ..onTap = () =>
+                                 context.push(RouteConstants.privacyPolicy),
+                         ),
+                       ],
+                     ),
+                   ),
+                 ),
+               ),
+             ],
+           ),
+           const SizedBox(height: 16),
+           PrimaryButton(
+               label: 'Create Account',
+               onPressed: _agreedToTerms ? () => _handleSignup() : null,
+               isLoading: _isLoading),
           const SizedBox(height: 16),
           const Text(
             'By signing up, you agree to our Terms & Privacy Policy',
