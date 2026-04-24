@@ -15,6 +15,7 @@ import '../../features/groups/screens/group_detail_screen.dart';
 import '../../features/groups/screens/group_settings_screen.dart';
 import '../../features/groups/screens/create_group_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
+import '../../features/profile/screens/edit_profile_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
 import '../../features/legal/screens/privacy_policy_screen.dart';
@@ -50,7 +51,7 @@ class AppRouter {
       redirect: (context, state) {
         if (notifier.isInitializing) return null;
         final user = ref.read(authProvider);
-        final isLoggedIn = user != null;
+        final isLoggedIn = user  != null;
         final location = state.uri.path;
         final groupId = state.pathParameters['groupId'];
         final isProtected = protectedRoutes.any(
@@ -146,6 +147,10 @@ class AppRouter {
       GoRoute(
         path: RouteConstants.profile,
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: RouteConstants.editProfile,
+        builder: (context, state) => const EditProfileScreen(),
       ),
       GoRoute(
         path: RouteConstants.settings,
